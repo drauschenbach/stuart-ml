@@ -16,3 +16,11 @@ This is a companion module for [Stuart](https://spark.apache.org/docs/2.2.0/), t
 $ luarocks install stuart
 $ luarocks install stuart-ml
 ```
+
+## Testing
+
+```
+$ busted
+●
+1 success / 0 failures / 0 errors / 0 pending : 0.002488 seconds
+```
