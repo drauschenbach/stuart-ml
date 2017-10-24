@@ -1,3 +1,15 @@
+# Compiled or Combined Lua sources
+luac.out
+
+# luarocks build files
+*.src.rock
+*.zip
+*.tar.gz
+
+# Editors
 .buildpath
 .project
 .settings
+
+# Analyzers
+luacov.stats.out
