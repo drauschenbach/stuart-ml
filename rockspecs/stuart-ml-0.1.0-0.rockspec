@@ -22,6 +22,12 @@ dependencies = {
 build = {
    type = "builtin",
    modules = {
-      stuart = "src/stuart-ml.lua"
+      stuart = "src/stuart-ml.lua",
+      ["stuart-ml.linalg.DenseVector"] = "src/stuart-ml/linalg/DenseVector.lua",
+      ["stuart-ml.linalg.SparseVector"] = "src/stuart-ml/linalg/SparseVector.lua",
+      ["stuart-ml.linalg.Vector"] = "src/stuart-ml/linalg/Vector.lua",
+      ["stuart-ml.linalg.Vectors"] = "src/stuart-ml/linalg/Vectors.lua",
+      ["stuart-ml.util.mosesPatchedRange"] = "src/stuart-ml/util/mosesPatchedRange.lua",
+      ["stuart-ml.util.unzip"] = "src/stuart-ml/util/unzip.lua"
    }
 }
