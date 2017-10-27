@@ -27,6 +27,10 @@ function DenseVector:__index(key)
   return self.values[key]
 end
 
+function DenseVector:__tostring()
+  return '[' .. table.concat(self.values,',') .. ']'
+end
+
 function DenseVector:argmax()
   if self:size() == 0 then
     return -1

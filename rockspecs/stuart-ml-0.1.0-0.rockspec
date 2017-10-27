@@ -23,6 +23,7 @@ build = {
    type = "builtin",
    modules = {
       stuart = "src/stuart-ml.lua",
+      ["stuart-ml.clustering.VectorWithNorm"] = "src/stuart-ml/clustering/VectorWithNorm.lua",
       ["stuart-ml.linalg.DenseVector"] = "src/stuart-ml/linalg/DenseVector.lua",
       ["stuart-ml.linalg.SparseVector"] = "src/stuart-ml/linalg/SparseVector.lua",
       ["stuart-ml.linalg.Vector"] = "src/stuart-ml/linalg/Vector.lua",

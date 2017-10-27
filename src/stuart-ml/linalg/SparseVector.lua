@@ -41,6 +41,12 @@ function SparseVector:__index(key)
   return self.values[i]
 end
 
+function SparseVector:__tostring()
+  return '(' .. self._size .. ',['
+    .. table.concat(self.indices,',') .. '],['
+    .. table.concat(self.values,',') .. '])'
+end
+
 function SparseVector:argmax()
   if self._size == 0 then return -1 end
   if self.numActives == 0 then return 0 end
