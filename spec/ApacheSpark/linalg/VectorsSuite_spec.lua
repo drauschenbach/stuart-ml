@@ -274,28 +274,58 @@ describe('Apache Spark MLlib VectorsSuite', function()
     assert.equal(0.0, svMap[3])
   end)
 
---  it('vector p-norm', function()
---    val dv = Vectors.dense(0.0, -1.2, 3.1, 0.0, -4.5, 1.9)
---    val sv = Vectors.sparse(6, Seq((1, -1.2), (2, 3.1), (3, 0.0), (4, -4.5), (5, 1.9)))
---
---    assert(Vectors.norm(dv, 1.0) ~== dv.toArray.foldLeft(0.0)((a, v) =>
---      a + math.abs(v)) relTol 1E-8)
---    assert(Vectors.norm(sv, 1.0) ~== sv.toArray.foldLeft(0.0)((a, v) =>
---      a + math.abs(v)) relTol 1E-8)
---
---    assert(Vectors.norm(dv, 2.0) ~== math.sqrt(dv.toArray.foldLeft(0.0)((a, v) =>
---      a + v * v)) relTol 1E-8)
---    assert(Vectors.norm(sv, 2.0) ~== math.sqrt(sv.toArray.foldLeft(0.0)((a, v) =>
---      a + v * v)) relTol 1E-8)
---
---    assert(Vectors.norm(dv, Double.PositiveInfinity) ~== dv.toArray.map(math.abs).max relTol 1E-8)
---    assert(Vectors.norm(sv, Double.PositiveInfinity) ~== sv.toArray.map(math.abs).max relTol 1E-8)
---
---    assert(Vectors.norm(dv, 3.7) ~== math.pow(dv.toArray.foldLeft(0.0)((a, v) =>
---      a + math.pow(math.abs(v), 3.7)), 1.0 / 3.7) relTol 1E-8)
---    assert(Vectors.norm(sv, 3.7) ~== math.pow(sv.toArray.foldLeft(0.0)((a, v) =>
---      a + math.pow(math.abs(v), 3.7)), 1.0 / 3.7) relTol 1E-8)
---  end)
+  it('vector p-norm', function()
+    local dv = Vectors.dense(0.0, -1.2, 3.1, 0.0, -4.5, 1.9)
+    local sv = Vectors.sparse(6, {{1, -1.2}, {2, 3.1}, {3, 0.0}, {4, -4.5}, {5, 1.9}})
+
+    local expected = moses.reduce(dv:toArray(), function(a,v)
+      return a + math.abs(v)
+    end, 0.0)
+    local actual = Vectors.norm(dv, 1.0)
+    assert.equal_within_relative_tolerance(expected, actual, 1e-8)
+      
+    expected = moses.reduce(sv:toArray(), function(a,v)
+      return a + math.abs(v)
+    end, 0.0)
+    actual = Vectors.norm(sv, 1.0)
+    assert.equal_within_relative_tolerance(expected, actual, 1e-8)
+
+    expected = math.sqrt(moses.reduce(dv:toArray(), function(a,v)
+      return a + v * v
+    end, 0.0))
+    actual = Vectors.norm(dv, 2.0)
+    assert.equal_within_relative_tolerance(expected, actual, 1e-8)
+
+    expected = math.sqrt(moses.reduce(sv:toArray(), function(a,v)
+      return a + v * v
+    end, 0.0))
+    actual = Vectors.norm(sv, 2.0)
+    assert.equal_within_relative_tolerance(expected, actual, 1e-8)
+
+    expected = moses.reduce(dv:toArray(), function(a,v)
+      return math.max(a, math.abs(v))
+    end, 0.0)
+    actual = Vectors.norm(dv, math.huge)
+    assert.equal_within_relative_tolerance(expected, actual, 1e-8)
+
+    expected = moses.reduce(sv:toArray(), function(a,v)
+      return math.max(a, math.abs(v))
+    end, 0.0)
+    actual = Vectors.norm(sv, math.huge)
+    assert.equal_within_relative_tolerance(expected, actual, 1e-8)
+
+    expected = math.pow(moses.reduce(dv:toArray(), function(a,v)
+      return a + math.pow(math.abs(v), 3.7)
+    end, 0.0), 1.0 / 3.7)
+    actual = Vectors.norm(dv, 3.7)
+    assert.equal_within_relative_tolerance(expected, actual, 1e-8)
+
+    expected = math.pow(moses.reduce(sv:toArray(), function(a,v)
+      return a + math.pow(math.abs(v), 3.7)
+    end, 0.0), 1.0 / 3.7)
+    actual = Vectors.norm(sv, 3.7)
+    assert.equal_within_relative_tolerance(expected, actual, 1e-8)
+  end)
 
   it('Vector numActive and numNonzeros', function()
     local dv = Vectors.dense(0.0, 2.0, 3.0, 0.0)
