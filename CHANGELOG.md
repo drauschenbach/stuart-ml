@@ -1,4 +1,4 @@
-## [Unreleased]
+## [0.1.0] - 2017-10-28
 ### Added
 - `clustering:` Ported `VectorWithNorm` datatype
 - `linalg:` Ported `DenseVector` and `SparseVector` datatypes, plus their `Vectors` factory
