@@ -11,6 +11,7 @@ RUN make bootstrap
 RUN luarocks install busted
 RUN luarocks install middleclass
 RUN luarocks install moses
+RUN luarocks install stuart
 
 # Add this project
 ADD . /app
