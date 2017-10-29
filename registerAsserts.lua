@@ -1,5 +1,6 @@
 local moses = require 'moses'
 local say = require 'say'
+local Vector = require 'stuart-ml.linalg.Vector'
 
 local registerAsserts = function(assert)
 
@@ -19,6 +20,20 @@ local registerAsserts = function(assert)
     local x = arguments[1]
     local y = arguments[2]
     local eps = arguments[3]
+    if x == y then return true end
+    
+    if moses.isTable(x) and x.isInstanceOf and x:isInstanceOf(Vector) and y.isInstanceOf and y:isInstanceOf(Vector) then
+      if x:size() ~= y:size() then return false end
+      for _,e in ipairs(moses.zip(x:toArray(), y:toArray())) do
+        local a = e[1]
+        local b = e[2]
+        local absA = math.abs(a)
+        local absB = math.abs(b)
+        if math.abs(a - b) >= eps then return false end
+      end
+      return true
+    end
+    
     return math.abs(x - y) < eps
   end, 'assertion.equal_abstol.positive', 'assertion.equal_abstol.negative')
   
@@ -30,6 +45,20 @@ local registerAsserts = function(assert)
     local y = arguments[2]
     local eps = arguments[3]
     if x == y then return true end
+    
+    if moses.isTable(x) and x.isInstanceOf and x:isInstanceOf(Vector) and y.isInstanceOf and y:isInstanceOf(Vector) then
+      if x:size() ~= y:size() then return false end
+      for _,e in ipairs(moses.zip(x:toArray(), y:toArray())) do
+        local a = e[1]
+        local b = e[2]
+        local absA = math.abs(a)
+        local absB = math.abs(b)
+        local diff = math.abs(a - b)
+        if diff >= eps * math.min(absA, absB) then return false end
+      end
+      return true
+    end
+    
     local absX = math.abs(x)
     local absY = math.abs(y)
     local diff = math.abs(x - y)
