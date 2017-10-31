@@ -2,33 +2,36 @@ local moses = require 'moses'
 local say = require 'say'
 local Vector = require 'stuart-ml.linalg.Vector'
 
+local isInstanceOf = function(x, type)
+  if not moses.isTable(x) or x.isInstanceOf == nil then return false end
+  return x:isInstanceOf(type)
+end
+
 local registerAsserts = function(assert)
 
   -----------------------------------------------------------------------------
   say:set('assertion.contains.positive', 'Expected %s to contain %s')
   say:set('assertion.contains.negative', 'Expected %s to not contain %s')
-  assert:register('assertion', 'contains', function(state, arguments)
+  assert:register('assertion', 'contains', function(_, arguments)
     local collection = arguments[1]
     local searchFor = arguments[2]
-    return moses.findIndex(collection, function(i,v) return v == searchFor end) ~= nil
+    return moses.findIndex(collection, function(_,v) return v == searchFor end) ~= nil
   end, 'assertion.contains.positive', 'assertion.contains.negative')
   
   -----------------------------------------------------------------------------
   say:set('assertion.equal_abstol.positive', 'Expected %s to equal %s within absolute tolerance %s')
   say:set('assertion.equal_abstol.negative', 'Expected %s to not equal %s within absolute tolerance %s')
-  assert:register('assertion', 'equal_abstol', function(state, arguments)
+  assert:register('assertion', 'equal_abstol', function(_, arguments)
     local x = arguments[1]
     local y = arguments[2]
     local eps = arguments[3]
     if x == y then return true end
     
-    if moses.isTable(x) and x.isInstanceOf and x:isInstanceOf(Vector) and y.isInstanceOf and y:isInstanceOf(Vector) then
+    if isInstanceOf(x, Vector) and isInstanceOf(y, Vector) then
       if x:size() ~= y:size() then return false end
       for _,e in ipairs(moses.zip(x:toArray(), y:toArray())) do
         local a = e[1]
         local b = e[2]
-        local absA = math.abs(a)
-        local absB = math.abs(b)
         if math.abs(a - b) >= eps then return false end
       end
       return true
@@ -40,13 +43,13 @@ local registerAsserts = function(assert)
   -----------------------------------------------------------------------------
   say:set('assertion.equal_reltol.positive', 'Expected %s to equal %s within relative tolerance %s')
   say:set('assertion.equal_reltol.negative', 'Expected %s to not equal %s within relative tolerance %s')
-  assert:register('assertion', 'equal_reltol', function(state, arguments)
+  assert:register('assertion', 'equal_reltol', function(_, arguments)
     local x = arguments[1]
     local y = arguments[2]
     local eps = arguments[3]
     if x == y then return true end
     
-    if moses.isTable(x) and x.isInstanceOf and x:isInstanceOf(Vector) and y.isInstanceOf and y:isInstanceOf(Vector) then
+    if isInstanceOf(x, Vector) and isInstanceOf(y, Vector) then
       if x:size() ~= y:size() then return false end
       for _,e in ipairs(moses.zip(x:toArray(), y:toArray())) do
         local a = e[1]
