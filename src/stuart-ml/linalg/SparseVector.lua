@@ -5,6 +5,11 @@ local Vector = require 'stuart-ml.linalg.Vector'
 local SparseVector = class('SparseVector', Vector)
 
 function SparseVector:initialize(size, indices, values)
+  assert(#indices == #values, 'Sparse vectors require that the dimension of the '
+    .. 'indices match the dimension of the values. You provided ' .. #indices .. ' indices and '
+    .. #values .. ' values')
+  assert(#indices <= size, 'You provided ' .. #indices .. ' indices and values, '
+    .. 'which exceeds the specified vector size ' .. size)
   Vector.initialize(self)
   self._size = size
   self.indices = indices

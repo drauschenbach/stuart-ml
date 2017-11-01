@@ -36,20 +36,14 @@ describe('Apache Spark MLlib VectorsSuite', function()
     assert.same(values, vec.values)
   end)
 
---  it('sparse vector construction with mismatched indices/values array', function()
---    intercept[IllegalArgumentException] {
---      Vectors.sparse(4, Array(1, 2, 3), Array(3.0, 5.0, 7.0, 9.0))
---    }
---    intercept[IllegalArgumentException] {
---      Vectors.sparse(4, Array(1, 2, 3), Array(3.0, 5.0))
---    }
---  end)
+  it('sparse vector construction with mismatched indices/values array', function()
+    assert.error(function() Vectors.sparse(4, {1,2,3}, {3.0,5.0,7.0,9.0}) end)
+    assert.error(function() Vectors.sparse(4, {1,2,3}, {3.0,5.0}) end)
+  end)
 
---  it('sparse vector construction with too many indices vs size', function()
---    intercept[IllegalArgumentException] {
---      Vectors.sparse(3, Array(1, 2, 3, 4), Array(3.0, 5.0, 7.0, 9.0))
---    }
---  end)
+  it('sparse vector construction with too many indices vs size', function()
+    assert.error(function() Vectors.sparse(3, {1,2,3,4}, {3.0,5.0,7.0,9.0}) end)
+  end)
 
   it('dense to array', function()
     local vec = Vectors.dense(arr)
