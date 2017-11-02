@@ -1,3 +1,12 @@
+# Changelog
+
+## [Unreleased]
+### Added
+- `linalg:` Ported `BLAS` `axpy()` and `dot()`
+
+### Changed
+- `linalg: ` Vector types are now 0-based like Apache Spark
+
 ## [0.1.0] - 2017-10-28
 ### Added
 - `clustering:` Ported `VectorWithNorm` datatype
