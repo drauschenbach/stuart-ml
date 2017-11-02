@@ -7,7 +7,7 @@ registerAsserts(assert)
 describe('Apache Spark MLlib VectorsSuite', function()
   local arr = {0.1, 0.0, 0.3, 0.4}
   local n = 4
-  local indices = {1, 3, 4}
+  local indices = {0, 2, 3}
   local values = {0.1, 0.3, 0.4}
 
   it('dense vector construction with varargs', function()
@@ -71,7 +71,7 @@ describe('Apache Spark MLlib VectorsSuite', function()
     assert.equal(-1, vec:argmax())
 
     local vec2 = Vectors.sparse(n, indices, values)
-    assert.equal(4, vec2:argmax())
+    assert.equal(3, vec2:argmax())
 
     local vec3 = Vectors.sparse(5, {2,3,4}, {1.0,0.0,-.7})
     assert.equal(2, vec3:argmax())
@@ -81,17 +81,17 @@ describe('Apache Spark MLlib VectorsSuite', function()
     local vec4 = Vectors.sparse(5, {2,3}, {-1.0,-.7})
     assert.equal(0, vec4:argmax())
 
---    local vec5 = Vectors.sparse(11, {1,4,11}, {-1.0,-.7,0.0})
---    assert.equal(3, vec5:argmax())
+    local vec5 = Vectors.sparse(11, {0,3,10}, {-1.0,-.7,0.0})
+    assert.equal(1, vec5:argmax())
 
-    local vec6 = Vectors.sparse(11, {1,2,3}, {-1.0,-.7,0.0})
-    assert.equal(3, vec6:argmax())
+    local vec6 = Vectors.sparse(11, {0,1,2}, {-1.0,-.7,0.0})
+    assert.equal(2, vec6:argmax())
 
-    local vec7 = Vectors.sparse(5, {1,2,4}, {-1.0,0.0,-.7})
-    assert.equal(2, vec7:argmax())
+    local vec7 = Vectors.sparse(5, {0,1,3}, {-1.0,0.0,-.7})
+    assert.equal(1, vec7:argmax())
 
     local vec8 = Vectors.sparse(5, {1,2}, {0.0,-1.0})
-    assert.equal(1, vec8:argmax())
+    assert.equal(0, vec8:argmax())
 
     -- Check for case when sparse vector is non-empty but the values are empty
     local vec9 = Vectors.sparse(100, {}, {})
@@ -250,7 +250,7 @@ describe('Apache Spark MLlib VectorsSuite', function()
 
     local dvMap = {}
     dv:foreachActive(function(index,value)
-      dvMap[index] = value
+      dvMap[index+1] = value
     end)
     assert.equal(4, moses.size(dvMap))
     assert.equal(0.0, dvMap[1])
@@ -262,7 +262,7 @@ describe('Apache Spark MLlib VectorsSuite', function()
     sv:foreachActive(function(index,value)
       svMap[index] = value
     end)
-    assert.equal(3, moses.size(svMap))
+    assert.equal(3, #svMap)
     assert.equal(1.2, svMap[1])
     assert.equal(3.1, svMap[2])
     assert.equal(0.0, svMap[3])
@@ -346,7 +346,7 @@ describe('Apache Spark MLlib VectorsSuite', function()
     -- here's a substitute test, for now
     assert.same(dv0:toArray(), dv0s:toArray())
 
-    local sv0 = Vectors.sparse(4, {1,2,3}, {0.0,2.0,3.0})
+    local sv0 = Vectors.sparse(4, {0,1,2}, {0.0,2.0,3.0})
     --assert.equal(sv0, sv0:toDense())
     assert.same(sv0:toArray(), sv0:toDense():toArray())
     

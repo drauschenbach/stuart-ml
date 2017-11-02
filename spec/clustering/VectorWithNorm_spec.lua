@@ -37,7 +37,7 @@ describe('clustering.VectorWithNorm', function()
   end)
   
   it('converts to DenseVector', function()
-    local indices = {1, 3, 4}
+    local indices = {0, 2, 3}
     local values = {0.1, 0.3, 4}
     local norm = 3
     local vec = Vectors.sparse(3, indices, values)

@@ -9,7 +9,7 @@ describe('linalg.BLASSuite', function()
 
   test('axpy', function()
     local alpha = 0.1
-    local sx = Vectors.sparse(3, {1,3}, {1.0,-2.0})
+    local sx = Vectors.sparse(3, {0,2}, {1.0, -2.0})
     local dx = Vectors.dense(1.0, 0.0, -2.0)
     local dy = {2.0, 1.0, 0.0}
     local expected = Vectors.dense(2.1, 1.0, -0.2)
@@ -22,7 +22,7 @@ describe('linalg.BLASSuite', function()
     BLAS.axpy(alpha, dx, dy2)
     assert.equal_abstol(expected, dy2, 1e-15)
 
-    local sy = Vectors.sparse(4, {1,2}, {2.0,1.0})
+    local sy = Vectors.sparse(4, {0,1}, {2.0, 1.0})
 
     assert.has_error(function() BLAS.axpy(alpha, sx, sy) end)
     assert.has_error(function() BLAS.axpy(alpha, dx, sy) end)

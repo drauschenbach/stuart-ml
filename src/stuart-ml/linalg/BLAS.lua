@@ -38,16 +38,12 @@ M.axpy_sparse_dense = function(a, x, y)
   local nnz = #xIndices
 
   if a == 1.0 then
-    local k = 1
-    while k <= nnz do
-      yValues[xIndices[k]] = yValues[xIndices[k]] + xValues[k]
-      k = k + 1
+    for k=0,nnz-1 do
+      yValues[xIndices[k+1]+1] = yValues[xIndices[k+1]+1] + xValues[k+1]
     end
   else
-    local k = 1
-    while k <= nnz do
-      yValues[xIndices[k]] = yValues[xIndices[k]] + a * xValues[k]
-      k = k + 1
+    for k=0,nnz-1 do
+      yValues[xIndices[k+1]+1] = yValues[xIndices[k+1]+1] + a * xValues[k+1]
     end
   end
 end

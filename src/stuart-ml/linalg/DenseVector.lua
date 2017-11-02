@@ -53,7 +53,7 @@ end
 
 function DenseVector:foreachActive(f)
   for i,value in ipairs(self.values) do
-    f(i, value)
+    f(i-1, value)
   end
 end
 

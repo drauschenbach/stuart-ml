@@ -27,8 +27,8 @@ describe('Apache Spark TestingUtilsSuite', function()
     assert.equal_reltol_not(Vectors.dense({3.1,3.5}), Vectors.dense({3.135,3.534}), 0.01)
     
     -- comparison of a dense vector and a sparse vector
-    assert.equal_reltol(Vectors.dense({3.1,3.5}), Vectors.sparse(2, {1,2}, {3.130,3.534}), 0.01)
-    assert.equal_reltol_not(Vectors.dense({3.1,3.5}), Vectors.sparse(2, {1,2}, {3.135,3.534}), 0.01)
+    assert.equal_reltol(Vectors.dense({3.1,3.5}), Vectors.sparse(2, {0,1}, {3.130,3.534}), 0.01)
+    assert.equal_reltol_not(Vectors.dense({3.1,3.5}), Vectors.sparse(2, {0,1}, {3.135,3.534}), 0.01)
   end)
 
   it('Comparing vectors using absolute error', function()
@@ -37,15 +37,15 @@ describe('Apache Spark TestingUtilsSuite', function()
     assert.equal_abstol_not(Vectors.dense({3.1, 3.5, 0.0}), Vectors.dense({3.1+1e-5,3.5+2e-7,1+1e-3}), 1e-6)
     
     -- comparisons of two sparse vectors
-    assert.equal_abstol(Vectors.sparse(3, {1,3}, {3.1,2.4}), Vectors.sparse(3, {1,3}, {3.1,2.4}), 1e-6)
-    assert.equal_abstol(Vectors.sparse(3, {1,3}, {3.1+1e-8, 2.4+1e-7}), Vectors.sparse(3, {1,3}, {3.1,2.4}), 1e-6)
-    assert.equal_abstol_not(Vectors.sparse(3, {1,3}, {3.1,2.4}), Vectors.sparse(3, {1,3}, {3.1+1e-3, 2.4}), 1e-6)
-    assert.equal_abstol_not(Vectors.sparse(3, {1,3}, {3.1+1e-3, 2.4}), Vectors.sparse(3, {1,3}, {3.1, 2.4}), 1e-6)
+    assert.equal_abstol(Vectors.sparse(3, {0,2}, {3.1,2.4}), Vectors.sparse(3, {0,2}, {3.1,2.4}), 1e-6)
+    assert.equal_abstol(Vectors.sparse(3, {0,2}, {3.1+1e-8, 2.4+1e-7}), Vectors.sparse(3, {0,2}, {3.1,2.4}), 1e-6)
+    assert.equal_abstol_not(Vectors.sparse(3, {0,2}, {3.1,2.4}), Vectors.sparse(3, {0,2}, {3.1+1e-3, 2.4}), 1e-6)
+    assert.equal_abstol_not(Vectors.sparse(3, {0,2}, {3.1+1e-3, 2.4}), Vectors.sparse(3, {0,2}, {3.1, 2.4}), 1e-6)
     
     -- comparison of a dense vector and a sparse vector
-    assert.equal_abstol(Vectors.sparse(3, {1,3}, {3.1,2.4}), Vectors.dense({3.1+1e-8, 0, 2.4+1e-7}), 1e-6)
-    assert.equal_abstol(Vectors.dense({3.1+1e-8, 0, 2.4+1e-7}), Vectors.sparse(3, {1,3}, {3.1,2.4}), 1e-6)
-    assert.equal_abstol_not(Vectors.sparse(3, {1,3}, {3.1,2.4}), Vectors.dense({3.1, 1e-3, 2.4}), 1e-6)
+    assert.equal_abstol(Vectors.sparse(3, {0,2}, {3.1,2.4}), Vectors.dense({3.1+1e-8, 0, 2.4+1e-7}), 1e-6)
+    assert.equal_abstol(Vectors.dense({3.1+1e-8, 0, 2.4+1e-7}), Vectors.sparse(3, {0,2}, {3.1,2.4}), 1e-6)
+    assert.equal_abstol_not(Vectors.sparse(3, {0,2}, {3.1,2.4}), Vectors.dense({3.1, 1e-3, 2.4}), 1e-6)
   end)
 
 end)
