@@ -16,11 +16,11 @@ describe('linalg.BLASSuite', function()
 
     local dy1 = Vectors.dense(moses.clone(dy))
     BLAS.axpy(alpha, sx, dy1)
-    assert.equal_abstol(expected, dy1, 1e-15)
+    assert.equal_absTol(expected, dy1, 1e-15)
 
     local dy2 = Vectors.dense(moses.clone(dy))
     BLAS.axpy(alpha, dx, dy2)
-    assert.equal_abstol(expected, dy2, 1e-15)
+    assert.equal_absTol(expected, dy2, 1e-15)
 
     local sy = Vectors.sparse(4, {0,1}, {2.0, 1.0})
 
