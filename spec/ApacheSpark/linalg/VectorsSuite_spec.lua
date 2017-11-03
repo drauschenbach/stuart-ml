@@ -324,7 +324,6 @@ describe('Apache Spark MLlib VectorsSuite', function()
       }
     }
     
-    --for m=1,1000,100 do
     for _, params in ipairs(testData) do
       local sparseVector1 = Vectors.sparse(params.m, params.indices1, params.values1)
       local sparseVector2 = Vectors.sparse(params.m, params.indices2, params.values2)

@@ -41,8 +41,8 @@ print(table.concat(sparseVector:toArray(), ','))
 
 ```sh
 $ busted
-●●●●●●●●●●●
-19 successes / 0 failures / 0 errors / 0 pending : 0.03143 seconds
+●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●
+39 successes / 0 failures / 0 errors / 0 pending : 0.068103 seconds
 ```
 
 ### Testing with a Specific Lua Version
@@ -50,6 +50,6 @@ $ busted
 ```sh
 $ docker build -f Test-Lua53.Dockerfile -t test .
 $ docker run -it test busted
-●●●●●●●●●●●
-19 successes / 0 failures / 0 errors / 0 pending : 0.03143 seconds
+●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●
+39 successes / 0 failures / 0 errors / 0 pending : 0.068103 seconds
 ```
