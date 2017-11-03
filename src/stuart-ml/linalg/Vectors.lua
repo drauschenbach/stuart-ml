@@ -74,29 +74,7 @@ M.sqdist = function(v1, v2)
     .. ' and Dim(v2)=' .. v2:size())
   local squaredDistance = 0.0
   if v1:isInstanceOf(SparseVector) and v2:isInstanceOf(SparseVector) then
-    local v1Values = v1.values
-    local v1Indices = v1.indices
-    local v2Values = v2.values
-    local v2Indices = v2.indices
-    local nnzv1 = #v1Indices
-    local nnzv2 = #v2Indices
-    local kv1 = 0
-    local kv2 = 0
-    while kv1 < nnzv1 or kv2 < nnzv2 do
-      local score = 0.0
-      if kv2 >= nnzv2 or (kv1 < nnzv1 and v1Indices[kv1+1] < v2Indices[kv2+1]) then
-        score = v1Values[kv1+1]
-        kv1 = kv1 + 1
-      elseif kv1 >= nnzv1 or (kv2 < nnzv2 and v2Indices[kv2+1] < v1Indices[kv1+1]) then
-        score = v2Values[kv2+1]
-        kv2 = kv2 + 1
-      else
-        score = v1Values[kv1+1] - v2Values[kv2+1]
-        kv1 = kv1 + 1
-        kv2 = kv2 + 1
-      end
-      squaredDistance = squaredDistance + score * score
-    end
+    squaredDistance = M.sqdist_sparse_sparse(v1, v2)
   elseif v1:isInstanceOf(SparseVector) and v2:isInstanceOf(DenseVector) then
     squaredDistance = M.sqdist_sparse_dense(v1, v2)
   elseif v1:isInstanceOf(DenseVector) and v2:isInstanceOf(SparseVector) then
@@ -111,6 +89,34 @@ M.sqdist = function(v1, v2)
     end
   else
     error('Do not support vector type ' .. v1.class .. ' and ' .. v2.class)
+  end
+  return squaredDistance
+end
+
+M.sqdist_sparse_sparse = function(v1, v2)
+  local squaredDistance = 0.0
+  local v1Values = v1.values
+  local v1Indices = v1.indices
+  local v2Values = v2.values
+  local v2Indices = v2.indices
+  local nnzv1 = #v1Indices
+  local nnzv2 = #v2Indices
+  local kv1 = 0
+  local kv2 = 0
+  while kv1 < nnzv1 or kv2 < nnzv2 do
+    local score = 0.0
+    if kv2 >= nnzv2 or (kv1 < nnzv1 and v1Indices[kv1+1] < v2Indices[kv2+1]) then
+      score = v1Values[kv1+1]
+      kv1 = kv1 + 1
+    elseif kv1 >= nnzv1 or (kv2 < nnzv2 and v2Indices[kv2+1] < v1Indices[kv1+1]) then
+      score = v2Values[kv2+1]
+      kv2 = kv2 + 1
+    else
+      score = v1Values[kv1+1] - v2Values[kv2+1]
+      kv1 = kv1 + 1
+      kv2 = kv2 + 1
+    end
+    squaredDistance = squaredDistance + score * score
   end
   return squaredDistance
 end

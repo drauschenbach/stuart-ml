@@ -4,6 +4,7 @@
 ### Added
 - `linalg:` Ported `BLAS` `axpy()` and `dot()`
 - `linalg:` Ported `Vectors` `sqdist()`
+- `util:` Ported `MLUtils` `EPSILON` and `fastSquaredDistance()`
 
 ### Changed
 - `linalg: ` Vector types are now 0-based like Apache Spark
