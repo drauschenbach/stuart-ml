@@ -21,6 +21,8 @@ $ luarocks install stuart-ml
 
 ### Vector Types
 
+Vector types are 0-based, unlike Lua arrays. This facilitates a more direct translation of Scala or Python-based Apache Spark jobs and use cases to Lua.
+
 ```lua
 Vectors = require 'stuart-ml.linalg.Vectors'
 
@@ -28,7 +30,7 @@ denseVector = Vectors.dense({0.1, 0.0, 0.3})
 print(table.concat(denseVector:toArray(), ','))
 {0.1,0,0.3}
 
-sparseVector = Vectors.sparse(5, {1,2,5}, {10,11,12})
+sparseVector = Vectors.sparse(5, {0,1,4}, {10,11,12})
 print(table.concat(sparseVector:toArray(), ','))
 {10,11,0,0,12}
 ```

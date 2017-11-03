@@ -1,4 +1,5 @@
 local moses = require 'moses'
+moses.range = require 'stuart-ml.util.mosesPatchedRange'
 local registerAsserts = require 'registerAsserts'
 local Vectors = require 'stuart-ml.linalg.Vectors'
 
@@ -217,32 +218,41 @@ describe('Apache Spark MLlib VectorsSuite', function()
 --    assert(v.size === x.rows)
 --  end)
 
---  it('sqdist', function()
---    val random = new Random()
---    for (m <- 1 until 1000 by 100) {
---      val nnz = random.nextInt(m)
---
---      val indices1 = random.shuffle(0 to m - 1).slice(0, nnz).sorted.toArray
---      val values1 = Array.fill(nnz)(random.nextDouble)
---      val sparseVector1 = Vectors.sparse(m, indices1, values1)
---
---      val indices2 = random.shuffle(0 to m - 1).slice(0, nnz).sorted.toArray
---      val values2 = Array.fill(nnz)(random.nextDouble)
---      val sparseVector2 = Vectors.sparse(m, indices2, values2)
---
---      val denseVector1 = Vectors.dense(sparseVector1.toArray)
---      val denseVector2 = Vectors.dense(sparseVector2.toArray)
---
---      val squaredDist = breezeSquaredDistance(sparseVector1.asBreeze, sparseVector2.asBreeze)
---
---      // SparseVector vs. SparseVector
---      assert(Vectors.sqdist(sparseVector1, sparseVector2) ~== squaredDist relTol 1E-8)
---      // DenseVector  vs. SparseVector
---      assert(Vectors.sqdist(denseVector1, sparseVector2) ~== squaredDist relTol 1E-8)
---      // DenseVector  vs. DenseVector
---      assert(Vectors.sqdist(denseVector1, denseVector2) ~== squaredDist relTol 1E-8)
---    }
---  end)
+  it('sqdist', function()
+      math.randomseed(os.clock())
+    for m=1,1000,100 do
+      local nnz = 0; if m > 1 then nnz = math.random(m-1) end
+      
+      local indices1 = moses.slice(moses.shuffle(moses.range(1,m)), 1, nnz)
+      local values1 = moses.map(moses.range(1,nnz), function() return math.random() end)
+      local sparseVector1 = Vectors.sparse(m, indices1, values1)
+      
+      local indices2 = moses.slice(moses.shuffle(moses.range(m)), 1, nnz)
+      local values2 = moses.map(moses.range(1,nnz), function() return math.random() end)
+      local sparseVector2 = Vectors.sparse(m, indices2, values2)
+      
+      local denseVector1 = Vectors.dense(sparseVector1:toArray())
+      assert.is_not_nil(denseVector1)
+      local denseVector2 = Vectors.dense(sparseVector2:toArray())
+      assert.is_not_nil(denseVector2)
+      
+      -- The following Scala tests make use of Breeze as an independent linear algebra function provider.
+      -- There does not appear to be any independent linear algebra libs on LuaRocks.
+      -- https://luarocks.org/modules/shakesoda/cpml comes close but it's only in the DEV repo.
+      
+      -- TODO val squaredDist = breezeSquaredDistance(sparseVector1.asBreeze, sparseVector2.asBreeze)
+      
+      -- SparseVector vs. SparseVector
+      -- TODO assert(Vectors.sqdist(sparseVector1, sparseVector2) ~== squaredDist relTol 1E-8)
+      Vectors.sqdist(sparseVector1, sparseVector2)
+      -- DenseVector  vs. SparseVector
+      -- TODO assert(Vectors.sqdist(denseVector1, sparseVector2) ~== squaredDist relTol 1E-8)
+      Vectors.sqdist(sparseVector1, sparseVector2)
+      -- DenseVector  vs. DenseVector
+      -- TODO assert(Vectors.sqdist(denseVector1, denseVector2) ~== squaredDist relTol 1E-8)
+      Vectors.sqdist(sparseVector1, sparseVector2)
+    end
+  end)
 
   it('foreachActive', function()
     local dv = Vectors.dense(0.0, 1.2, 3.1, 0.0)
@@ -337,7 +347,7 @@ describe('Apache Spark MLlib VectorsSuite', function()
     local dv0s = dv0:toSparse()
     assert.equal(2, dv0s.numActives)
     
-    -- This next compare doesn't work, because Lua automatically treats two tables
+    -- This next compare doesn't work, because Lua < 5.3 automatically treats two tables
     -- as unequal if they have different metamethod tables. A search for a different
     -- class library might be necessary in order to try and achieve SparseVector and
     -- DenseVector having the same metatable, and therefore becoming comparable with __eq.
