@@ -1,4 +1,5 @@
 local class = require 'middleclass'
+local isInstanceOf = require 'stuart-ml.util.isInstanceOf'
 local Vector = require 'stuart-ml.linalg.Vector'
 local Vectors = require 'stuart-ml.linalg.Vectors'
 
@@ -9,7 +10,7 @@ local Vectors = require 'stuart-ml.linalg.Vectors'
 local VectorWithNorm = class('VectorWithNorm')
 
 function VectorWithNorm:initialize(arg1, norm)
-  if arg1.isInstanceOf and arg1:isInstanceOf(Vector) then
+  if isInstanceOf(arg1, Vector) then
     self.vector = arg1
   else -- arg1 is an array
     self.vector = Vectors.dense(arg1)
