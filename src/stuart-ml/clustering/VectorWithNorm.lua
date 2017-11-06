@@ -18,6 +18,10 @@ function VectorWithNorm:initialize(arg1, norm)
   self.norm = norm or 2.0
 end
 
+function VectorWithNorm.__eq(a, b)
+  return a.vector == b.vector and a.norm == b.norm
+end
+
 function VectorWithNorm:__tostring()
   return '(' .. tostring(self.vector) .. ',' .. self.norm .. ')'
 end

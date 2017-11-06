@@ -47,4 +47,13 @@ describe('clustering.VectorWithNorm', function()
     assert.equal(expected, actual)
   end)
   
+  it('equality', function()
+    local a = VectorWithNorm:new(Vectors.sparse(3, {1,3,5}, {1,3,5}), 3)
+    local b = VectorWithNorm:new(Vectors.sparse(3, {1,3,5}, {1,3,5}), 3)
+    assert.equal(a, b)
+    
+    b = VectorWithNorm:new(Vectors.sparse(3, {1,3,5}, {1,3,6}), 3)
+    assert.not_equal(a, b)
+  end)
+  
 end)
