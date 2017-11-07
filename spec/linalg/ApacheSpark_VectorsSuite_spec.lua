@@ -421,19 +421,19 @@ describe('Apache Spark MLlib VectorsSuite', function()
 
   it('Vector numActive and numNonzeros', function()
     local dv = Vectors.dense(0.0, 2.0, 3.0, 0.0)
-    assert.equal(4, dv.numActives)
-    assert.equal(2, dv.numNonzeros)
+    assert.equal(4, dv:numActives())
+    assert.equal(2, dv:numNonzeros())
 
     local sv = Vectors.sparse(4, {0, 1, 2}, {0.0, 2.0, 3.0})
-    assert.equal(3, sv.numActives)
-    assert.equal(2, sv.numNonzeros)
+    assert.equal(3, sv:numActives())
+    assert.equal(2, sv:numNonzeros())
   end)
 
   it('Vector toSparse and toDense', function()
     local dv0 = Vectors.dense(0.0, 2.0, 3.0, 0.0)
     assert.same(dv0, dv0:toDense())
     local dv0s = dv0:toSparse()
-    assert.equal(2, dv0s.numActives)
+    assert.equal(2, dv0s:numActives())
     
     -- This next compare doesn't work, because Lua < 5.3 automatically treats two tables
     -- as unequal if they have different metamethod tables. A search for a different
@@ -449,7 +449,7 @@ describe('Apache Spark MLlib VectorsSuite', function()
     assert.same(sv0:toArray(), sv0:toDense():toArray())
     
     local sv0s = sv0:toSparse()
-    assert.equal(2, sv0s.numActives)
+    assert.equal(2, sv0s:numActives())
     --assert.same(sv0, sv0s)
     assert.same(sv0:toArray(), sv0s:toArray())
   end)
@@ -462,12 +462,12 @@ describe('Apache Spark MLlib VectorsSuite', function()
 --    val dv1 = Vectors.dense(0.0, 2.0, 0.0, 0.0)
 --    val dv1c = dv1.compressed.asInstanceOf[SparseVector]
 --    assert(dv1 === dv1c)
---    assert(dv1c.numActives === 1)
+--    assert(dv1c:numActives() === 1)
 --
 --    val sv0 = Vectors.sparse(4, Array(1, 2), Array(2.0, 0.0))
 --    val sv0c = sv0.compressed.asInstanceOf[SparseVector]
 --    assert(sv0 === sv0c)
---    assert(sv0c.numActives === 1)
+--    assert(sv0c:numActives() === 1)
 --
 --    val sv1 = Vectors.sparse(4, Array(0, 1, 2), Array(1.0, 2.0, 3.0))
 --    val sv1c = sv1.compressed.asInstanceOf[DenseVector]

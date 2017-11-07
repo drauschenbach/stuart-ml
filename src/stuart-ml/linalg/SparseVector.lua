@@ -15,11 +15,6 @@ function SparseVector:initialize(size, indices, values)
   self._size = size
   self.indices = indices
   self.values = values
-  self.numActives = #values
-  self.numNonzeros = moses.reduce(values, function(r,v)
-    if v ~= 0 then r = r + 1 end
-    return r
-  end, 0)
 end
 
 function SparseVector.__eq(a, b)
@@ -55,12 +50,12 @@ end
 
 function SparseVector:argmax()
   if self._size == 0 then return -1 end
-  if self.numActives == 0 then return 0 end
+  if self:numActives() == 0 then return 0 end
   -- Find the max active entry
   local maxIdx = self.indices[1]
   local maxValue = self.values[1]
   local maxJ = 0
-  local na = self.numActives
+  local na = self:numActives()
   for j=2,na do
     local v = self.values[j]
     if v > maxValue then
@@ -117,7 +112,7 @@ function SparseVector:toDense()
 end
 
 function SparseVector:toSparse()
-  if self.numActives == self.numNonzeros then return self end
+  if self:numActives() == self:numNonzeros() then return self end
   local ii = {}
   local vv = {}
   self:foreachActive(function(i,v)
