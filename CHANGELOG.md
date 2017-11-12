@@ -2,6 +2,7 @@
 ### Added
 - `linalg:` Ported `BLAS` `axpy()`, `dot()`, and `scal()`
 - `linalg:` Ported `Vectors` `sqdist()`
+- `linalg:` Implement `VectorWithNorm` equality (`__eq`)
 - `util:` Ported `MLUtils` `EPSILON` and `fastSquaredDistance()`
 
 ### Changed
