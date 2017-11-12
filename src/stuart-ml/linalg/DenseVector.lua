@@ -9,13 +9,6 @@ local DenseVector = class('DenseVector', Vector)
 function DenseVector:initialize(values)
   Vector.initialize(self)
   self.values = values
-  self.numActives = #values
-  
-  local nnz = 0
-  for _,v in ipairs(values) do
-    if v ~= 0.0 then nnz = nnz + 1 end
-  end
-  self.numNonzeros = nnz
 end
 
 function DenseVector.__eq(a, b)

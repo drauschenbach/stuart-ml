@@ -7,6 +7,18 @@ registerAsserts(assert)
 
 describe('linalg.BLASSuite', function()
 
+  test('scal', function()
+    local a = 0.1
+    local sx = Vectors.sparse(3, {0,2}, {1.0, -2.0})
+    local dx = Vectors.dense(1.0, 0.0, -2.0)
+
+    BLAS.scal(a, sx)
+    assert.equal_abstol(Vectors.sparse(3, {0,2}, {0.1, -0.2}), sx, 1e-15)
+
+    BLAS.scal(a, dx)
+    assert.equal_absTol(Vectors.dense(0.1, 0.0, -0.2), dx, 1e-15)
+  end)
+
   test('axpy', function()
     local alpha = 0.1
     local sx = Vectors.sparse(3, {0,2}, {1.0, -2.0})
