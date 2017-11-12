@@ -1,13 +1,12 @@
-# Changelog
-
-## [Unreleased]
+## [0.1.3] - 2017-11-11
 ### Added
 - `linalg:` Ported `BLAS` `axpy()` and `dot()`
 - `linalg:` Ported `Vectors` `sqdist()`
 - `util:` Ported `MLUtils` `EPSILON` and `fastSquaredDistance()`
 
 ### Changed
-- `linalg: ` Vector types are now 0-based like Apache Spark
+- `linalg:` Vector types are now 0-based like Apache Spark
+- Consolidate Apache Spark and Stuart unit tests into a single unified folder hierarchy
 
 ## [0.1.0] - 2017-10-28
 ### Added
