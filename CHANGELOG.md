@@ -1,5 +1,6 @@
 ## [0.1.3] - 2017-11-11
 ### Added
+- `clustering:` Ported `KMeans` `fastSquaredDistance()`, `findClosest()` and `pointCost()`
 - `linalg:` Ported `BLAS` `axpy()`, `dot()`, and `scal()`
 - `linalg:` Ported `Vectors` `sqdist()`
 - `linalg:` Implement `VectorWithNorm` equality (`__eq`)
