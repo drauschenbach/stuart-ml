@@ -1,6 +1,6 @@
 ## [0.1.3] - 2017-11-11
 ### Added
-- `linalg:` Ported `BLAS` `axpy()` and `dot()`
+- `linalg:` Ported `BLAS` `axpy()`, `dot()`, and `scal()`
 - `linalg:` Ported `Vectors` `sqdist()`
 - `util:` Ported `MLUtils` `EPSILON` and `fastSquaredDistance()`
 
