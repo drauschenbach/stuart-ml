@@ -7,6 +7,7 @@
 - `util:` Ported `MLUtils` `EPSILON` and `fastSquaredDistance()`
 
 ### Changed
+- `clustering:` Fixed KMeans getters and setters to match RDD API, not DataFrame API
 - `linalg:` Vector types are now 0-based like Apache Spark
 - Consolidate Apache Spark and Stuart unit tests into a single unified folder hierarchy
 
