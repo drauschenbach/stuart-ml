@@ -1,3 +1,7 @@
+## [Unreleased]
+### Added
+- Port Java `StringTokenizer`
+
 ## [0.1.3] - 2017-11-11
 ### Added
 - `clustering:` Ported `KMeans` `fastSquaredDistance()`, `findClosest()` and `pointCost()`
