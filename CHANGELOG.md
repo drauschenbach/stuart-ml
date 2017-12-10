@@ -1,6 +1,7 @@
 ## [Unreleased]
 ### Added
-- Port Java `StringTokenizer`
+- `util:` Port `NumericParser`
+- `util:` Port `StringTokenizer`
 
 ## [0.1.3] - 2017-11-11
 ### Added

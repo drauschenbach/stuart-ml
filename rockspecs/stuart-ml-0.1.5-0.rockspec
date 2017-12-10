@@ -36,6 +36,7 @@ build = {
       ["stuart-ml.util.isInstanceOf"] = "src/stuart-ml/util/isInstanceOf.lua",
       ["stuart-ml.util.MLUtils"] = "src/stuart-ml/util/MLUtils.lua",
       ["stuart-ml.util.mosesPatchedRange"] = "src/stuart-ml/util/mosesPatchedRange.lua",
+      ["stuart-ml.util.NumericParser"] = "src/stuart-ml/util/NumericParser.lua",
       ["stuart-ml.util.StringTokenizer"] = "src/stuart-ml/util/StringTokenizer.lua",
       ["stuart-ml.util.unzip"] = "src/stuart-ml/util/unzip.lua"
    }
