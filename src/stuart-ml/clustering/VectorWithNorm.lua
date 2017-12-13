@@ -1,5 +1,5 @@
 local class = require 'middleclass'
-local isInstanceOf = require 'stuart-ml.util.isInstanceOf'
+local isInstanceOf = require 'stuart.util.isInstanceOf'
 local Vector = require 'stuart-ml.linalg.Vector'
 local Vectors = require 'stuart-ml.linalg.Vectors'
 
