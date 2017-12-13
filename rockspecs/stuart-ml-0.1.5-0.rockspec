@@ -17,9 +17,8 @@ description = {
 }
 dependencies = {
    "lua >= 5.1, < 5.3",
-   "parquet >= 0.8.0-1",
    "stuart = 0.1.5",
-   "stuart-sql >= 0.1.3, <= 0.1.5"
+   "stuart-sql = 0.1.5"
 }
 build = {
    type = "builtin",
@@ -33,7 +32,7 @@ build = {
       ["stuart-ml.linalg.SparseVector"] = "src/stuart-ml/linalg/SparseVector.lua",
       ["stuart-ml.linalg.Vector"] = "src/stuart-ml/linalg/Vector.lua",
       ["stuart-ml.linalg.Vectors"] = "src/stuart-ml/linalg/Vectors.lua",
-      ["stuart-ml.util.isInstanceOf"] = "src/stuart-ml/util/isInstanceOf.lua",
+      ["stuart-ml.util.Loader"] = "src/stuart-ml/util/Loader.lua",
       ["stuart-ml.util.MLUtils"] = "src/stuart-ml/util/MLUtils.lua",
       ["stuart-ml.util.mosesPatchedRange"] = "src/stuart-ml/util/mosesPatchedRange.lua",
       ["stuart-ml.util.NumericParser"] = "src/stuart-ml/util/NumericParser.lua",
