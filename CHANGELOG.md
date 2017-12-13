@@ -1,4 +1,4 @@
-## [Unreleased]
+## [0.1.5]
 ### Added
 - `clustering:` Port `KMeansModel`
 - `util:` Port `Loader`, which can load a `KMeansModel` from a Parquet file or directory of files, whether local and WebHDFS
