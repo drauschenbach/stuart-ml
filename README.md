@@ -18,6 +18,34 @@ $ luarocks install stuart-ml
 
 ## Using
 
+### Loading a KMeansModel
+
+First build a model in Spark, then export it as uncompressed Parquet:
+
+```scala
+$ docker run -it gettyimages/spark bin/spark-shell --conf spark.sql.parquet.compression.codec=uncompressed
+
+import org.apache.spark.mllib.linalg.Vector
+import org.apache.spark.mllib.linalg.Vectors
+import org.apache.spark.mllib.clustering.KMeans
+
+var v1 = Vectors.dense(Array[Double](1,2,3))
+var v2 = Vectors.dense(Array[Double](5,6,7))
+var data = sc.parallelize(Array(v1,v2))
+var model = KMeans.train(data, k=2, maxIterations=1)
+model.save(sc, "model4")
+```
+
+Load the model into Stuart ML with:
+
+```lua
+local stuart = require 'stuart'
+local KMeansModel = require 'stuart-ml.clustering.KMeansModel'
+
+local sc = stuart.NewContext()
+local model = KMeansModel.load(sc, 'model4')
+```
+
 ### Vector Types
 
 Vector types are 0-based, unlike Lua arrays. This facilitates a more direct translation of Scala or Python-based Apache Spark jobs and use cases to Lua.
