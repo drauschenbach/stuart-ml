@@ -1,4 +1,5 @@
 local moses = require 'moses'
+moses.zip = require 'stuart-ml.util.mosesPatchedZip'
 local say = require 'say'
 local Vector = require 'stuart-ml.linalg.Vector'
 
@@ -15,7 +16,7 @@ local registerAsserts = function(assert)
   assert:register('assertion', 'contains', function(_, arguments)
     local collection = arguments[1]
     local searchFor = arguments[2]
-    return moses.findIndex(collection, function(_,v) return v == searchFor end) ~= nil
+    return moses.findIndex(collection, function(v) return v == searchFor end) ~= nil
   end, 'assertion.contains.positive', 'assertion.contains.negative')
   
   -----------------------------------------------------------------------------

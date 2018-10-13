@@ -1,4 +1,5 @@
 local moses = require 'moses'
+moses.zip = require 'stuart-ml.util.mosesPatchedZip'
 
 local unpack = table.unpack or unpack
 
