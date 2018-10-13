@@ -14,7 +14,7 @@ describe('util.MLUtils', function()
   end)
 
   it('fast squared distance', function()
-    local a = moses.map(moses.range(30,0,-1), function(_,v) return math.pow(2.0, v) end)
+    local a = moses.map(moses.range(30,0,-1), function(v) return math.pow(2.0, v) end)
     local breezeSquaredDistance_v1_v2 = { -- pre-computed using MLUtilsSuite.scala
       3.843071682022823E17,
       9.6076792050570576E16,
@@ -110,10 +110,10 @@ describe('util.MLUtils', function()
     local precision = 1e-6
     for m=0,n-1 do
       local indices; if m == 0 then indices = {0} else indices = moses.range(m) end
-      local values = moses.map(indices, function(i,_) return a[indices[i]+1] end)
+      local values = moses.map(indices, function(_,i) return a[indices[i]+1] end)
       local v2 = Vectors.sparse(n, indices, values)
       local norm2 = Vectors.norm(v2, 2.0)
-      local v3 = Vectors.sparse(n, indices, moses.map(indices, function(_,v) return a[v+1] + 0.5 end))
+      local v3 = Vectors.sparse(n, indices, moses.map(indices, function(v) return a[v+1] + 0.5 end))
       local norm3 = Vectors.norm(v3, 2.0)
       local squaredDist = breezeSquaredDistance_v1_v2[m+1]
       local fastSquaredDist1 = MLUtils.fastSquaredDistance(v1, norm1, v2, norm2, precision)
@@ -125,7 +125,7 @@ describe('util.MLUtils', function()
       assert.is_true((fastSquaredDist3 - squaredDist2) <= precision * squaredDist2)
       if m > 10 then
         local v4 = Vectors.sparse(n, moses.slice(indices, 0, m-10),
-          moses.slice(moses.map(indices, function(_,v) return a[v+1] + 0.5 end), 0, m-10))
+          moses.slice(moses.map(indices, function(v) return a[v+1] + 0.5 end), 0, m-10))
         local norm4 = Vectors.norm(v4, 2.0)
         squaredDist = breezeSquaredDistance_v2_v4[m+1]
         local fastSquaredDist = MLUtils.fastSquaredDistance(v2, norm2, v4, norm4, precision)

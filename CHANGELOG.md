@@ -1,3 +1,7 @@
+## [0.1.7] - 2018-10-12
+### Changed
+- Upgrade to Stuart 0.1.7
+
 ## [0.1.5] - 2017-12-12
 ### Added
 - `clustering:` Port `KMeansModel`

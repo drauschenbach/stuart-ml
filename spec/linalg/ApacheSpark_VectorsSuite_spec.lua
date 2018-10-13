@@ -1,5 +1,6 @@
 local moses = require 'moses'
 moses.range = require 'stuart-ml.util.mosesPatchedRange'
+moses.zip = require 'stuart-ml.util.mosesPatchedZip'
 local registerAsserts = require 'registerAsserts'
 local Vectors = require 'stuart-ml.linalg.Vectors'
 
