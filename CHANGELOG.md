@@ -1,3 +1,10 @@
+## [Unreleased]
+### Added
+- Lua 5.3 support
+
+### Changed
+- [#15](https://github.com/BixData/stuart-ml/issues/15) Remove stuart-sql LuaRocks dependency. It is still used when present, but no longer required.
+
 ## [0.1.7] - 2018-10-12
 ### Changed
 - Upgrade to Stuart 0.1.7

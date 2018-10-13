@@ -11,7 +11,6 @@ RUN make bootstrap
 RUN luarocks install busted
 RUN luarocks install middleclass
 RUN luarocks install stuart
-RUN luarocks install stuart-sql
 
 # Add this project
 ADD . /app

@@ -1,9 +1,9 @@
 local class = require 'middleclass'
+local hasSparkSession, SparkSession = pcall(require, 'stuart-sql.SparkSession')
 local isInstanceOf = require 'stuart.util.isInstanceOf'
 local KMeans = require 'stuart-ml.clustering.KMeans'
 local Loader = require 'stuart-ml.util.Loader'
 local moses = require 'moses'
-local SparkSession = require 'stuart-sql.SparkSession'
 local Vector = require 'stuart-ml.linalg.Vector'
 local Vectors = require 'stuart-ml.linalg.Vectors'
 local VectorWithNorm = require 'stuart-ml.clustering.VectorWithNorm'
@@ -18,6 +18,7 @@ function KMeansModel:initialize(clusterCenters)
 end
 
 function KMeansModel.load(sc, path)
+  assert(hasSparkSession)
   local spark = SparkSession.builder():sparkContext(sc):getOrCreate()
   local className, formatVersion, metadata = Loader.loadMetadata(sc, path)
   assert(className == 'org.apache.spark.mllib.clustering.KMeansModel')
