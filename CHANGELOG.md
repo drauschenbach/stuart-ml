@@ -1,6 +1,7 @@
 ## [Unreleased]
 ### Added
 - Lua 5.3 support
+- `stat:` Ported `MultivariateOnlineSummarizer`
 
 ### Changed
 - [#15](https://github.com/BixData/stuart-ml/issues/15) Remove stuart-sql LuaRocks dependency. It is still used when present, but no longer required.
@@ -11,10 +12,10 @@
 
 ## [0.1.5] - 2017-12-12
 ### Added
-- `clustering:` Port `KMeansModel`
-- `util:` Port `Loader`, which can load a `KMeansModel` from a Parquet file or directory of files, whether local and WebHDFS
-- `util:` Port `NumericParser`
-- `util:` Port `StringTokenizer`
+- `clustering:` Ported `KMeansModel`
+- `util:` Ported `Loader`, which can load a `KMeansModel` from a Parquet file or directory of files, whether local or WebHDFS
+- `util:` Ported `NumericParser`
+- `util:` Ported `StringTokenizer`
 
 ## [0.1.3] - 2017-11-11
 ### Added
