@@ -75,7 +75,7 @@ $ busted
 ### Testing with a Specific Lua Version
 
 ```sh
-$ docker build -f Test-Lua53.Dockerfile -t test .
+$ docker build -f Test-Lua5.3.Dockerfile -t test .
 $ docker run -it test busted
 ●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●
 39 successes / 0 failures / 0 errors / 0 pending : 0.068103 seconds

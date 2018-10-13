@@ -1,3 +1,4 @@
+local hasSparkSession, _ = pcall(require, 'stuart-sql.SparkSession')
 local KMeansModel = require 'stuart-ml.clustering.KMeansModel'
 local registerAsserts = require 'registerAsserts'
 local stuart = require 'stuart'
@@ -8,6 +9,7 @@ registerAsserts(assert)
 describe('clustering.KMeansModel', function()
 
   it('loads', function()
+    if not hasSparkSession then return pending('No stuart-sql is present') end
     local sc = stuart.NewContext()
     local model = KMeansModel.load(sc, 'spec-fixtures/model2')
     assert.equal(1, #model.clusterCenters)
@@ -15,6 +17,7 @@ describe('clustering.KMeansModel', function()
   end)
 
   it('predicts', function()
+    if not hasSparkSession then return pending('No stuart-sql is present') end
     local sc = stuart.NewContext()
     local model = KMeansModel.load(sc, 'spec-fixtures/model4')
     assert.equal(2, #model.clusterCenters)
