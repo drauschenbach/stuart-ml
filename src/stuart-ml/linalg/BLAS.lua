@@ -20,7 +20,7 @@ M.axpy = function(a, vectorX, vectorY)
     elseif vectorX:isInstanceOf(DenseVector) then
       return M.axpy_sparse_dense(a,vectorX:toSparse(),vectorY)
     else
-      error('axpy doesn\t support vectorX type ' .. vectorX.class)
+      error('axpy doesn\'t support vectorX type ' .. vectorX.class)
     end
   end
   error('axpy only supports adding to a DenseVector but got type ' .. vectorY.class)
