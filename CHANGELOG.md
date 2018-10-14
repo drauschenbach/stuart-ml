@@ -1,4 +1,4 @@
-## [Unreleased]
+## [0.1.8] - 2018-10-14
 ### Added
 - Lua 5.3 support
 - [#17](https://github.com/BixData/stuart/issues/17) `stat:` Ported `MultivariateOnlineSummarizer` class, `RowMatrix` numCols(), numRows(), computeColumnSummaryStatistics(), and updateNumRows(), and `statistics` colStats()
