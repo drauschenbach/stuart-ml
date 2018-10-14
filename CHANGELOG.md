@@ -2,6 +2,8 @@
 ### Added
 - Lua 5.3 support
 - `stat:` Ported `MultivariateOnlineSummarizer`
+- `stat:` Ported `RowMatrix` numCols(), numRows(), computeColumnSummaryStatistics(), and updateNumRows()
+- `stat:` Ported `statistics` colStats()
 
 ### Changed
 - [#15](https://github.com/BixData/stuart-ml/issues/15) Remove stuart-sql LuaRocks dependency. It is still used when present, but no longer required.

@@ -18,10 +18,24 @@ function MultivariateOnlineSummarizer:initialize()
   self.nnz = {}
   self.currMax = {}
   self.currMin = {}
-  getmetatable(self).__tostring = function()
-    print(string.format('n=%d totalCnt=%d totalWeightSum=%d totalSquareSum=%d weightSquareSum=%d',
-      self.n, self.totalCnt, self.totalWeightSum, self.totalSquareSum, self.weightSquareSum))
-  end
+end
+
+function MultivariateOnlineSummarizer:__tostring()
+  local format = 'MultivariateOnlineSummarizer{n=%d currMean={%s} currM2N={%s} currM2={%s} currL1={%s} totalCnt=%d totalWeightSum=%d totalSquareSum=%d weightSquareSum=%d weightSum={%s} nnz={%s} currMax={%s} currMin={%s}}'
+  return string.format(format,
+    self.n,
+    table.concat(self.currMean,','),
+    table.concat(self.currM2n,','),
+    table.concat(self.currM2,','),
+    table.concat(self.currL1,','),
+    self.totalCnt,
+    self.totalWeightSum,
+    self.totalSquareSum,
+    self.weightSquareSum,
+    table.concat(self.weightSum,','),
+    table.concat(self.nnz,','),
+    table.concat(self.currMax,','),
+    table.concat(self.currMin,','))
 end
 
 --[[
@@ -77,6 +91,24 @@ function MultivariateOnlineSummarizer:add(instance, weight)
   self.weightSquareSum = self.weightSquareSum + weight * weight
   self.totalCnt = self.totalCnt + 1
   return self
+end
+
+function MultivariateOnlineSummarizer:clone()
+  local other = MultivariateOnlineSummarizer:new()
+  other.n = self.n
+  other.currMean = self.currMean
+  other.currM2n = self.currM2n
+  other.currM2 = self.currM2
+  other.currL1 = self.currL1
+  other.totalCnt = self.totalCnt
+  other.totalWeightSum = self.totalWeightSum
+  other.totalSquareSum = self.totalSquareSum
+  other.weightSquareSum = self.weightSquareSum
+  other.weightSum = self.weightSum
+  other.nnz = self.nnz
+  other.currMax = self.currMax
+  other.currMin = self.currMin
+  return other
 end
 
 --[[
