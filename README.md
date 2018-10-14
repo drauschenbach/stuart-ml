@@ -12,8 +12,29 @@ A native Lua implementation of [Spark MLlib](https://spark.apache.org/docs/2.2.0
 
 ### Installing
 
+To install on an operating system:
+
 ```sh
 $ luarocks install stuart-ml
+```
+
+To load into a web page:
+
+```html
+<html>
+  <body>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/fengari-web@0.1.2/dist/fengari-web.js"></script>
+    <script type="application/lua" src="https://cdn.jsdelivr.net/npm/lua-stuart@0.1.8-0/stuart.lua"></script>
+    <script type="application/lua" src="https://cdn.jsdelivr.net/npm/lua-stuart-ml@0.1.8-0/stuart-ml.lua"></script>
+  
+    <script type="application/lua">
+      local Vectors = require 'stuart-ml.linalg.Vectors'
+      local denseVector = Vectors.dense({0.1, 0.0, 0.3})
+      ...
+    </script>
+    
+  </body>
+</html>
 ```
 
 ## API Guide
