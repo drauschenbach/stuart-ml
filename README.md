@@ -31,15 +31,15 @@ A vector has numeric-typed and 0-based indices (unlike 1-based Lua arrays) and n
 The base class of local vectors is `Vector`, and we provide two implementations: `DenseVector` and `SparseVector`. We recommend using the factory methods implemented in `Vectors` to create vectors.
 
 ```lua
-local Vectors = require 'stuart-ml.linalg.Vectors'
+Vectors = require 'stuart-ml.linalg.Vectors'
 
-local denseVector = Vectors.dense({0.1, 0.0, 0.3})
-print(table.concat(denseVector:toArray(), ','))
-{0.1,0,0.3}
+denseVector = Vectors.dense({0.1, 0.0, 0.3})
+print(denseVector)
+0.1,0,0.3
 
-local sparseVector = Vectors.sparse(5, {0,1,4}, {10,11,12})
-print(table.concat(sparseVector:toArray(), ','))
-{10,11,0,0,12}
+sparseVector = Vectors.sparse(5, {0,1,4}, {10,11,12})
+print(sparseVector)
+10,11,0,0,12
 ```
 
 ### Basic statistics
