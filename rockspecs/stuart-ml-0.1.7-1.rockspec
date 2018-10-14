@@ -31,6 +31,7 @@ build = {
       ["stuart-ml.linalg.SparseVector"] = "src/stuart-ml/linalg/SparseVector.lua",
       ["stuart-ml.linalg.Vector"] = "src/stuart-ml/linalg/Vector.lua",
       ["stuart-ml.linalg.Vectors"] = "src/stuart-ml/linalg/Vectors.lua",
+      ["stuart-ml.stat.MultivariateOnlineSummarizer"] = "src/stuart-ml/stat/MultivariateOnlineSummarizer.lua",
       ["stuart-ml.util.Loader"] = "src/stuart-ml/util/Loader.lua",
       ["stuart-ml.util.MLUtils"] = "src/stuart-ml/util/MLUtils.lua",
       ["stuart-ml.util.mosesPatchedRange"] = "src/stuart-ml/util/mosesPatchedRange.lua",
