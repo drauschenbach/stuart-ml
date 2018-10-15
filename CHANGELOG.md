@@ -1,3 +1,7 @@
+## [Unreleased]
+### Fixed
+- [#23](https://github.com/BixData/stuart-ml/issues/23) KMeans cluster centers load in a non-deterministic sort order due to missing sort
+
 ## [0.1.8] - 2018-10-14
 ### Added
 - Lua 5.3 support
