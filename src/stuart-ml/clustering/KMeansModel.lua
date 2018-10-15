@@ -24,11 +24,10 @@ function KMeansModel.load(sc, path)
   assert(className == 'org.apache.spark.mllib.clustering.KMeansModel')
   assert(formatVersion == '1.0')
   local centroids = spark.read:parquet(Loader.dataPath(path))
-  --Loader.checkSchema[Cluster](centroids.schema)
+  --TODO Loader.checkSchema[Cluster](centroids.schema)
   local localCentroids = centroids:rdd():map(function(e) return {e[1], Vectors.dense(e[2])} end)
   assert(metadata.k == localCentroids:count())
-  --new KMeansModel(localCentroids.sortBy(_.id).map(_.point))
-  return KMeansModel:new(localCentroids:map(function(e) return e[2] end):collect())
+  return KMeansModel:new(localCentroids:sortByKey():map(function(e) return e[2] end):collect())
 end
 
 function KMeansModel:predict(point)
