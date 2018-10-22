@@ -12,10 +12,10 @@ local VectorWithNorm = class('VectorWithNorm')
 function VectorWithNorm:initialize(arg1, norm)
   if isInstanceOf(arg1, Vector) then
     self.vector = arg1
-  else -- arg1 is an array
+  else -- arg1 is a table
     self.vector = Vectors.dense(arg1)
   end
-  self.norm = norm or 2.0
+  self.norm = norm or Vectors.norm(self.vector, 2.0)
 end
 
 function VectorWithNorm.__eq(a, b)

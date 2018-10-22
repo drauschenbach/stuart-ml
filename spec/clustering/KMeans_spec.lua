@@ -1,5 +1,7 @@
 local registerAsserts = require 'registerAsserts'
 local KMeans = require 'stuart-ml.clustering.KMeans'
+local Vectors = require 'stuart-ml.linalg.Vectors'
+local VectorWithNorm = require 'stuart-ml.clustering.VectorWithNorm'
 
 registerAsserts(assert)
 
@@ -37,6 +39,26 @@ describe('clustering.KMeans', function()
     assert.has_error(function()
       KMeans:new():setInitializationSteps(0)
     end)
+  end)
+
+  it('findClosest() with exact match works', function()
+    local centers = {
+      VectorWithNorm:new(Vectors.dense(1,2,6))
+    }
+    local point = VectorWithNorm:new(Vectors.dense(1,2,6))
+    local bestIndex, bestDistance = KMeans.findClosest(centers, point)
+    assert.equal(1, bestIndex)
+    assert.equal(0, bestDistance)
+  end)
+
+  it('findClosest() with near match works', function()
+    local centers = {
+      VectorWithNorm:new(Vectors.dense(1,2,6))
+    }
+    local point = VectorWithNorm:new(Vectors.dense(1,3,0))
+    local bestIndex, bestDistance = KMeans.findClosest(centers, point)
+    assert.equal(1, bestIndex)
+    assert.equal(37, bestDistance)
   end)
   
 end)
