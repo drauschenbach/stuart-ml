@@ -146,7 +146,6 @@ function KMeans:initKMeansParallel(data)
       return bestIndex
     end):countByValue()
 
---    val myWeights = distinctCenters.indices.map(countMap.getOrElse(_, 0L).toDouble).toArray
     local myWeights = moses.map(distinctCenters, function(_, i) return countMap[i] or 0.0 end)
     return localKMeans.kMeansPlusPlus(0, distinctCenters, myWeights, self.k, 30)
   end
