@@ -10,6 +10,22 @@ local tables = require 'stuart-ml.util.tables'
 local Vectors = require 'stuart-ml.linalg.Vectors'
 local VectorWithNorm = require 'stuart-ml.clustering.VectorWithNorm'
 
+-- Moses find() and unique() don't use metatable __eq fns, so don't work for Spark Vector types
+local function find(array, value)
+  for i = 1, #array do
+    if moses.isEqual(array[i], value, true) then return i end
+  end
+end
+local function unique(array)
+  local ret = {}
+  for i = 1, #array do
+    if not find(ret, array[i]) then
+      ret[#ret+1] = array[i]
+    end
+  end
+  return ret
+end
+
 local KMeans = class('KMeans')
 
 KMeans.RANDOM = 'RANDOM'
@@ -116,21 +132,6 @@ function KMeans:initKMeansParallel(data)
     centers = moses.append(centers, newCenters)
   end
 
-  -- Moses find() and unique() don't use metatable __eq fns, so don't work for Spark Vector types
-  local find = function (array, value)
-    for i = 1, #array do
-      if moses.isEqual(array[i], value, true) then return i end
-    end
-  end
-  local unique = function(array)
-    local ret = {}
-    for i = 1, #array do
-      if not find(ret, array[i]) then
-        ret[#ret+1] = array[i]
-      end
-    end
-    return ret
-  end
 
   local distinctCenters = unique(moses.pluck(centers, 'vector'))
   distinctCenters = moses.map(distinctCenters, function(v) return VectorWithNorm:new(v) end)
@@ -152,7 +153,11 @@ function KMeans:initKMeansParallel(data)
 end
 
 function KMeans:initRandom(vectorsWithNormsRDD)
-  return vectorsWithNormsRDD:takeSample(false, self.k, clock.now()*1e6)
+  -- Select without replacement; may still produce duplicates if the data has < k distinct
+  -- points, so deduplicate the centroids to match the behavior of k-means|| in the same situation
+  local sample = vectorsWithNormsRDD:takeSample(false, self.k, clock.now())
+  local distinctSample = unique(moses.pluck(sample, 'vector'))
+  return moses.map(distinctSample, function(v) return VectorWithNorm:new(v) end)
 end
 
 function KMeans.pointCost(centers, point)

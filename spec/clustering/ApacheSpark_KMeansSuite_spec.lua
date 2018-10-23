@@ -43,6 +43,22 @@ describe('Apache Spark MLlib KMeansSuite', function()
     assert.equal_absTol(center, model.clusterCenters[1], 1e-5)
   end)
 
+  it('fewer distinct points than clusters', function()
+    local data = sc:parallelize({
+        Vectors.dense(1.0, 2.0, 3.0),
+        Vectors.dense(1.0, 2.0, 3.0),
+        Vectors.dense(1.0, 2.0, 3.0)
+      }, 2)
+    
+    local k, maxIterations, initializationMode = 2, 1, KMeans.RANDOM
+    local model = KMeans.train(data, k, maxIterations, initializationMode)
+    assert.equal(1, #model.clusterCenters)
+    
+    k, maxIterations, initializationMode = 2, 1, KMeans.K_MEANS_PARALLEL
+    model = KMeans.train(data, k, maxIterations, initializationMode)
+    assert.equal(1, #model.clusterCenters)
+  end)
+
   it('two clusters', function()
     local points = {
       Vectors.dense(0.0, 0.0),
