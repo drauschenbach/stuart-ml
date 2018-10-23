@@ -47,6 +47,8 @@ local WSSSE = clusters:computeCost(parsedData)
 print('Within Set Sum of Squared Errors = ' .. WSSSE)
 ```
 
+<small>Find full example code at [examples/ApacheSpark/KMeansExample.lua](../examples/ApacheSpark/KMeansExample.lua).</small>
+
 Output:
 
 ```
