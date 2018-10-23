@@ -1,4 +1,5 @@
 local KMeans = require 'stuart-ml.clustering.KMeans'
+local KMeansModel = require 'stuart-ml.clustering.KMeansModel'
 local moses = require 'moses'
 local registerAsserts = require 'registerAsserts'
 local stuart = require 'stuart'
@@ -83,6 +84,15 @@ describe('Apache Spark MLlib KMeansSuite', function()
     end
   end)
   
+  -- TODO it('single cluster with big dataset', function()
+  -- end)
+  
+  -- TODO it('single cluster with sparse data', function()
+  -- end)
+  
+  -- TODO it('k-means|| initialization', function()
+  -- end)
+  
   it('two clusters', function()
     local points = {
       Vectors.dense(0.0, 0.0),
@@ -120,5 +130,30 @@ describe('Apache Spark MLlib KMeansSuite', function()
       assert.not_equal(predicts[4], predicts[1])
     end
   end)
+  
+  -- TODO it('model save/load', function()
+  -- end)
 
+  it('Initialize using given cluster centers', function()
+    local points = {
+      Vectors.dense(0.0, 0.0),
+      Vectors.dense(1.0, 0.0),
+      Vectors.dense(0.0, 1.0),
+      Vectors.dense(1.0, 1.0)
+    }
+    local rdd = sc:parallelize(points, 3)
+    -- creating an initial model
+    local initialModel = KMeansModel:new({points[1], points[3]})
+
+    local returnModel = KMeans:new()
+      :setK(2)
+      :setMaxIterations(0)
+      :setInitialModel(initialModel)
+      :run(rdd)
+    
+    -- comparing the returned model and the initial model
+    assert.equal(initialModel.clusterCenters[1], returnModel.clusterCenters[1])
+    assert.equal(initialModel.clusterCenters[2], returnModel.clusterCenters[2])
+  end)
+  
 end)

@@ -15,6 +15,7 @@ function KMeansModel:initialize(clusterCenters)
   self.clusterCenters = clusterCenters
   if clusterCenters ~= nil then
     self.clusterCentersWithNorm = moses.map(clusterCenters, function(center) return VectorWithNorm:new(center) end)
+    self.k = #clusterCenters
   end
 end
 
