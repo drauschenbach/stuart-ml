@@ -17,6 +17,21 @@ function KMeansModel:initialize(clusterCenters)
   end
 end
 
+function KMeansModel:__tostring()
+  return string.format('KMeansModel(clusterCenters=%s)',
+    table.concat(moses.map(self.clusterCenters, function(_,vector) return tostring(vector) end), ','))
+end
+
+--[[
+  Return the K-means cost (sum of squared distances of points to their nearest center) for this
+  model on the given data.
+--]]
+function KMeansModel:computeCost(rddOfVectors)
+  return rddOfVectors:map(function(vector)
+    return KMeans.pointCost(self.clusterCentersWithNorm, VectorWithNorm:new(vector)):sum()
+  end)
+end
+
 function KMeansModel.load(sc, path)
   assert(hasSparkSession)
   local spark = SparkSession.builder():sparkContext(sc):getOrCreate()
