@@ -258,7 +258,7 @@ function KMeans:runAlgorithm(data)
     logging.logInfo(string.format('KMeans converged in %d iterations.', iteration))
   end
   
-  logging.logInfo(string.format('The cost is %d', cost))
+  logging.logInfo(string.format('The cost is %f', cost))
   
   local KMeansModel = require 'stuart-ml.clustering.KMeansModel'
   return KMeansModel:new(moses.pluck(centers, 'vector'))
