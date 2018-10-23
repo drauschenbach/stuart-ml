@@ -1,4 +1,5 @@
 local KMeans = require 'stuart-ml.clustering.KMeans'
+local moses = require 'moses'
 local registerAsserts = require 'registerAsserts'
 local stuart = require 'stuart'
 local Vectors = require 'stuart-ml.linalg.Vectors'
@@ -7,7 +8,7 @@ local VectorWithNorm = require 'stuart-ml.clustering.VectorWithNorm'
 registerAsserts(assert)
 
 describe('Apache Spark MLlib KMeansSuite', function()
-  --local seed = 42
+  local seed = 42
   local sc = stuart.NewContext()
 
   it('single cluster', function()
@@ -59,6 +60,29 @@ describe('Apache Spark MLlib KMeansSuite', function()
     assert.equal(1, #model.clusterCenters)
   end)
 
+  -- TODO it('unique cluster centers', function()
+  -- end)
+
+  it('deterministic initialization', function()
+    -- Create a large-ish set of points for clustering
+    local points = moses.map(moses.range(1, 1000), function(n) return Vectors.dense(n, n) end)
+    local rdd = sc:parallelize(points, 3)
+    
+    for _, initMode in ipairs({KMeans.RANDOM, KMeans.K_MEANS_PARALLEL}) do
+      -- Create three deterministic models and compare cluster means
+      local model1 = KMeans.train(rdd, 10, 2, initMode, seed)
+      local centers1 = model1.clusterCenters
+      
+      local model2 = KMeans.train(rdd, 10, 2, initMode, seed)
+      local centers2 = model2.clusterCenters
+      
+      moses.forEach(moses.zip(centers1, centers2), function(e)
+        local c1, c2 = e[1], e[2]
+        assert.equal_absTol(c1, c2, 1e-14)
+      end)
+    end
+  end)
+  
   it('two clusters', function()
     local points = {
       Vectors.dense(0.0, 0.0),

@@ -71,7 +71,7 @@ M.kMeansPlusPlus = function(_, points, weights, k, maxIterations)
     for j = 1, k do
       if counts[j] == 0.0 then
         -- Assign center to a random point
-        centers[j] = points[random.nextInt(#points)]:toDense()
+        centers[j] = points[1 + random.nextInt(#points-1)]:toDense()
       else
         BLAS.scal(1.0 / counts[j], sums[j])
         centers[j] = VectorWithNorm:new(sums[j])
