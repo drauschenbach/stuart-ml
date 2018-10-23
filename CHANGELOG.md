@@ -1,6 +1,6 @@
 ## [Unreleased]
 ### Added
-- [#28] (https://github.com/BixData/stuart-ml/issues/28) Train a K-means model
+- [#28](https://github.com/BixData/stuart-ml/issues/28) Train a K-means model
 
 ### Fixed
 - [#23](https://github.com/BixData/stuart-ml/issues/23) K-means cluster centers load in a non-deterministic sort order due to missing sort

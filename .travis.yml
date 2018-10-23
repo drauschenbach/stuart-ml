@@ -23,5 +23,5 @@ install:
   - if [[ "$LUA" == "luajit=2.1" ]]; then luarocks install stuart; fi
 
 script:
-  - luacheck --std max+busted --codes src spec --no-self --ignore 213 311 611 631
+  - luacheck --std max+busted --codes src spec examples --no-self --ignore 213 311 611 631
   - busted --verbose --defer-print --no-auto-insulate
