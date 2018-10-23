@@ -30,8 +30,8 @@ end
 --]]
 function KMeansModel:computeCost(rddOfVectors)
   return rddOfVectors:map(function(vector)
-    return KMeans.pointCost(self.clusterCentersWithNorm, VectorWithNorm:new(vector)):sum()
-  end)
+    return KMeans.pointCost(self.clusterCentersWithNorm, VectorWithNorm:new(vector))
+  end):sum()
 end
 
 function KMeansModel.load(sc, path)

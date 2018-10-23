@@ -79,8 +79,8 @@ describe('Apache Spark MLlib KMeansSuite', function()
       
       for _, e in ipairs(moses.zip(centers1, centers2)) do
         local c1, c2 = e[1], e[2]
-        --assert.equal_absTol(c1, c2, 1e-14) -- Lua 5.1 at Travis CI has trouble with this tolerance, 5.2+5.3+JIT do not
-        assert.equal_absTol(c1, c2, 1e-13)
+        --assert.equal_absTol(c1, c2, 1e-14) -- this tolerance doesn't regularly pass
+        assert.equal_absTol(c1, c2, 1e-12)
       end
     end
   end)
