@@ -1,6 +1,6 @@
 local class = require 'middleclass'
 local hasSparkSession, SparkSession = pcall(require, 'stuart-sql.SparkSession')
-local isInstanceOf = require 'stuart.util.isInstanceOf'
+local isInstanceOf = require 'stuart.util'.isInstanceOf
 local KMeans = require 'stuart-ml.clustering.KMeans'
 local Loader = require 'stuart-ml.util.Loader'
 local moses = require 'moses'

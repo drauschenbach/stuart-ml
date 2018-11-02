@@ -1,5 +1,5 @@
 local DenseVector = require 'stuart-ml.linalg.DenseVector'
-local isInstanceOf = require 'stuart.util.isInstanceOf'
+local isInstanceOf = require 'stuart.util'.isInstanceOf
 local SparseVector = require 'stuart-ml.linalg.SparseVector'
 local Vector = require 'stuart-ml.linalg.Vector'
 

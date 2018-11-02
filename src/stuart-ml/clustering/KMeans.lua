@@ -1,10 +1,10 @@
 local BLAS = require 'stuart-ml.linalg.BLAS'
 local class = require 'middleclass'
-local clock = require 'stuart.interface.clock'
 local localKMeans = require 'stuart-ml.clustering.localKMeans'
 local logging = require 'stuart.internal.logging'
 local MLUtils = require 'stuart-ml.util.MLUtils'
 local moses = require 'moses'
+local now = require 'stuart.interface'.now
 local random = require 'stuart-ml.util.random'
 local tables = require 'stuart-ml.util.tables'
 local Vectors = require 'stuart-ml.linalg.Vectors'
@@ -155,7 +155,7 @@ end
 function KMeans:initRandom(vectorsWithNormsRDD)
   -- Select without replacement; may still produce duplicates if the data has < k distinct
   -- points, so deduplicate the centroids to match the behavior of k-means|| in the same situation
-  local sample = vectorsWithNormsRDD:takeSample(false, self.k, clock.now())
+  local sample = vectorsWithNormsRDD:takeSample(false, self.k, now())
   local distinctSample = unique(moses.pluck(sample, 'vector'))
   return moses.map(distinctSample, function(v) return VectorWithNorm:new(v) end)
 end
@@ -204,7 +204,7 @@ function KMeans:runAlgorithm(data)
   local converged, cost, iteration = false, 0.0, 1
   
   -- Execute iterations of Lloyd's algorithm until converged
-  local iterationStartTime = clock.now()
+  local iterationStartTime = now()
   while iteration <= self.maxIterations and not converged do
     
     -- Find the sum and count of points mapping to each center
@@ -249,7 +249,7 @@ function KMeans:runAlgorithm(data)
     iteration = iteration + 1
   end
   
-  local iterationTimeInSeconds = clock.now() - iterationStartTime
+  local iterationTimeInSeconds = now() - iterationStartTime
   logging.logInfo(string.format('Iterations took %f seconds.', iterationTimeInSeconds))
   
   if iteration == self.maxIterations then
