@@ -1,7 +1,3 @@
-local BLAS = require 'stuart-ml.linalg.BLAS'
-local SparseVector = require 'stuart-ml.linalg.SparseVector'
-local Vectors = require 'stuart-ml.linalg.Vectors'
-
 local M = {}
 
 M.EPSILON = 1.0
@@ -33,6 +29,9 @@ M.fastSquaredDistance = function(v1, norm1, v2, norm2, precision)
   local normDiff = norm1 - norm2
   local sqDist = 0.0
   local precisionBound1 = 2.0 * M.EPSILON * sumSquaredNorm / (normDiff * normDiff + M.EPSILON)
+  local BLAS = require 'stuart-ml.linalg.BLAS'
+  local SparseVector = require 'stuart-ml.linalg.SparseVector'
+  local Vectors = require 'stuart-ml.linalg.Vectors'
   if precisionBound1 < precision then
     sqDist = sumSquaredNorm - 2.0 * BLAS.dot(v1, v2)
   elseif v1:isInstanceOf(SparseVector) or v2:isInstanceOf(SparseVector) then

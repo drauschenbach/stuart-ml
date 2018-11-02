@@ -1,6 +1,4 @@
 local class = require 'middleclass'
-local moses = require 'moses'
-local SparseVector = require 'stuart-ml.linalg.SparseVector'
 local Vector = require 'stuart-ml.linalg.Vector'
 
 local DenseVector = class('DenseVector', Vector)
@@ -12,6 +10,7 @@ end
 
 function DenseVector.__eq(a, b)
   if a:size() ~= b:size() then return false end
+  local moses = require 'moses'
   return moses.same(a.values, b.values)
 end
 
@@ -40,6 +39,7 @@ function DenseVector:argmax()
 end
 
 function DenseVector:copy()
+  local moses = require 'moses'
   return DenseVector:new(moses.clone(self.values))
 end
 
@@ -70,6 +70,7 @@ function DenseVector:toSparse()
       vv[#vv+1] = v
     end
   end)
+  local SparseVector = require 'stuart-ml.linalg.SparseVector'
   return SparseVector:new(self:size(), ii, vv)
 end
 
