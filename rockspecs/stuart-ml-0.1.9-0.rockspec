@@ -1,8 +1,8 @@
 package = "stuart-ml"
-version = "0.1.8-0"
+version = "0.1.9-0"
 source = {
-   url = "https://github.com/BixData/stuart-ml/archive/0.1.8-0.tar.gz",
-   dir = "stuart-ml-0.1.8-0"
+   url = "https://github.com/BixData/stuart-ml/archive/0.1.9-0.tar.gz",
+   dir = "stuart-ml-0.1.9-0"
 }
 description = {
    summary = "A native Lua implementation of Spark MLlib",
@@ -17,7 +17,7 @@ description = {
 }
 dependencies = {
    "lua >= 5.1, <= 5.3",
-   "stuart ~> 0.1.8"
+   "stuart ~> 0.1.9"
 }
 build = {
    type = "builtin",
@@ -35,14 +35,11 @@ build = {
       ["stuart-ml.linalg.Vectors"] = "src/stuart-ml/linalg/Vectors.lua",
       ["stuart-ml.stat.MultivariateOnlineSummarizer"] = "src/stuart-ml/stat/MultivariateOnlineSummarizer.lua",
       ["stuart-ml.stat.statistics"] = "src/stuart-ml/stat/statistics.lua",
+      ["stuart-ml.util"] = "src/stuart-ml/util.lua",
       ["stuart-ml.util.Loader"] = "src/stuart-ml/util/Loader.lua",
       ["stuart-ml.util.MLUtils"] = "src/stuart-ml/util/MLUtils.lua",
-      ["stuart-ml.util.mosesPatchedRange"] = "src/stuart-ml/util/mosesPatchedRange.lua",
-      ["stuart-ml.util.mosesPatchedZip"] = "src/stuart-ml/util/mosesPatchedZip.lua",
       ["stuart-ml.util.NumericParser"] = "src/stuart-ml/util/NumericParser.lua",
       ["stuart-ml.util.random"] = "src/stuart-ml/util/random.lua",
-      ["stuart-ml.util.StringTokenizer"] = "src/stuart-ml/util/StringTokenizer.lua",
-      ["stuart-ml.util.tables"] = "src/stuart-ml/util/tables.lua",
-      ["stuart-ml.util.unzip"] = "src/stuart-ml/util/unzip.lua"
+      ["stuart-ml.util.StringTokenizer"] = "src/stuart-ml/util/StringTokenizer.lua"
    }
 }

@@ -1,5 +1,3 @@
-local jsonutil = require 'stuart.util.json'
-
 --[[
     Helper methods for loading models from files.
 --]]
@@ -16,7 +14,8 @@ end
 --]]
 function M.loadMetadata(sc, path)
   local firstLine = sc:textFile(M.metadataPath(path)):first()
-  local metadata = jsonutil.decode(firstLine)
+  local jsonDecode = require 'stuart.util'.jsonDecode
+  local metadata = jsonDecode(firstLine)
   return metadata.class, metadata.version, metadata
 end
 

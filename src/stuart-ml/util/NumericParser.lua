@@ -1,6 +1,3 @@
-local lunajson = require 'lunajson'
-local StringTokenizer = require 'stuart-ml.util.StringTokenizer'
-
 --[[
  * Simple parser for a numeric structure consisting of three types:
  *
@@ -11,12 +8,9 @@ local StringTokenizer = require 'stuart-ml.util.StringTokenizer'
 
 local M = {}
 
-local function trim(s)
-  return s:match'^%s*(.*%S)' or ''
-end
-
 -- Parses a string into a Double, or an Array[Double].
 function M.parse(s)
+  local StringTokenizer = require 'stuart-ml.util.StringTokenizer'
   local tokenizer = StringTokenizer:new(s, '()[],', true)
   assert(tokenizer:hasMoreTokens())
   local token = tokenizer:nextToken()
@@ -52,7 +46,8 @@ end
 
 function M.parseNumber(s)
   while s:sub(1,1) == '+' or s:sub(1,1) == ' ' do s = s:sub(2) end
-  local n = lunajson.decode(s)
+  local jsonDecode = require 'stuart.util'.jsonDecode
+  local n = jsonDecode(s)
   assert(type(n) == 'number')
   return n
 end
@@ -62,6 +57,7 @@ function M.parseTuple(tokenizer)
   local parsing = true
   local allowComma = false
   local token
+  local function trim(s) return s:match'^%s*(.*%S)' or '' end
   while parsing and tokenizer:hasMoreTokens() do
     token = tokenizer:nextToken()
     if token == '(' then

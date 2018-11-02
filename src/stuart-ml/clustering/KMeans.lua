@@ -1,17 +1,8 @@
-local BLAS = require 'stuart-ml.linalg.BLAS'
 local class = require 'middleclass'
-local clock = require 'stuart.interface.clock'
-local localKMeans = require 'stuart-ml.clustering.localKMeans'
-local logging = require 'stuart.internal.logging'
-local MLUtils = require 'stuart-ml.util.MLUtils'
-local moses = require 'moses'
-local random = require 'stuart-ml.util.random'
-local tables = require 'stuart-ml.util.tables'
-local Vectors = require 'stuart-ml.linalg.Vectors'
-local VectorWithNorm = require 'stuart-ml.clustering.VectorWithNorm'
 
 -- Moses find() and unique() don't use metatable __eq fns, so don't work for Spark Vector types
 local function find(array, value)
+  local moses = require 'moses'
   for i = 1, #array do
     if moses.isEqual(array[i], value, true) then return i end
   end
@@ -43,6 +34,7 @@ end
 
 -- Returns the squared Euclidean distance between two vectors
 function KMeans.fastSquaredDistance(vectorWithNorm1, vectorWithNorm2)
+  local MLUtils = require 'stuart-ml.util.MLUtils'
   return MLUtils.fastSquaredDistance(vectorWithNorm1.vector, vectorWithNorm1.norm, vectorWithNorm2.vector, vectorWithNorm2.norm)
 end
 
@@ -106,6 +98,9 @@ function KMeans:initKMeansParallel(data)
   -- to their squared distance from the centers. Note that only distances between points
   -- and new centers are computed in each iteration.
   local bcNewCentersList = {}
+  local moses = require 'moses'
+  local tableIterator = require 'stuart-ml.util'.tableIterator
+  local random = require 'stuart-ml.util.random'
   for step = 1, self.initializationSteps do
     local bcNewCenters = newCenters
     bcNewCentersList[#bcNewCentersList+1] = bcNewCenters
@@ -125,7 +120,7 @@ function KMeans:initKMeansParallel(data)
           r[#r+1] = point
         end
       end
-      return tables.iterator(r)
+      return tableIterator(r)
     end):collect()
     
     newCenters = moses.map(chosen, function(v) return v:toDense() end)
@@ -134,6 +129,7 @@ function KMeans:initKMeansParallel(data)
 
 
   local distinctCenters = unique(moses.pluck(centers, 'vector'))
+  local VectorWithNorm = require 'stuart-ml.clustering.VectorWithNorm'
   distinctCenters = moses.map(distinctCenters, function(v) return VectorWithNorm:new(v) end)
 
   if #distinctCenters <= self.k then
@@ -148,6 +144,7 @@ function KMeans:initKMeansParallel(data)
     end):countByValue()
 
     local myWeights = moses.map(distinctCenters, function(_, i) return countMap[i] or 0.0 end)
+    local localKMeans = require 'stuart-ml.clustering.localKMeans'
     return localKMeans.kMeansPlusPlus(0, distinctCenters, myWeights, self.k, 30)
   end
 end
@@ -155,8 +152,11 @@ end
 function KMeans:initRandom(vectorsWithNormsRDD)
   -- Select without replacement; may still produce duplicates if the data has < k distinct
   -- points, so deduplicate the centroids to match the behavior of k-means|| in the same situation
-  local sample = vectorsWithNormsRDD:takeSample(false, self.k, clock.now())
+  local now = require 'stuart.interface'.now
+  local sample = vectorsWithNormsRDD:takeSample(false, self.k, now())
+  local moses = require 'moses'
   local distinctSample = unique(moses.pluck(sample, 'vector'))
+  local VectorWithNorm = require 'stuart-ml.clustering.VectorWithNorm'
   return moses.map(distinctSample, function(v) return VectorWithNorm:new(v) end)
 end
 
@@ -171,8 +171,10 @@ end
 --]]
 function KMeans:run(data)
   -- Compute squared norms and cache them.
+  local Vectors = require 'stuart-ml.linalg.Vectors'
   local norms = data:map(function(v) return Vectors.norm(v, 2.0) end)
   local zippedData = data:zip(norms):map(function(e)
+    local VectorWithNorm = require 'stuart-ml.clustering.VectorWithNorm'
     return VectorWithNorm:new(e[1], e[2])
   end)
   local model = self:runAlgorithm(zippedData)
@@ -183,8 +185,10 @@ end
   Implementation of K-Means algorithm.
 --]]
 function KMeans:runAlgorithm(data)
+  local moses = require 'moses'
   local centers
   if self.initialModel ~= nil then
+    local VectorWithNorm = require 'stuart-ml.clustering.VectorWithNorm'
     centers = moses.map(self.initialModel.clusterCenters, function(center) return VectorWithNorm:new(center) end)
   else
     if self.initializationMode == KMeans.RANDOM then
@@ -204,7 +208,12 @@ function KMeans:runAlgorithm(data)
   local converged, cost, iteration = false, 0.0, 1
   
   -- Execute iterations of Lloyd's algorithm until converged
-  local iterationStartTime = clock.now()
+  local now = require 'stuart.interface'.now
+  local iterationStartTime = now()
+  local BLAS = require 'stuart-ml.linalg.BLAS'
+  local tableIterator = require 'stuart-ml.util'.tableIterator
+  local VectorWithNorm = require 'stuart-ml.clustering.VectorWithNorm'
+  local Vectors = require 'stuart-ml.linalg.Vectors'
   while iteration <= self.maxIterations and not converged do
     
     -- Find the sum and count of points mapping to each center
@@ -226,7 +235,7 @@ function KMeans:runAlgorithm(data)
       local contribs = moses.map(contribsKeys, function(j)
         return {j, {sums[j], counts[j]}}
       end)
-      return tables.iterator(contribs)
+      return tableIterator(contribs)
       
     end):reduceByKey(function(e)
       local sum1, count1, sum2, count2 = e[1][1], e[1][2], e[2][1], e[2][2]
@@ -249,7 +258,8 @@ function KMeans:runAlgorithm(data)
     iteration = iteration + 1
   end
   
-  local iterationTimeInSeconds = clock.now() - iterationStartTime
+  local iterationTimeInSeconds = now() - iterationStartTime
+  local logging = require 'stuart.internal.logging'
   logging.logInfo(string.format('Iterations took %f seconds.', iterationTimeInSeconds))
   
   if iteration == self.maxIterations then

@@ -1,5 +1,5 @@
 local registerAsserts = require 'registerAsserts'
-local unzip = require 'stuart-ml.util.unzip'
+local unzip = require 'stuart-ml.util'.unzip
 
 registerAsserts(assert)
 

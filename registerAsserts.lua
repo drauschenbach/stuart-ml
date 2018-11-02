@@ -1,5 +1,5 @@
 local moses = require 'moses'
-moses.zip = require 'stuart-ml.util.mosesPatchedZip'
+moses.zip = require 'stuart-ml.util'.mosesPatchedZip
 local say = require 'say'
 local Vector = require 'stuart-ml.linalg.Vector'
 

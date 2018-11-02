@@ -1,6 +1,5 @@
 local class = require 'middleclass'
 local moses = require 'moses'
-local Vectors = require 'stuart-ml.linalg.Vectors'
 
 local MultivariateOnlineSummarizer = class('MultivariateOnlineSummarizer')
 
@@ -170,6 +169,7 @@ function MultivariateOnlineSummarizer:mean()
   for i=1,self.n do
     realMean[i] = self.currMean[i] * (self.weightSum[i] / self.totalWeightSum)
   end
+  local Vectors = require 'stuart-ml.linalg.Vectors'
   return Vectors.dense(realMean)
 end
 
@@ -187,6 +187,7 @@ function MultivariateOnlineSummarizer:variance()
         * (self.totalWeightSum - self.weightSum[i]) / self.totalWeightSum) / denominator
     end
   end
+  local Vectors = require 'stuart-ml.linalg.Vectors'
   return Vectors.dense(realVariance)
 end
 
@@ -198,6 +199,7 @@ end
 -- Number of nonzero elements in each dimension.
 function MultivariateOnlineSummarizer:numNonzeros()
   assert(self.totalWeightSum > 0, 'Nothing has been added to this summarizer')
+  local Vectors = require 'stuart-ml.linalg.Vectors'
   return Vectors.dense(self.nnz)
 end
 
@@ -209,6 +211,7 @@ function MultivariateOnlineSummarizer:max()
       self.currMax[i] = 0.0
     end
   end
+  local Vectors = require 'stuart-ml.linalg.Vectors'
   return Vectors.dense(self.currMax)
 end
 
@@ -220,6 +223,7 @@ function MultivariateOnlineSummarizer:min()
       self.currMin[i] = 0.0
     end
   end
+  local Vectors = require 'stuart-ml.linalg.Vectors'
   return Vectors.dense(self.currMin)
 end
 
@@ -230,12 +234,14 @@ function MultivariateOnlineSummarizer:normL2()
   for i=1,#self.currM2 do
     realMagnitude[i] = math.sqrt(self.currM2[i])
   end
+  local Vectors = require 'stuart-ml.linalg.Vectors'
   return Vectors.dense(realMagnitude)
 end
 
 -- L1 norm of each dimension.
 function MultivariateOnlineSummarizer:normL1()
   assert(self.totalWeightSum > 0, 'Nothing has been added to this summarizer')
+  local Vectors = require 'stuart-ml.linalg.Vectors'
   return Vectors.dense(self.currL1)
 end
 

@@ -1,5 +1,4 @@
 local class = require 'middleclass'
-local moses = require 'moses'
 local Vector = require 'stuart-ml.linalg.Vector'
 
 local SparseVector = class('SparseVector', Vector)
@@ -19,6 +18,7 @@ end
 
 function SparseVector.__eq(a, b)
   if a:size() ~= b:size() then return false end
+  local moses = require 'moses'
   if b:isInstanceOf(SparseVector) then
     if not moses.same(a.indices, b.indices) then return false end
     return moses.same(a.values, b.values)
@@ -37,6 +37,7 @@ function SparseVector.__eq(a, b)
 end
 
 function SparseVector:__index(key)
+  local moses = require 'moses'
   local i = moses.indexOf(self.indices, key)
   if i == nil then return 0 end
   return self.values[i]
@@ -85,6 +86,7 @@ function SparseVector:argmax()
 end
 
 function SparseVector:copy()
+  local moses = require 'moses'
   return SparseVector:new(self._size, moses.clone(self.indices), moses.clone(self.values))
 end
 
@@ -99,6 +101,7 @@ function SparseVector:size()
 end
 
 function SparseVector:toArray()
+  local moses = require 'moses'
   local data = moses.rep(0, self._size)
   for i,k in ipairs(self.indices) do
     data[k+1] = self.values[i]

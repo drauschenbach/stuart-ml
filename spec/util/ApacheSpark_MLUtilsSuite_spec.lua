@@ -1,6 +1,6 @@
 local MLUtils = require 'stuart-ml.util.MLUtils'
 local moses = require 'moses'
-moses.range = require 'stuart-ml.util.mosesPatchedRange'
+moses.range = require 'stuart-ml.util'.mosesPatchedRange
 local registerAsserts = require 'registerAsserts'
 local Vectors = require 'stuart-ml.linalg.Vectors'
 

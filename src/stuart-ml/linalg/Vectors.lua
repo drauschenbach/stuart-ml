@@ -1,13 +1,8 @@
-local DenseVector = require 'stuart-ml.linalg.DenseVector'
-local moses = require 'moses'
-local SparseVector = require 'stuart-ml.linalg.SparseVector'
-local unzip = require 'stuart-ml.util.unzip'
-
-local unpack = table.unpack or unpack
-
 local M = {}
 
 M.dense = function(...)
+  local moses = require 'moses'
+  local DenseVector = require 'stuart-ml.linalg.DenseVector'
   if moses.isTable(...) then
     return DenseVector:new(...)
   else
@@ -51,10 +46,14 @@ M.norm = function(vector, p)
 end
 
 M.sparse = function(size, arg2, arg3)
+  local moses = require 'moses'
+  local SparseVector = require 'stuart-ml.linalg.SparseVector'
   if arg3 == nil then -- arg2 is elements
     local elements = moses.sort(arg2, function(a,b)
       if moses.isTable(a) and moses.isTable(b) then return a[1] < b[1] end
     end)
+    local unpack = table.unpack or unpack
+    local unzip = require 'stuart-ml.util'.unzip
     local indices, values = unpack(unzip(elements))
 --    var prev = -1
 --    indices.foreach { i =>
@@ -73,6 +72,8 @@ M.sqdist = function(v1, v2)
   assert(v1:size() == v2:size(), 'Vector dimensions do not match: Dim(v1)=' .. v1:size()
     .. ' and Dim(v2)=' .. v2:size())
   local squaredDistance = 0.0
+  local SparseVector = require 'stuart-ml.linalg.SparseVector'
+  local DenseVector = require 'stuart-ml.linalg.DenseVector'
   if v1:isInstanceOf(SparseVector) and v2:isInstanceOf(SparseVector) then
     squaredDistance = M.sqdist_sparse_sparse(v1, v2)
   elseif v1:isInstanceOf(SparseVector) and v2:isInstanceOf(DenseVector) then
@@ -148,7 +149,9 @@ M.sqdist_sparse_dense = function(v1, v2)
 end
 
 M.zeros = function(size)
+  local moses = require 'moses'
   local data = moses.rep(0, size)
+  local DenseVector = require 'stuart-ml.linalg.DenseVector'
   return DenseVector:new(data)
 end
 

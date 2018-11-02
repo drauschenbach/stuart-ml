@@ -1,5 +1,4 @@
 local class = require 'middleclass'
-local moses = require 'moses'
 
 local Vector = class('Vector')
 
@@ -8,6 +7,7 @@ function Vector:numActives()
 end
 
 function Vector:numNonzeros()
+  local moses = require 'moses'
   local nnz = moses.reduce(self.values, function(r,v)
     if v ~= 0 then r = r + 1 end
     return r

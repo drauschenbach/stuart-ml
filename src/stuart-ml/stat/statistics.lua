@@ -1,5 +1,3 @@
-local RowMatrix = require 'stuart-ml.linalg.distributed.RowMatrix'
-
 local M = {}
 
 --[[
@@ -9,6 +7,7 @@ local M = {}
   @return table containing column-wise summary statistics.
 --]]
 M.colStats = function(rdd)
+  local RowMatrix = require 'stuart-ml.linalg.distributed.RowMatrix'
   return RowMatrix:new(rdd):computeColumnSummaryStatistics()
 end
 
