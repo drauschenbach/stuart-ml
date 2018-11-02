@@ -1,4 +1,4 @@
-## [Unreleased]
+## [0.1.9] - 2018-11-02
 ### Added
 - [#28](https://github.com/BixData/stuart-ml/issues/28) Train a K-means model
 

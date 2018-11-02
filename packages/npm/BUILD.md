@@ -10,7 +10,7 @@ $ npm login
 ## 2. Prepare amalgamated Lua file
 
 ```sh
-$ lua amalgamate.lua ../../rockspecs/stuart-ml-0.1.8-0.rockspec
+$ lua amalgamate.lua ../../stuart-ml-0.1.8-0.rockspec
 ```
 
 This generates `stuart-ml.lua`, `package.json`, and `lua-stuart-ml.tgz` files.

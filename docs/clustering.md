@@ -24,7 +24,7 @@ Stuart ML supports the following models:
 local KMeans = require 'stuart-ml.clustering.KMeans'
 local KMeansModel = require 'stuart-ml.clustering.KMeansModel'
 local moses = require 'moses'
-local split = require 'stuart.util.split'
+local split = require 'stuart.util'.split
 local stuart = require 'stuart'
 local Vectors = require 'stuart-ml.linalg.Vectors'
 
