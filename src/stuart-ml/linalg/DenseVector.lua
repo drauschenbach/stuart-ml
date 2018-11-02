@@ -1,6 +1,5 @@
 local class = require 'middleclass'
 local moses = require 'moses'
-moses.range = require 'stuart-ml.util.mosesPatchedRange'
 local SparseVector = require 'stuart-ml.linalg.SparseVector'
 local Vector = require 'stuart-ml.linalg.Vector'
 

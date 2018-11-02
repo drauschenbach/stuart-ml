@@ -6,7 +6,7 @@ local MLUtils = require 'stuart-ml.util.MLUtils'
 local moses = require 'moses'
 local now = require 'stuart.interface'.now
 local random = require 'stuart-ml.util.random'
-local tables = require 'stuart-ml.util.tables'
+local tableIterator = require 'stuart-ml.util'.tableIterator
 local Vectors = require 'stuart-ml.linalg.Vectors'
 local VectorWithNorm = require 'stuart-ml.clustering.VectorWithNorm'
 
@@ -125,7 +125,7 @@ function KMeans:initKMeansParallel(data)
           r[#r+1] = point
         end
       end
-      return tables.iterator(r)
+      return tableIterator(r)
     end):collect()
     
     newCenters = moses.map(chosen, function(v) return v:toDense() end)
@@ -226,7 +226,7 @@ function KMeans:runAlgorithm(data)
       local contribs = moses.map(contribsKeys, function(j)
         return {j, {sums[j], counts[j]}}
       end)
-      return tables.iterator(contribs)
+      return tableIterator(contribs)
       
     end):reduceByKey(function(e)
       local sum1, count1, sum2, count2 = e[1][1], e[1][2], e[2][1], e[2][2]
