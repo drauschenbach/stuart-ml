@@ -3,7 +3,7 @@
 - [#28](https://github.com/BixData/stuart-ml/issues/28) Train a K-means model
 
 ### Changed
-- Remove all use of module upvalues, so that modules can be more easily transpiled to C then burned into ROM and chipsets (eLua [LTR](http://www.eluaproject.net/doc/v0.9/en_arch_ltr.html) interop)
+- [#34](https://github.com/BixData/stuart-ml/issues/34) Remove all use of module upvalues, so that modules can be more easily transpiled to C then burned into ROM and chipsets (eLua [LTR](http://www.eluaproject.net/doc/v0.9/en_arch_ltr.html) interop)
 
 ### Fixed
 - [#23](https://github.com/BixData/stuart-ml/issues/23) K-means cluster centers load in a non-deterministic sort order due to missing sort

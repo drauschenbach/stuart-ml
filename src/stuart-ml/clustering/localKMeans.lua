@@ -1,10 +1,3 @@
-local BLAS = require 'stuart-ml.linalg.BLAS'
-local logging = require 'stuart.internal.logging'
-local moses = require 'moses'
-local random = require 'stuart-ml.util.random'
-local Vectors = require 'stuart-ml.linalg.Vectors'
-local VectorWithNorm = require 'stuart-ml.clustering.VectorWithNorm'
-
 --[[
   An utility module to run K-means locally. It's used in the initialization of
   KMeans but not meant to be publicly exposed.
@@ -22,10 +15,13 @@ M.kMeansPlusPlus = function(_, points, weights, k, maxIterations)
   -- Initialize centers by sampling using the k-means++ procedure.
   centers[1] = M.pickWeighted(points, weights):toDense()
   local KMeans = require 'stuart-ml.clustering.KMeans'
+  local moses = require 'moses'
   local costArray = moses.map(points, function(vectorWithNorm)
     return KMeans.fastSquaredDistance(vectorWithNorm, centers[1])
   end)
   
+  local random = require 'stuart-ml.util.random'
+  local logging = require 'stuart.internal.logging'
   for i = 1, k do
     local sum = moses.sum(moses.map(moses.zip(costArray, weights), function(p) return p[1] * p[2] end))
     local r = random.nextDouble() * sum
@@ -53,6 +49,9 @@ M.kMeansPlusPlus = function(_, points, weights, k, maxIterations)
   local oldClosest = moses.fill({}, -1, 1, #points)
   local iteration = 0
   local moved = true
+  local BLAS = require 'stuart-ml.linalg.BLAS'
+  local VectorWithNorm = require 'stuart-ml.clustering.VectorWithNorm'
+  local Vectors = require 'stuart-ml.linalg.Vectors'
   while moved and iteration < maxIterations do
     moved = false
     local counts = moses.fill({}, 0.0, 1, k)
@@ -90,6 +89,8 @@ M.kMeansPlusPlus = function(_, points, weights, k, maxIterations)
 end
 
 M.pickWeighted = function(data, weights)
+  local random = require 'stuart-ml.util.random'
+  local moses = require 'moses'
   local r = random.nextDouble() * moses.sum(weights)
   local i, curWeight = 1, 0.0
   while i <= #data and curWeight < r do

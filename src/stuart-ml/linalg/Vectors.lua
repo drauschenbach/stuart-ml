@@ -53,7 +53,7 @@ M.sparse = function(size, arg2, arg3)
       if moses.isTable(a) and moses.isTable(b) then return a[1] < b[1] end
     end)
     local unpack = table.unpack or unpack
-    local unzip = require 'stuart-ml.util.unzip'
+    local unzip = require 'stuart-ml.util'.unzip
     local indices, values = unpack(unzip(elements))
 --    var prev = -1
 --    indices.foreach { i =>

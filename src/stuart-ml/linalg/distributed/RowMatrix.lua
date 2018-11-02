@@ -1,5 +1,4 @@
 local class = require 'middleclass'
-local MultivariateOnlineSummarizer = require 'stuart-ml.stat.MultivariateOnlineSummarizer'
 
 --import breeze.linalg.{axpy => brzAxpy, inv, svd => brzSvd, DenseMatrix => BDM, DenseVector => BDV,
 --  MatrixSingularException, SparseVector => BSV}
@@ -386,6 +385,7 @@ end
 function RowMatrix:computeColumnSummaryStatistics()
   local seqOp = function(aggregator, data) return aggregator:add(data) end
   local combOp = function(aggregator1, aggregator2) return aggregator1:merge(aggregator2) end
+  local MultivariateOnlineSummarizer = require 'stuart-ml.stat.MultivariateOnlineSummarizer'
   local summarizer = MultivariateOnlineSummarizer:new()
   local summary = self.rows:treeAggregate(summarizer, seqOp, combOp)
   self:updateNumRows(summary:count())
