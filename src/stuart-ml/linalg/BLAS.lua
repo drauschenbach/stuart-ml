@@ -40,7 +40,6 @@ end
 
 M.dot = function(x, y)
   assert(x:size() == y:size())
-  local isInstanceOf = require 'stuart.util'.isInstanceOf
   local DenseVector = require 'stuart-ml.linalg.DenseVector'
   if x:isInstanceOf(DenseVector) and y:isInstanceOf(DenseVector) then
     return M.dot_sparse_dense(x:toSparse(), y)
