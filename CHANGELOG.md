@@ -1,4 +1,4 @@
-## [Unreleased]
+## [1.0.0] - 2018-11-08
 ### Changed
 - Upgrade to Stuart 1.0.0 with changes to class framework
 
