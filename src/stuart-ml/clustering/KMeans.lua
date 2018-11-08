@@ -1,4 +1,4 @@
-local class = require 'middleclass'
+local class = require 'stuart.class'
 
 -- Moses find() and unique() don't use metatable __eq fns, so don't work for Spark Vector types
 local function find(array, value)
@@ -17,12 +17,12 @@ local function unique(array)
   return ret
 end
 
-local KMeans = class('KMeans')
+local KMeans = class.new('KMeans')
 
 KMeans.RANDOM = 'RANDOM'
 KMeans.K_MEANS_PARALLEL = 'k-means||'
 
-function KMeans:initialize(k, maxIterations, initializationMode, initializationSteps, epsilon, seed)
+function KMeans:__init(k, maxIterations, initializationMode, initializationSteps, epsilon, seed)
   self.k = k or 2
   self.maxIterations = maxIterations or 20
   self.initializationMode = initializationMode or KMeans.K_MEANS_PARALLEL
@@ -77,7 +77,7 @@ function KMeans:getSeed()
 end
 
 function KMeans:initKMeansParallel(data)
-  assert(data:isInstanceOf(require 'stuart.RDD'))
+  assert(class.istype(data,'RDD'))
   
   -- Initialize empty centers and point costs.
   local costs = data:map(function() return math.huge end)

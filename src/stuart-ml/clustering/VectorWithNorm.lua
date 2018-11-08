@@ -1,16 +1,14 @@
-local class = require 'middleclass'
+local class = require 'stuart.class'
 
 -- A vector with its norm for fast distance computation.
 --
 -- @see [[org.apache.spark.mllib.clustering.KMeans#fastSquaredDistance]]
 
-local VectorWithNorm = class('VectorWithNorm')
+local VectorWithNorm = class.new('VectorWithNorm')
 
-function VectorWithNorm:initialize(arg1, norm)
-  local isInstanceOf = require 'stuart.util'.isInstanceOf
+function VectorWithNorm:__init(arg1, norm)
   local Vectors = require 'stuart-ml.linalg.Vectors'
-  local Vector = require 'stuart-ml.linalg.Vector'
-  if isInstanceOf(arg1, Vector) then
+  if class.istype(arg1, 'Vector') then
     self.vector = arg1
   else -- arg1 is a table
     self.vector = Vectors.dense(arg1)

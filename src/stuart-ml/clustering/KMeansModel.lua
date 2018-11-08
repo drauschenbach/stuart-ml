@@ -1,8 +1,8 @@
-local class = require 'middleclass'
+local class = require 'stuart.class'
 
-local KMeansModel = class('KMeansModel')
+local KMeansModel = class.new('KMeansModel')
 
-function KMeansModel:initialize(clusterCenters)
+function KMeansModel:__init(clusterCenters)
   self.clusterCenters = clusterCenters
   if clusterCenters ~= nil then
     local VectorWithNorm = require 'stuart-ml.clustering.VectorWithNorm'
@@ -48,18 +48,16 @@ end
 
 function KMeansModel:predict(arg)
   -- Returns the cluster index that a given point belongs to.
-  local isInstanceOf = require 'stuart.util'.isInstanceOf
+  local istype = require 'stuart.class'.istype
   local KMeans = require 'stuart-ml.clustering.KMeans'
-  local Vector = require 'stuart-ml.linalg.Vector'
   local VectorWithNorm = require 'stuart-ml.clustering.VectorWithNorm'
-  if isInstanceOf(arg, Vector) then
+  if istype(arg, 'Vector') then
     local point = arg
     return KMeans.findClosest(self.clusterCentersWithNorm, VectorWithNorm:new(point))
   end
   
   -- Maps given RDD of points to their cluster indices.
-  local RDD = require 'stuart.RDD'
-  assert(isInstanceOf(arg, RDD))
+  assert(istype(arg, 'RDD'))
   local points = arg
   return points:map(function(p)
     local bestIndex, _ = KMeans.findClosest(self.clusterCentersWithNorm, VectorWithNorm:new(p))

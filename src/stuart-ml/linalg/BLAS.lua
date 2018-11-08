@@ -6,23 +6,21 @@ local M = {}
 @param vectorY Vector
 --]]
 M.axpy = function(a, vectorX, vectorY)
-  local isInstanceOf = require 'stuart.util'.isInstanceOf
-  local Vector = require 'stuart-ml.linalg.Vector'
-  assert(isInstanceOf(vectorX, Vector))
-  assert(isInstanceOf(vectorY, Vector))
+  local class = require 'stuart.class'
+  local istype = class.istype
+  assert(istype(vectorX, 'Vector'))
+  assert(istype(vectorY, 'Vector'))
   assert(vectorX:size() == vectorY:size())
-  local DenseVector = require 'stuart-ml.linalg.DenseVector'
-  if vectorY:isInstanceOf(DenseVector) then
-    local SparseVector = require 'stuart-ml.linalg.SparseVector'
-    if vectorX:isInstanceOf(SparseVector) then
+  if istype(vectorY,'DenseVector') then
+    if istype(vectorX,'SparseVector') then
       return M.axpy_sparse_dense(a,vectorX,vectorY)
-    elseif vectorX:isInstanceOf(DenseVector) then
+    elseif istype(vectorX,'DenseVector') then
       return M.axpy_sparse_dense(a,vectorX:toSparse(),vectorY)
     else
       error('axpy doesn\'t support vectorX type ' .. vectorX.class)
     end
   end
-  error('axpy only supports adding to a DenseVector but got type ' .. vectorY.class)
+  error('axpy only supports adding to a DenseVector but got type ' .. class.type(vectorY))
 end
 
 M.axpy_sparse_dense = function(a, x, y)
@@ -40,19 +38,19 @@ end
 
 M.dot = function(x, y)
   assert(x:size() == y:size())
-  local DenseVector = require 'stuart-ml.linalg.DenseVector'
-  if x:isInstanceOf(DenseVector) and y:isInstanceOf(DenseVector) then
+  local class = require 'stuart.class'
+  local istype = class.istype
+  if istype(x,'DenseVector') and istype(y,'DenseVector') then
     return M.dot_sparse_dense(x:toSparse(), y)
   end
-  local SparseVector = require 'stuart-ml.linalg.SparseVector'
-  if x:isInstanceOf(SparseVector) and y:isInstanceOf(DenseVector) then
+  if istype(x,'SparseVector') and istype(y,'DenseVector') then
       return M.dot_sparse_dense(x, y)
-  elseif x:isInstanceOf(DenseVector) and y:isInstanceOf(SparseVector) then
+  elseif istype(x,'DenseVector') and istype(y,'SparseVector') then
       return M.dot_sparse_dense(y, x)
-  elseif x:isInstanceOf(SparseVector) and y:isInstanceOf(SparseVector) then
+  elseif istype(x,'SparseVector') and istype(y,'SparseVector') then
       return M.dot_sparse_sparse(x, y)
   else
-    error('dot doesn\'t support (' .. x.class ',' .. y.class .. ')')
+    error(string.format("dot doesn't support (%s,%s)", class.type(x), class.type(y)))
   end
 end
 

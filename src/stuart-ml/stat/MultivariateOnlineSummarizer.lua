@@ -1,9 +1,9 @@
-local class = require 'middleclass'
+local class = require 'stuart.class'
 local moses = require 'moses'
 
-local MultivariateOnlineSummarizer = class('MultivariateOnlineSummarizer')
+local MultivariateOnlineSummarizer = class.new('MultivariateOnlineSummarizer')
 
-function MultivariateOnlineSummarizer:initialize()
+function MultivariateOnlineSummarizer:__init()
   self.n = 0
   self.currMean = {}
   self.currM2n = {}

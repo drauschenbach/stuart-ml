@@ -1,10 +1,10 @@
-local class = require 'middleclass'
-local Vector = require 'stuart-ml.linalg.Vector'
+local class = require 'stuart.class'
+require 'stuart-ml.linalg.Vector'
 
-local DenseVector = class('DenseVector', Vector)
+local DenseVector, parent = class.new('DenseVector', 'Vector')
 
-function DenseVector:initialize(values)
-  Vector.initialize(self)
+function DenseVector:__init(values)
+  parent.__init(self)
   self.values = values
 end
 
