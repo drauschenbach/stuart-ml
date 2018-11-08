@@ -1,4 +1,4 @@
-local class = require 'middleclass'
+local class = require 'stuart.class'
 
 --import breeze.linalg.{axpy => brzAxpy, inv, svd => brzSvd, DenseMatrix => BDM, DenseVector => BDV,
 --  MatrixSingularException, SparseVector => BSV}
@@ -21,9 +21,9 @@ local class = require 'middleclass'
  * @param nCols number of columns. A non-positive value means unknown, and then the number of
  *              columns will be determined by the size of the first row.
 --]]
-local RowMatrix = class('RowMatrix')
+local RowMatrix = class.new('RowMatrix')
 
-function RowMatrix:initialize(rows, nRows, nCols)
+function RowMatrix:__init(rows, nRows, nCols)
   self.rows = rows
   self.nRows = nRows or 0
   self.nCols = nCols or 0

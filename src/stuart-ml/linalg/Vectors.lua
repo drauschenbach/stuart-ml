@@ -72,15 +72,14 @@ M.sqdist = function(v1, v2)
   assert(v1:size() == v2:size(), 'Vector dimensions do not match: Dim(v1)=' .. v1:size()
     .. ' and Dim(v2)=' .. v2:size())
   local squaredDistance = 0.0
-  local SparseVector = require 'stuart-ml.linalg.SparseVector'
-  local DenseVector = require 'stuart-ml.linalg.DenseVector'
-  if v1:isInstanceOf(SparseVector) and v2:isInstanceOf(SparseVector) then
+  local class = require 'stuart.class'
+  if class.istype(v1,'SparseVector') and class.istype(v2,'SparseVector') then
     squaredDistance = M.sqdist_sparse_sparse(v1, v2)
-  elseif v1:isInstanceOf(SparseVector) and v2:isInstanceOf(DenseVector) then
+  elseif class.istype(v1,'SparseVector') and class.istype(v2,'DenseVector') then
     squaredDistance = M.sqdist_sparse_dense(v1, v2)
-  elseif v1:isInstanceOf(DenseVector) and v2:isInstanceOf(SparseVector) then
+  elseif class.istype(v1,'DenseVector') and class.istype(v2,'SparseVector') then
     squaredDistance = M.sqdist_sparse_dense(v2, v1)
-  elseif v1:isInstanceOf(DenseVector) and v2:isInstanceOf(DenseVector) then
+  elseif class.istype(v1,'DenseVector') and class.istype(v2,'DenseVector') then
     local kv = 0
     local sz = #v1
     while kv < sz do

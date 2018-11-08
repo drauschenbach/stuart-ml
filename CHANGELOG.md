@@ -1,3 +1,7 @@
+## [Unreleased]
+### Changed
+- Upgrade to Stuart 1.0.0 with changes to class framework
+
 ## [0.1.9] - 2018-11-02
 ### Added
 - [#28](https://github.com/BixData/stuart-ml/issues/28) Train a K-means model

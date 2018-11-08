@@ -16,11 +16,7 @@ before_install:
 install:
   - luarocks install busted
   - luarocks install luacheck
-  - if [[ "$LUA" == "lua=5.1"    ]]; then luarocks install stuart-sql; fi
-  - if [[ "$LUA" == "lua=5.2"    ]]; then luarocks install stuart-sql; fi
-  - if [[ "$LUA" == "lua=5.3"    ]]; then luarocks install stuart; fi
-  - if [[ "$LUA" == "luajit=2.0" ]]; then luarocks install stuart; fi
-  - if [[ "$LUA" == "luajit=2.1" ]]; then luarocks install stuart; fi
+  - luarocks install stuart
 
 script:
   - luacheck --std max+busted --codes src spec examples --no-self --ignore 213 311 611 631

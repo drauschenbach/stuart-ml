@@ -1,12 +1,7 @@
+local class = require 'stuart.class'
 local moses = require 'moses'
 moses.zip = require 'stuart-ml.util'.mosesPatchedZip
 local say = require 'say'
-local Vector = require 'stuart-ml.linalg.Vector'
-
-local isInstanceOf = function(x, type)
-  if not moses.isTable(x) or x.isInstanceOf == nil then return false end
-  return x:isInstanceOf(type)
-end
 
 local registerAsserts = function(assert)
 
@@ -28,7 +23,7 @@ local registerAsserts = function(assert)
     local eps = arguments[3]
     if x == y then return true end
     
-    if isInstanceOf(x, Vector) and isInstanceOf(y, Vector) then
+    if class.istype(x, 'Vector') and class.istype(y, 'Vector') then
       if x:size() ~= y:size() then return false end
       for _,e in ipairs(moses.zip(x:toArray(), y:toArray())) do
         local a = e[1]
@@ -50,7 +45,7 @@ local registerAsserts = function(assert)
     local eps = arguments[3]
     if x == y then return true end
     
-    if isInstanceOf(x, Vector) and isInstanceOf(y, Vector) then
+    if class.istype(x, 'Vector') and class.istype(y, 'Vector') then
       if x:size() ~= y:size() then return false end
       for _,e in ipairs(moses.zip(x:toArray(), y:toArray())) do
         local a = e[1]

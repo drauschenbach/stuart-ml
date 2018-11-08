@@ -1,16 +1,16 @@
-local class = require 'middleclass'
-local Vector = require 'stuart-ml.linalg.Vector'
+local class = require 'stuart.class'
+require 'stuart-ml.linalg.Vector'
 
-local SparseVector = class('SparseVector', Vector)
+local SparseVector, parent = class.new('SparseVector', 'Vector')
 
 -- @param indices 0-based indices
-function SparseVector:initialize(size, indices, values)
+function SparseVector:__init(size, indices, values)
   assert(#indices == #values, 'Sparse vectors require that the dimension of the '
     .. 'indices match the dimension of the values. You provided ' .. #indices .. ' indices and '
     .. #values .. ' values')
   assert(#indices <= size, 'You provided ' .. #indices .. ' indices and values, '
     .. 'which exceeds the specified vector size ' .. size)
-  Vector.initialize(self)
+  parent.__init(self)
   self._size = size
   self.indices = indices
   self.values = values
@@ -19,15 +19,14 @@ end
 function SparseVector.__eq(a, b)
   if a:size() ~= b:size() then return false end
   local moses = require 'moses'
-  if b:isInstanceOf(SparseVector) then
+  if class.istype(b,'SparseVector') then
     if not moses.same(a.indices, b.indices) then return false end
     return moses.same(a.values, b.values)
   end
   
   -- This next section only runs in Lua 5.3+, and supports the equality test
   -- of a SparseVector against a DenseVector
-  local DenseVector = require 'stuart-ml.linalg.DenseVector'
-  if b:isInstanceOf(DenseVector) then
+  if class.istype(b,'DenseVector') then
     if not moses.same(a.values, b.values) then return false end
     local bIndices = moses.range(1, a:size())
     return moses.same(a.indices, bIndices)

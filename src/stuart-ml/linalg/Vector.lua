@@ -1,6 +1,6 @@
-local class = require 'middleclass'
+local class = require 'stuart.class'
 
-local Vector = class('Vector')
+local Vector = class.new('Vector')
 
 function Vector:numActives()
   return #self.values
