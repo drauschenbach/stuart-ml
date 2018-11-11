@@ -6,7 +6,7 @@ describe('StringTokenizer', function()
     local s = '(0.0, [1.0, 2.0])'
     local delims = '()[],'
     local includeDelims = true
-    local tokenizer = StringTokenizer:new(s, delims, includeDelims)
+    local tokenizer = StringTokenizer.new(s, delims, includeDelims)
     assert.equal('(', tokenizer:nextToken())
     assert.equal('0.0', tokenizer:nextToken())
     assert.equal(',', tokenizer:nextToken())
@@ -24,7 +24,7 @@ describe('StringTokenizer', function()
     local s = '(0.0, [1.0, 2.0])'
     local delims = '()[],'
     local includeDelims = false
-    local tokenizer = StringTokenizer:new(s, delims, includeDelims)
+    local tokenizer = StringTokenizer.new(s, delims, includeDelims)
     assert.equal('0.0', tokenizer:nextToken())
     assert.equal(' ', tokenizer:nextToken())
     assert.equal('1.0', tokenizer:nextToken())

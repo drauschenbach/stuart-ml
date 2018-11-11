@@ -34,8 +34,8 @@ describe('linalg.distributed.RowMatrixSuite', function()
   local denseMat, sparseMat
 
   setup(function()
-    denseMat = RowMatrix:new(sc:parallelize(denseData, 2))
-    sparseMat = RowMatrix:new(sc:parallelize(sparseData, 2))
+    denseMat = RowMatrix.new(sc:parallelize(denseData, 2))
+    sparseMat = RowMatrix.new(sc:parallelize(sparseData, 2))
   end)
 
   test('size', function()

@@ -4,11 +4,11 @@ M.dense = function(...)
   local moses = require 'moses'
   local DenseVector = require 'stuart-ml.linalg.DenseVector'
   if moses.isTable(...) then
-    return DenseVector:new(...)
+    return DenseVector.new(...)
   else
     local values = table.pack(...)
     values.n = nil
-    return DenseVector:new(values)
+    return DenseVector.new(values)
   end
 end
 
@@ -62,35 +62,37 @@ M.sparse = function(size, arg2, arg3)
 --    }
 --    require(prev < size, s"You may not write an element to index $prev because the declared " +
 --      s"size of your vector is $size")
-    return SparseVector:new(size, indices, values)
+    return SparseVector.new(size, indices, values)
   else -- arg2 is indices, arg3 is values
-    return SparseVector:new(size, arg2, arg3)
+    return SparseVector.new(size, arg2, arg3)
   end
 end
 
 M.sqdist = function(v1, v2)
   assert(v1:size() == v2:size(), 'Vector dimensions do not match: Dim(v1)=' .. v1:size()
     .. ' and Dim(v2)=' .. v2:size())
-  local squaredDistance = 0.0
   local class = require 'stuart.class'
-  if class.istype(v1,'SparseVector') and class.istype(v2,'SparseVector') then
-    squaredDistance = M.sqdist_sparse_sparse(v1, v2)
-  elseif class.istype(v1,'SparseVector') and class.istype(v2,'DenseVector') then
-    squaredDistance = M.sqdist_sparse_dense(v1, v2)
-  elseif class.istype(v1,'DenseVector') and class.istype(v2,'SparseVector') then
-    squaredDistance = M.sqdist_sparse_dense(v2, v1)
-  elseif class.istype(v1,'DenseVector') and class.istype(v2,'DenseVector') then
+  local SparseVector = require 'stuart-ml.linalg.SparseVector'
+  if class.istype(v1,SparseVector) and class.istype(v2,SparseVector) then
+    return M.sqdist_sparse_sparse(v1, v2)
+  end
+  local DenseVector = require 'stuart-ml.linalg.DenseVector'
+  if class.istype(v1,SparseVector) and class.istype(v2,DenseVector) then
+    return M.sqdist_sparse_dense(v1, v2)
+  elseif class.istype(v1,DenseVector) and class.istype(v2,SparseVector) then
+    return M.sqdist_sparse_dense(v2, v1)
+  elseif class.istype(v1,DenseVector) and class.istype(v2,DenseVector) then
     local kv = 0
     local sz = #v1
+    local squaredDistance = 0.0
     while kv < sz do
       local score = v1[kv+1] - v2[kv+1]
       squaredDistance = squaredDistance + score * score
       kv = kv + 1
     end
-  else
-    error('Do not support vector type ' .. v1.class .. ' and ' .. v2.class)
+    return squaredDistance
   end
-  return squaredDistance
+  error('Unsupported vector type ' .. v1 .. ' and ' .. v2)
 end
 
 M.sqdist_sparse_sparse = function(v1, v2)
@@ -151,7 +153,7 @@ M.zeros = function(size)
   local moses = require 'moses'
   local data = moses.rep(0, size)
   local DenseVector = require 'stuart-ml.linalg.DenseVector'
-  return DenseVector:new(data)
+  return DenseVector.new(data)
 end
 
 return M

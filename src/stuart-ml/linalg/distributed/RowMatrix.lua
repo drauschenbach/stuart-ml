@@ -21,9 +21,9 @@ local class = require 'stuart.class'
  * @param nCols number of columns. A non-positive value means unknown, and then the number of
  *              columns will be determined by the size of the first row.
 --]]
-local RowMatrix = class.new('RowMatrix')
+local RowMatrix = class.new()
 
-function RowMatrix:__init(rows, nRows, nCols)
+function RowMatrix:_init(rows, nRows, nCols)
   self.rows = rows
   self.nRows = nRows or 0
   self.nCols = nCols or 0
@@ -386,7 +386,7 @@ function RowMatrix:computeColumnSummaryStatistics()
   local seqOp = function(aggregator, data) return aggregator:add(data) end
   local combOp = function(aggregator1, aggregator2) return aggregator1:merge(aggregator2) end
   local MultivariateOnlineSummarizer = require 'stuart-ml.stat.MultivariateOnlineSummarizer'
-  local summarizer = MultivariateOnlineSummarizer:new()
+  local summarizer = MultivariateOnlineSummarizer.new()
   local summary = self.rows:treeAggregate(summarizer, seqOp, combOp)
   self:updateNumRows(summary:count())
   return summary

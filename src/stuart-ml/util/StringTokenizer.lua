@@ -1,6 +1,6 @@
 local class = require 'stuart.class'
 
-local StringTokenizer = class.new('StringTokenizer')
+local StringTokenizer = class.new()
 
 local function contains(s, c)
   for i=1,#s do
@@ -9,7 +9,7 @@ local function contains(s, c)
   return false
 end
 
-function StringTokenizer:__init(str, delims, returnDelims)
+function StringTokenizer:_init(str, delims, returnDelims)
   self.str = str
   self.delims = delims or '\t\n\r\f'
   self.returnDelims = not not returnDelims

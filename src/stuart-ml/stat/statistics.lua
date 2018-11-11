@@ -8,7 +8,7 @@ local M = {}
 --]]
 M.colStats = function(rdd)
   local RowMatrix = require 'stuart-ml.linalg.distributed.RowMatrix'
-  return RowMatrix:new(rdd):computeColumnSummaryStatistics()
+  return RowMatrix.new(rdd):computeColumnSummaryStatistics()
 end
 
 return M

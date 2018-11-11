@@ -1,11 +1,10 @@
 local class = require 'stuart.class'
-require 'stuart-ml.linalg.Vector'
+local Vector = require 'stuart-ml.linalg.Vector'
 
-local DenseVector, parent = class.new('DenseVector', 'Vector')
+local DenseVector = class.new(Vector)
 
-function DenseVector:__init(values)
-  parent.__init(self)
-  self.values = values
+function DenseVector:_init(values)
+  self:super(values)
 end
 
 function DenseVector.__eq(a, b)
@@ -15,6 +14,7 @@ function DenseVector.__eq(a, b)
 end
 
 function DenseVector:__index(key)
+  if type(key)~='number' then return rawget(getmetatable(self), key) end
   return self.values[key]
 end
 
@@ -40,7 +40,7 @@ end
 
 function DenseVector:copy()
   local moses = require 'moses'
-  return DenseVector:new(moses.clone(self.values))
+  return DenseVector.new(moses.clone(self.values))
 end
 
 function DenseVector:foreachActive(f)
@@ -71,7 +71,7 @@ function DenseVector:toSparse()
     end
   end)
   local SparseVector = require 'stuart-ml.linalg.SparseVector'
-  return SparseVector:new(self:size(), ii, vv)
+  return SparseVector.new(self:size(), ii, vv)
 end
 
 return DenseVector

@@ -11,7 +11,7 @@ local M = {}
 -- Parses a string into a Double, or an Array[Double].
 function M.parse(s)
   local StringTokenizer = require 'stuart-ml.util.StringTokenizer'
-  local tokenizer = StringTokenizer:new(s, '()[],', true)
+  local tokenizer = StringTokenizer.new(s, '()[],', true)
   assert(tokenizer:hasMoreTokens())
   local token = tokenizer:nextToken()
   if token == '(' then
