@@ -90,8 +90,9 @@ local sc = stuart.NewContext()
 local model = KMeansModel.load(sc, 'model4')
 ```
 
-The model loader requires the Stuart SQL support module, which can be installed with:
+The model loader requires the Stuart SQL and Parquet support modules, which can be installed with:
 
 ```sh
 $ luarocks install stuart-sql
+$ luarocks install parquet
 ```

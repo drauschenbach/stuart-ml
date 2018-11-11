@@ -10,7 +10,7 @@ describe('stat.MultivariateOnlineSummarizer', function()
     -- For column 2, the maximum will be 0.0, and it's not explicitly added since we ignore all
     -- the zeros; it's a case we need to test. For column 3, the minimum will be 0.0 which we
     -- need to test as well.
-    local summarizer = MultivariateOnlineSummarizer:new()
+    local summarizer = MultivariateOnlineSummarizer.new()
     summarizer:add(Vectors.dense(-1.0, 0.0, 6.0))
     summarizer:add(Vectors.dense(3.0, -3.0, 0.0))
     
@@ -23,7 +23,7 @@ describe('stat.MultivariateOnlineSummarizer', function()
   end)
 
   test('sparse vector input', function()
-    local summarizer = MultivariateOnlineSummarizer:new()
+    local summarizer = MultivariateOnlineSummarizer.new()
     summarizer:add(Vectors.sparse(3, {{0, -1.0}, {2, 6.0}}))
     summarizer:add(Vectors.sparse(3, {{0, 3.0}, {1, -3.0}}))
 
@@ -36,7 +36,7 @@ describe('stat.MultivariateOnlineSummarizer', function()
   end)
 
   test('mixing dense and sparse vector input', function()
-    local summarizer = MultivariateOnlineSummarizer:new()
+    local summarizer = MultivariateOnlineSummarizer.new()
     summarizer:add(Vectors.sparse(3, {{0,-2.0}, {1,2.3}}))
     summarizer:add(Vectors.dense(0.0, -1.0, -3.0))
     summarizer:add(Vectors.sparse(3, {{1,-5.1}}))
@@ -53,11 +53,11 @@ describe('stat.MultivariateOnlineSummarizer', function()
   end)
   
   test('merging two summarizers', function()
-    local summarizer1 = MultivariateOnlineSummarizer:new()
+    local summarizer1 = MultivariateOnlineSummarizer.new()
     summarizer1:add(Vectors.sparse(3, {{0,-2.0}, {1,2.3}}))
     summarizer1:add(Vectors.dense(0.0, -1.0, -3.0))
 
-    local summarizer2 = MultivariateOnlineSummarizer:new()
+    local summarizer2 = MultivariateOnlineSummarizer.new()
     summarizer2:add(Vectors.sparse(3, {{1,-5.1}}))
     summarizer2:add(Vectors.dense(3.8, 0.0, 1.9))
     summarizer2:add(Vectors.dense(1.7, -0.6, 0.0))
@@ -76,15 +76,15 @@ describe('stat.MultivariateOnlineSummarizer', function()
   test('merging summarizer with empty summarizer', function()
     -- If one of two is non-empty, this should return the non-empty summarizer.
     -- If both of them are empty, then just return the empty summarizer.
-    local summarizer1 = MultivariateOnlineSummarizer:new()
-    summarizer1:add(Vectors.dense(0.0, -1.0, -3.0)):merge(MultivariateOnlineSummarizer:new())
+    local summarizer1 = MultivariateOnlineSummarizer.new()
+    summarizer1:add(Vectors.dense(0.0, -1.0, -3.0)):merge(MultivariateOnlineSummarizer.new())
     assert.equal(1, summarizer1:count())
 
-    local summarizer2 = MultivariateOnlineSummarizer:new()
-    summarizer2:merge(MultivariateOnlineSummarizer:new()):add(Vectors.dense(0.0, -1.0, -3.0))
+    local summarizer2 = MultivariateOnlineSummarizer.new()
+    summarizer2:merge(MultivariateOnlineSummarizer.new()):add(Vectors.dense(0.0, -1.0, -3.0))
     assert.equal(1, summarizer2:count())
 
-    local summarizer3 = MultivariateOnlineSummarizer:new():merge(MultivariateOnlineSummarizer:new())
+    local summarizer3 = MultivariateOnlineSummarizer.new():merge(MultivariateOnlineSummarizer.new())
     assert.equal(0, summarizer3:count())
 
     assert.equal_absTol(summarizer1:mean(), Vectors.dense(0.0, -1.0, -3.0), 1e-5)
@@ -100,10 +100,10 @@ describe('stat.MultivariateOnlineSummarizer', function()
   end)
   
   test('merging summarizer when one side has zero mean (SPARK-4355)', function()
-      local s0 = MultivariateOnlineSummarizer:new()
+      local s0 = MultivariateOnlineSummarizer.new()
         :add(Vectors.dense(2.0))
         :add(Vectors.dense(2.0))
-      local s1 = MultivariateOnlineSummarizer:new()
+      local s1 = MultivariateOnlineSummarizer.new()
         :add(Vectors.dense(1.0))
         :add(Vectors.dense(-1.0))
     s0:merge(s1)
@@ -111,10 +111,10 @@ describe('stat.MultivariateOnlineSummarizer', function()
   end)
   
   test('merging summarizer with weighted samples', function()
-    local summarizer = MultivariateOnlineSummarizer:new()
+    local summarizer = MultivariateOnlineSummarizer.new()
       :add(Vectors.sparse(3, {{0,-0.8}, {1,1.7}}), 0.1)
       :add(Vectors.dense(0.0, -1.2, -1.7), 0.2)
-      :merge(MultivariateOnlineSummarizer:new()
+      :merge(MultivariateOnlineSummarizer.new()
         :add(Vectors.sparse(3, {{0,-0.7}, {1,0.01}, {2,1.3}}), 0.15)
         :add(Vectors.dense(-0.5, 0.3, -1.5), 0.05)
       )
@@ -134,17 +134,17 @@ describe('stat.MultivariateOnlineSummarizer', function()
   end)
   
   test('test min/max with weighted samples (SPARK-16561)', function()
-    local summarizer1 = MultivariateOnlineSummarizer:new()
+    local summarizer1 = MultivariateOnlineSummarizer.new()
       :add(Vectors.dense(10.0, -10.0), 1e10)
       :add(Vectors.dense(0.0, 0.0), 1e-7)
 
-    local summarizer2 = MultivariateOnlineSummarizer:new()
+    local summarizer2 = MultivariateOnlineSummarizer.new()
     summarizer2:add(Vectors.dense(10.0, -10.0), 1e10)
     for i=1,100 do
       summarizer2:add(Vectors.dense(0.0, 0.0), 1e-7)
     end
 
-    local summarizer3 = MultivariateOnlineSummarizer:new()
+    local summarizer3 = MultivariateOnlineSummarizer.new()
     for i=1,100 do
       summarizer3:add(Vectors.dense(0.0, 0.0), 1e-7)
     end

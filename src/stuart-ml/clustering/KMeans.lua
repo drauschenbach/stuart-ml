@@ -17,12 +17,12 @@ local function unique(array)
   return ret
 end
 
-local KMeans = class.new('KMeans')
+local KMeans = class.new()
 
 KMeans.RANDOM = 'RANDOM'
 KMeans.K_MEANS_PARALLEL = 'k-means||'
 
-function KMeans:__init(k, maxIterations, initializationMode, initializationSteps, epsilon, seed)
+function KMeans:_init(k, maxIterations, initializationMode, initializationSteps, epsilon, seed)
   self.k = k or 2
   self.maxIterations = maxIterations or 20
   self.initializationMode = initializationMode or KMeans.K_MEANS_PARALLEL
@@ -77,7 +77,8 @@ function KMeans:getSeed()
 end
 
 function KMeans:initKMeansParallel(data)
-  assert(class.istype(data,'RDD'))
+  local RDD = require 'stuart.RDD'
+  assert(class.istype(data,RDD))
   
   -- Initialize empty centers and point costs.
   local costs = data:map(function() return math.huge end)
@@ -130,7 +131,7 @@ function KMeans:initKMeansParallel(data)
 
   local distinctCenters = unique(moses.pluck(centers, 'vector'))
   local VectorWithNorm = require 'stuart-ml.clustering.VectorWithNorm'
-  distinctCenters = moses.map(distinctCenters, function(v) return VectorWithNorm:new(v) end)
+  distinctCenters = moses.map(distinctCenters, function(v) return VectorWithNorm.new(v) end)
 
   if #distinctCenters <= self.k then
     return distinctCenters
@@ -157,7 +158,7 @@ function KMeans:initRandom(vectorsWithNormsRDD)
   local moses = require 'moses'
   local distinctSample = unique(moses.pluck(sample, 'vector'))
   local VectorWithNorm = require 'stuart-ml.clustering.VectorWithNorm'
-  return moses.map(distinctSample, function(v) return VectorWithNorm:new(v) end)
+  return moses.map(distinctSample, function(v) return VectorWithNorm.new(v) end)
 end
 
 function KMeans.pointCost(centers, point)
@@ -175,7 +176,7 @@ function KMeans:run(data)
   local norms = data:map(function(v) return Vectors.norm(v, 2.0) end)
   local zippedData = data:zip(norms):map(function(e)
     local VectorWithNorm = require 'stuart-ml.clustering.VectorWithNorm'
-    return VectorWithNorm:new(e[1], e[2])
+    return VectorWithNorm.new(e[1], e[2])
   end)
   local model = self:runAlgorithm(zippedData)
   return model
@@ -189,7 +190,7 @@ function KMeans:runAlgorithm(data)
   local centers
   if self.initialModel ~= nil then
     local VectorWithNorm = require 'stuart-ml.clustering.VectorWithNorm'
-    centers = moses.map(self.initialModel.clusterCenters, function(center) return VectorWithNorm:new(center) end)
+    centers = moses.map(self.initialModel.clusterCenters, function(center) return VectorWithNorm.new(center) end)
   else
     if self.initializationMode == KMeans.RANDOM then
       centers = self:initRandom(data)
@@ -248,7 +249,7 @@ function KMeans:runAlgorithm(data)
     moses.each(totalContribs, function(e, j)
       local sum, count = e[1], e[2]
       BLAS.scal(1.0 / count, sum)
-      local newCenter = VectorWithNorm:new(sum)
+      local newCenter = VectorWithNorm.new(sum)
       if converged and KMeans.fastSquaredDistance(newCenter, centers[j]) > self.epsilon * self.epsilon then
         converged = false
       end
@@ -271,7 +272,7 @@ function KMeans:runAlgorithm(data)
   logging.logInfo(string.format('The cost is %f', cost))
   
   local KMeansModel = require 'stuart-ml.clustering.KMeansModel'
-  return KMeansModel:new(moses.pluck(centers, 'vector'))
+  return KMeansModel.new(moses.pluck(centers, 'vector'))
 end
 
 function KMeans:setInitialModel(model)
@@ -310,7 +311,7 @@ function KMeans:setSeed(seed)
 end
 
 function KMeans.train(rdd, k, maxIterations, initializationMode, seed)
-  return KMeans:new(k, maxIterations, initializationMode, 2, 1e-4, seed):run(rdd)
+  return KMeans.new(k, maxIterations, initializationMode, 2, 1e-4, seed):run(rdd)
 end
 
 return KMeans

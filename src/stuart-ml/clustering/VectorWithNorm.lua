@@ -4,11 +4,12 @@ local class = require 'stuart.class'
 --
 -- @see [[org.apache.spark.mllib.clustering.KMeans#fastSquaredDistance]]
 
-local VectorWithNorm = class.new('VectorWithNorm')
+local VectorWithNorm = class.new()
 
-function VectorWithNorm:__init(arg1, norm)
+function VectorWithNorm:_init(arg1, norm)
+  local Vector = require 'stuart-ml.linalg.Vector'
   local Vectors = require 'stuart-ml.linalg.Vectors'
-  if class.istype(arg1, 'Vector') then
+  if class.istype(arg1, Vector) then
     self.vector = arg1
   else -- arg1 is a table
     self.vector = Vectors.dense(arg1)
@@ -25,7 +26,7 @@ function VectorWithNorm:__tostring()
 end
 
 function VectorWithNorm:toDense()
-  return VectorWithNorm:new(self.vector:toDense(), self.norm)
+  return VectorWithNorm.new(self.vector:toDense(), self.norm)
 end
 
 return VectorWithNorm

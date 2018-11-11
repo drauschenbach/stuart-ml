@@ -1,32 +1,32 @@
 local class = require 'stuart.class'
-require 'stuart-ml.linalg.Vector'
+local Vector = require 'stuart-ml.linalg.Vector'
 
-local SparseVector, parent = class.new('SparseVector', 'Vector')
+local SparseVector = class.new(Vector)
 
 -- @param indices 0-based indices
-function SparseVector:__init(size, indices, values)
+function SparseVector:_init(size, indices, values)
   assert(#indices == #values, 'Sparse vectors require that the dimension of the '
     .. 'indices match the dimension of the values. You provided ' .. #indices .. ' indices and '
     .. #values .. ' values')
   assert(#indices <= size, 'You provided ' .. #indices .. ' indices and values, '
     .. 'which exceeds the specified vector size ' .. size)
-  parent.__init(self)
   self._size = size
   self.indices = indices
-  self.values = values
+  self:super(values)
 end
 
 function SparseVector.__eq(a, b)
   if a:size() ~= b:size() then return false end
   local moses = require 'moses'
-  if class.istype(b,'SparseVector') then
+  if class.istype(b,SparseVector) then
     if not moses.same(a.indices, b.indices) then return false end
     return moses.same(a.values, b.values)
   end
   
   -- This next section only runs in Lua 5.3+, and supports the equality test
   -- of a SparseVector against a DenseVector
-  if class.istype(b,'DenseVector') then
+  local DenseVector = require 'stuart-ml.linalg.DenseVector'
+  if class.istype(b,DenseVector) then
     if not moses.same(a.values, b.values) then return false end
     local bIndices = moses.range(1, a:size())
     return moses.same(a.indices, bIndices)
@@ -36,6 +36,7 @@ function SparseVector.__eq(a, b)
 end
 
 function SparseVector:__index(key)
+  if type(key)~='number' then return rawget(getmetatable(self), key) end
   local moses = require 'moses'
   local i = moses.indexOf(self.indices, key)
   if i == nil then return 0 end
@@ -86,7 +87,7 @@ end
 
 function SparseVector:copy()
   local moses = require 'moses'
-  return SparseVector:new(self._size, moses.clone(self.indices), moses.clone(self.values))
+  return SparseVector.new(self._size, moses.clone(self.indices), moses.clone(self.values))
 end
 
 function SparseVector:foreachActive(f)
@@ -110,7 +111,7 @@ end
 
 function SparseVector:toDense()
   local DenseVector = require 'stuart-ml.linalg.DenseVector'
-  return DenseVector:new(self:toArray())
+  return DenseVector.new(self:toArray())
 end
 
 function SparseVector:toSparse()
@@ -123,7 +124,7 @@ function SparseVector:toSparse()
       vv[#vv+1] = v
     end
   end)
-  return SparseVector:new(self:size(), ii, vv)
+  return SparseVector.new(self:size(), ii, vv)
 end
 
 return SparseVector

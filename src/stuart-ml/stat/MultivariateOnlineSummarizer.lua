@@ -1,9 +1,9 @@
 local class = require 'stuart.class'
 local moses = require 'moses'
 
-local MultivariateOnlineSummarizer = class.new('MultivariateOnlineSummarizer')
+local MultivariateOnlineSummarizer = class.new()
 
-function MultivariateOnlineSummarizer:__init()
+function MultivariateOnlineSummarizer:_init()
   self.n = 0
   self.currMean = {}
   self.currM2n = {}
@@ -93,7 +93,7 @@ function MultivariateOnlineSummarizer:add(instance, weight)
 end
 
 function MultivariateOnlineSummarizer:clone()
-  local other = MultivariateOnlineSummarizer:new()
+  local other = MultivariateOnlineSummarizer.new()
   other.n = self.n
   other.currMean = self.currMean
   other.currM2n = self.currM2n

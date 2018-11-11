@@ -1,6 +1,10 @@
 local class = require 'stuart.class'
 
-local Vector = class.new('Vector')
+local Vector = class.new()
+
+function Vector:_init(values)
+  self.values = values or {}
+end
 
 function Vector:numActives()
   return #self.values

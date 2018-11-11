@@ -23,7 +23,8 @@ local registerAsserts = function(assert)
     local eps = arguments[3]
     if x == y then return true end
     
-    if class.istype(x, 'Vector') and class.istype(y, 'Vector') then
+    local Vector = require 'stuart-ml.linalg.Vector'
+    if class.istype(x, Vector) and class.istype(y, Vector) then
       if x:size() ~= y:size() then return false end
       for _,e in ipairs(moses.zip(x:toArray(), y:toArray())) do
         local a = e[1]
@@ -45,7 +46,8 @@ local registerAsserts = function(assert)
     local eps = arguments[3]
     if x == y then return true end
     
-    if class.istype(x, 'Vector') and class.istype(y, 'Vector') then
+    local Vector = require 'stuart-ml.linalg.Vector'
+    if class.istype(x, Vector) and class.istype(y, Vector) then
       if x:size() ~= y:size() then return false end
       for _,e in ipairs(moses.zip(x:toArray(), y:toArray())) do
         local a = e[1]

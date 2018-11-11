@@ -106,13 +106,13 @@ describe('Apache Spark MLlib KMeansSuite', function()
 
     local KMeansLocal = require 'stuart-ml.clustering.KMeans'
     function KMeansLocal:initRandom()
-      local center1 = VectorWithNorm:new(Vectors.dense({0.03333333333333333,0.03333333333333333}), 0.04714045207910317)
-      local center2 = VectorWithNorm:new(Vectors.dense({9.066666666666666,0.06666666666666667}), 9.06691176139312)
+      local center1 = VectorWithNorm.new(Vectors.dense({0.03333333333333333,0.03333333333333333}), 0.04714045207910317)
+      local center2 = VectorWithNorm.new(Vectors.dense({9.066666666666666,0.06666666666666667}), 9.06691176139312)
       return {center1, center2}
     end
     function KMeansLocal:initKMeansParallel()
-      local center1 = VectorWithNorm:new(points[6], 9.2)
-      local center2 = VectorWithNorm:new(points[4], 9.0)
+      local center1 = VectorWithNorm.new(points[6], 9.2)
+      local center2 = VectorWithNorm.new(points[4], 9.0)
       return {center1, center2}
     end
     for _, initMode in ipairs({KMeans.RANDOM, KMeans.K_MEANS_PARALLEL}) do
@@ -143,9 +143,9 @@ describe('Apache Spark MLlib KMeansSuite', function()
     }
     local rdd = sc:parallelize(points, 3)
     -- creating an initial model
-    local initialModel = KMeansModel:new({points[1], points[3]})
+    local initialModel = KMeansModel.new({points[1], points[3]})
 
-    local returnModel = KMeans:new()
+    local returnModel = KMeans.new()
       :setK(2)
       :setMaxIterations(0)
       :setInitialModel(initialModel)
