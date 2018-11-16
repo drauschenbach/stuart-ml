@@ -13,16 +13,11 @@ describe('Apache Spark MLlib VectorsSuite', function()
   local values = {0.1, 0.3, 0.4}
 
   it('dense vector construction with varargs', function()
-    local vec = Vectors.dense(arr)
+    local unpack = table.unpack or unpack
+    local vec = Vectors.dense(unpack(arr))
     assert.equal(#arr, vec:size())
     assert.same(arr, vec.values)
   end)
-
---  it('dense vector construction from a double array', function()
---   val vec = Vectors.dense(arr).asInstanceOf[DenseVector]
---    assert(vec.size === arr.length)
---    assert(vec.values.eq(arr))
---  end)
 
   it('sparse vector construction', function()
     local vec = Vectors.sparse(n, indices, values)
