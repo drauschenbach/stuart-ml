@@ -6,9 +6,7 @@ M.dense = function(...)
   if moses.isTable(...) then
     return DenseVector.new(...)
   else
-    local values = table.pack(...)
-    values.n = nil
-    return DenseVector.new(values)
+    return DenseVector.new({...})
   end
 end
 
