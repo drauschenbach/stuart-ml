@@ -6,7 +6,7 @@ A native Lua implementation of [Spark MLlib](https://spark.apache.org/docs/2.2.0
 
 ![Build Status](https://api.travis-ci.org/BixData/stuart-ml.svg?branch=master)
 [![License](http://img.shields.io/badge/Licence-Apache%202.0-blue.svg)](LICENSE)
-[![Lua](https://img.shields.io/badge/Lua-5.1%20|%205.2%20|%205.3%20|%20JIT%202.0%20|%20JIT%202.1%20|%20Fengari%20|%20GopherLua-blue.svg)]()
+[![Lua](https://img.shields.io/badge/Lua-5.1%20|%205.2%20|%205.3%20|%20JIT%202.0%20|%20JIT%202.1%20|%20eLua%20|%20Fengari%20|%20GopherLua%20|%20Redis-blue.svg)]()
 
 ## Getting Started
 
