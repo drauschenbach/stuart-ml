@@ -12,7 +12,7 @@ function SparseVector:_init(size, indices, values)
     .. 'which exceeds the specified vector size ' .. size)
   self._size = size
   self.indices = indices
-  self:super(values)
+  Vector._init(self, values)
 end
 
 function SparseVector.__eq(a, b)

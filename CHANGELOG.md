@@ -1,3 +1,7 @@
+## [2.0.0] - 2018-12-16
+### Changed
+- Upgraded to Stuart 2.0.0
+
 ## [1.0.1] - 2018-11-17
 ### Fixed
 - [#38](https://github.com/BixData/stuart-ml/issues/38) Vectors.dense(...) with varargs error: no table.pack() function (eLua interop)

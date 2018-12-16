@@ -4,7 +4,7 @@ local Vector = require 'stuart-ml.linalg.Vector'
 local DenseVector = class.new(Vector)
 
 function DenseVector:_init(values)
-  self:super(values)
+  Vector._init(self, values)
 end
 
 function DenseVector.__eq(a, b)
