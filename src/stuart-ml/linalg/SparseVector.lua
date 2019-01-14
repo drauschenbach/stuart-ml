@@ -44,9 +44,9 @@ function SparseVector:__index(key)
 end
 
 function SparseVector:__tostring()
-  return '(' .. self._size .. ',{'
-    .. table.concat(self.indices,',') .. '},{'
-    .. table.concat(self.values,',') .. '})'
+  return '(' .. self._size .. ',('
+    .. table.concat(self.indices,',') .. '),('
+    .. table.concat(self.values,',') .. '))'
 end
 
 function SparseVector:argmax()
