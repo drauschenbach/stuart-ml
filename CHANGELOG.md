@@ -1,3 +1,10 @@
+## [Unreleased]
+### Added
+- [regression:] Support LabeledPoint class
+
+### Changed
+- DenseVector and SparseVector toString() format changed to conform to Apache Spark (instead of Lua conventions), now that LabeledPoint unit test coverage requires compatibility
+
 ## [2.0.0] - 2018-12-16
 ### Changed
 - Upgraded to Stuart 2.0.0

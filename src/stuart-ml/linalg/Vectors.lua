@@ -43,6 +43,18 @@ M.norm = function(vector, p)
   end
 end
 
+M.parseNumeric = function(values)
+  local moses = require 'moses'
+  assert(moses.isTable(values))
+  if moses.all(values, function(x) return moses.isNumber(x) end) then
+    return M.dense(values)
+  elseif #values >= 3 and moses.isNumber(values[1]) and moses.isTable(values[2]) and moses.isTable(values[3]) then
+    return M.sparse(values[1], values[2], values[3])
+  else
+    error('cannot parse Vector')
+  end
+end
+
 M.sparse = function(size, arg2, arg3)
   local moses = require 'moses'
   local SparseVector = require 'stuart-ml.linalg.SparseVector'

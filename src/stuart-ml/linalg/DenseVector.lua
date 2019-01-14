@@ -19,7 +19,7 @@ function DenseVector:__index(key)
 end
 
 function DenseVector:__tostring()
-  return '{' .. table.concat(self.values,',') .. '}'
+  return '(' .. table.concat(self.values,',') .. ')'
 end
 
 function DenseVector:argmax()
