@@ -53,8 +53,24 @@ function DenseMatrix:copy()
   error('NIY')
 end
 
-function DenseMatrix:foreachActive()
-  error('NIY')
+function DenseMatrix:foreachActive(f)
+  if not self.isTransposed then
+    -- outer loop over columns
+    for j = 0, self.numCols-1 do
+      local indStart = j * self.numRows
+      for i = 0, self.numRows-1 do
+        f(i, j, self.values[1 + indStart + i])
+      end
+    end
+  else
+    -- outer loop over rows
+    for i = 0, self.numRows-1 do
+      local indStart = i * self.numCols
+      for j = 0, self.numCols-1 do
+        f(i, j, self.values[1 + indStart + j])
+      end
+    end
+  end
 end
 
 function DenseMatrix:index(i, j)

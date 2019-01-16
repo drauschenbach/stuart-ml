@@ -1,5 +1,8 @@
+local DenseMatrix = require 'stuart-ml.linalg.DenseMatrix'
 local Matrices = require 'stuart-ml.linalg.Matrices'
+local moses = require 'moses'
 local registerAsserts = require 'registerAsserts'
+local SparseMatrix = require 'stuart-ml.linalg.SparseMatrix'
 
 registerAsserts(assert)
 
@@ -136,23 +139,23 @@ describe('linalg.MatricesSuite', function()
   --  assert(sparseMat.values(2) === 10.0)
   --}
   
---  test('toSparse, toDense', function()
---    local m = 3
---    local n = 2
---    local values = {1.0, 2.0, 4.0, 5.0}
---    local allValues = {1.0, 2.0, 0.0, 0.0, 4.0, 5.0}
---    local colPtrs = {0, 2, 4}
---    local rowIndices = {0, 1, 1, 2}
---
---    local spMat1 = SparseMatrix.new(m, n, colPtrs, rowIndices, values)
---    local deMat1 = DenseMatrix.new(m, n, allValues)
---
---    local spMat2 = deMat1:toSparse()
---    local deMat2 = spMat1:toDense()
---
---    -- assert(spMat1.asBreeze === spMat2.asBreeze)
---    -- assert(deMat1.asBreeze === deMat2.asBreeze)
---  end)
+  test('toSparse, toDense', function()
+    local m = 3
+    local n = 2
+    local values = {1.0, 2.0, 4.0, 5.0}
+    local allValues = {1.0, 2.0, 0.0, 0.0, 4.0, 5.0}
+    local colPtrs = {0, 2, 4}
+    local rowIndices = {0, 1, 1, 2}
+
+    local spMat1 = SparseMatrix.new(m, n, colPtrs, rowIndices, values)
+    local deMat1 = DenseMatrix.new(m, n, allValues)
+
+    deMat1:toSparse()
+    spMat1:toDense()
+
+    -- assert(spMat1.asBreeze === spMat2.asBreeze)
+    -- assert(deMat1.asBreeze === deMat2.asBreeze)
+  end)
   
   --test("map, update") {
   --  local m = 3
@@ -198,41 +201,41 @@ describe('linalg.MatricesSuite', function()
   --  assert(dAT.toSparse.asBreeze === sATexpected.asBreeze)
   --  assert(sAT.toDense.asBreeze === dATexpected.asBreeze)
   --}
-  --
-  --test("foreachActive") {
-  --  local m = 3
-  --  local n = 2
-  --  local values = Array(1.0, 2.0, 4.0, 5.0)
-  --  local allValues = Array(1.0, 2.0, 0.0, 0.0, 4.0, 5.0)
-  --  local colPtrs = Array(0, 2, 4)
-  --  local rowIndices = Array(0, 1, 1, 2)
-  --
-  --  local sp = new SparseMatrix(m, n, colPtrs, rowIndices, values)
-  --  local dn = new DenseMatrix(m, n, allValues)
-  --
-  --  local dnMap = MutableMap[(Int, Int), Double]()
-  --  dn.foreachActive { (i, j, value) =>
-  --    dnMap.put((i, j), value)
-  --  }
-  --  assert(dnMap.size === 6)
-  --  assert(dnMap(0, 0) === 1.0)
-  --  assert(dnMap(1, 0) === 2.0)
-  --  assert(dnMap(2, 0) === 0.0)
-  --  assert(dnMap(0, 1) === 0.0)
-  --  assert(dnMap(1, 1) === 4.0)
-  --  assert(dnMap(2, 1) === 5.0)
-  --
-  --  local spMap = MutableMap[(Int, Int), Double]()
-  --  sp.foreachActive { (i, j, value) =>
-  --    spMap.put((i, j), value)
-  --  }
-  --  assert(spMap.size === 4)
-  --  assert(spMap(0, 0) === 1.0)
-  --  assert(spMap(1, 0) === 2.0)
-  --  assert(spMap(1, 1) === 4.0)
-  --  assert(spMap(2, 1) === 5.0)
-  --}
-  --
+  
+  test('foreachActive', function()
+    local m = 3
+    local n = 2
+    local values = {1.0, 2.0, 4.0, 5.0}
+    local allValues = {1.0, 2.0, 0.0, 0.0, 4.0, 5.0}
+    local colPtrs = {0, 2, 4}
+    local rowIndices = {0, 1, 1, 2}
+  
+    local sp = SparseMatrix.new(m, n, colPtrs, rowIndices, values)
+    local dn = DenseMatrix.new(m, n, allValues)
+  
+    local dnMap = {}
+    dn:foreachActive(function(i, j, value)
+      dnMap[string.format('%s,%s', i, j)] = value
+    end)
+    assert.equals(6, #moses.keys(dnMap))
+    assert.equals(1.0, dnMap['0,0'])
+    assert.equals(2.0, dnMap['1,0'])
+    assert.equals(0.0, dnMap['2,0'])
+    assert.equals(0.0, dnMap['0,1'])
+    assert.equals(4.0, dnMap['1,1'])
+    assert.equals(5.0, dnMap['2,1'])
+  
+    local spMap = {}
+    sp:foreachActive(function(i, j, value)
+      spMap[string.format('%s,%s', i, j)] = value
+    end)
+    assert.equals(4, #moses.keys(spMap))
+    assert.equals(1.0, spMap['0,0'])
+    assert.equals(2.0, spMap['1,0'])
+    assert.equals(4.0, spMap['1,1'])
+    assert.equals(5.0, spMap['2,1'])
+  end)
+  
   --test("horzcat, vertcat, eye, speye") {
   --  local m = 3
   --  local n = 2

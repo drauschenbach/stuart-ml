@@ -43,17 +43,17 @@ function SparseMatrix:_init(numRows, numCols, colPtrs, rowIndices, values, isTra
   self.isTransposed = isTransposed or false
 end
 
+--  override def apply(i: Int, j: Int): Double = {
+--    val ind = index(i, j)
+--    if (ind < 0) 0.0 else values(ind)
+--  }
+
 --  override def equals(o: Any): Boolean = o match {
 function SparseMatrix:__eq()
   error('NIY')
 --    case m: Matrix => asBreeze == m.asBreeze
 --    case _ => false
 end
-
---  override def apply(i: Int, j: Int): Double = {
---    val ind = index(i, j)
---    if (ind < 0) 0.0 else values(ind)
---  }
 
 function SparseMatrix:asBreeze()
   error('NIY')
@@ -71,7 +71,26 @@ function SparseMatrix:copy()
 end
 
 function SparseMatrix:foreachActive(f)
-  error('NIY')
+  if not self.isTransposed then
+    for j = 0, self.numCols-1 do
+      local idx = self.colPtrs[j+1]
+      local idxEnd = self.colPtrs[j + 2]
+      while idx < idxEnd do
+        f(self.rowIndices[idx+1], j, self.values[idx+1])
+        idx = idx + 1
+      end
+    end
+  else
+    for i = 0, self.numRows-1 do
+      local idx = self.colPtrs[i+1]
+      local idxEnd = self.colPtrs[i + 2]
+      while idx < idxEnd do
+        local j = self.rowIndices[idx+1]
+        f(i, j, self.values[idx+1])
+        idx = idx + 1
+      end
+    end
+  end
 end
 
 function SparseMatrix:index(i, j)
