@@ -4,7 +4,7 @@ local Vectors = require 'stuart-ml.linalg.Vectors'
 
 registerAsserts(assert)
 
-describe('stat.MultivariateOnlineSummarizer', function()
+describe('stat.MultivariateOnlineSummarizerSuite', function()
 
   test('dense vector input', function()
     -- For column 2, the maximum will be 0.0, and it's not explicitly added since we ignore all
