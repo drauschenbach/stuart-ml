@@ -1,5 +1,6 @@
 ## [Unreleased]
 ### Added
+- [#31](https://github.com/BixData/stuart-ml/issues/31) `[linalg:]` Support `DenseMatrix`, `Matrices`, `Matrix`, and `SparseMatrix` modules
 - [regression:] Support LabeledPoint class
 
 ### Changed
