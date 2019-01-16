@@ -100,44 +100,44 @@ describe('linalg.MatricesSuite', function()
   --
   --  assert(!sparseMat.toArray.eq(sparseCopy.toArray))
   --}
-  --
-  --test("matrix indexing and updating") {
-  --  local m = 3
-  --  local n = 2
-  --  local allValues = Array(0.0, 1.0, 2.0, 3.0, 4.0, 0.0)
-  --
-  --  local denseMat = new DenseMatrix(m, n, allValues)
-  --
-  --  assert(denseMat(0, 1) === 3.0)
-  --  assert(denseMat(0, 1) === denseMat.values(3))
-  --  assert(denseMat(0, 1) === denseMat(3))
-  --  assert(denseMat(0, 0) === 0.0)
-  --
-  --  denseMat.update(0, 0, 10.0)
-  --  assert(denseMat(0, 0) === 10.0)
-  --  assert(denseMat.values(0) === 10.0)
-  --
-  --  local sparseValues = Array(1.0, 2.0, 3.0, 4.0)
-  --  local colPtrs = Array(0, 2, 4)
-  --  local rowIndices = Array(1, 2, 0, 1)
-  --  local sparseMat = new SparseMatrix(m, n, colPtrs, rowIndices, sparseValues)
-  --
-  --  assert(sparseMat(0, 1) === 3.0)
-  --  assert(sparseMat(0, 1) === sparseMat.values(2))
-  --  assert(sparseMat(0, 0) === 0.0)
-  --
-  --  intercept[NoSuchElementException] {
-  --    sparseMat.update(0, 0, 10.0)
-  --  }
-  --
-  --  intercept[NoSuchElementException] {
-  --    sparseMat.update(2, 1, 10.0)
-  --  }
-  --
-  --  sparseMat.update(0, 1, 10.0)
-  --  assert(sparseMat(0, 1) === 10.0)
-  --  assert(sparseMat.values(2) === 10.0)
-  --}
+  
+  test('matrix indexing and updating', function()
+    local m = 3
+    local n = 2
+    local allValues = {0.0, 1.0, 2.0, 3.0, 4.0, 0.0}
+  
+    local denseMat = DenseMatrix.new(m, n, allValues)
+  
+    assert.equals(3.0, denseMat:get(0, 1))
+    assert.equals(denseMat.values[4], denseMat:get(0, 1))
+    assert.equals(denseMat.values[4], denseMat:get(0, 1))
+    assert.equals(0.0, denseMat:get(0, 0))
+  
+    denseMat:update(0, 0, 10.0)
+    assert.equals(10.0, denseMat:get(0, 0))
+    assert.equals(10.0, denseMat.values[1])
+  
+    local sparseValues = {1.0, 2.0, 3.0, 4.0}
+    local colPtrs = {0, 2, 4}
+    local rowIndices = {1, 2, 0, 1}
+    local sparseMat = SparseMatrix.new(m, n, colPtrs, rowIndices, sparseValues)
+  
+--    assert.equals(3.0, sparseMat:get(0, 1))
+--    assert.equals(sparseMat.values[3], sparseMat:get(0, 1))
+--    assert.equals(0.0, sparseMat:get(0, 0))
+  
+    assert.has_error(function()
+      sparseMat:update(0, 0, 10.0)
+    end)
+  
+--    assert.has_error(function()
+--      sparseMat:update(2, 1, 10.0)
+--    end)
+--
+--    sparseMat:update(0, 1, 10.0)
+--    assert.equals(10.0, sparseMat:get(0, 1))
+--    assert.equals(10.0, sparseMat.values[3])
+  end)
   
   test('toSparse, toDense', function()
     local m = 3

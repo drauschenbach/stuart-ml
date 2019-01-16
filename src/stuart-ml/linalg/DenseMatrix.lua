@@ -73,6 +73,14 @@ function DenseMatrix:foreachActive(f)
   end
 end
 
+function DenseMatrix:get(i, j)
+  if j == nil then
+    return self.values[i+1]
+  else
+    return self.values[self:index(i, j)]
+  end
+end
+
 function DenseMatrix:index(i, j)
   assert(i >= 0 and i < self.numRows)
   assert(j >= 0 and j < self.numCols)
@@ -130,8 +138,8 @@ function DenseMatrix:transpose()
   return DenseMatrix.new(self.numCols, self.numRows, self.values, not self.isTransposed)
 end
 
-function DenseMatrix:update()
-  error('NIY')
+function DenseMatrix:update(i, j, v)
+  self.values[self:index(i, j)] = v
 end
 
 function DenseMatrix.zeros(numRows, numCols)
