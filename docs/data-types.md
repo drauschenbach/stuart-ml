@@ -29,7 +29,7 @@ A matrix has numeric-typed row and column indices and numeric-typed values. Stua
 
 is stored in a one-dimensional table `{1.0, 3.0, 5.0, 2.0, 4.0, 6.0}` with the matrix size `(3, 2)`.
 
-The base class of matrices is `Matrix`, and we provide two implementations: `DenseMatrix`, and `SparseMatrix`. We recommend using the factory methods implemented in `Matrices` to create matrices. Remember, matrices in MLlib are stored in column-major order.
+The base class of matrices is `Matrix`, and we provide two implementations: `DenseMatrix`, and `SparseMatrix`. We recommend using the factory methods implemented in `Matrices` to create matrices. Remember, matrices in Stuart ML are stored in column-major order.
 
 ```lua
 Matrix = require 'stuart-ml.linalg.Matrix'
