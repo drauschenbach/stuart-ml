@@ -2,11 +2,13 @@ local MLUtils = require 'stuart-ml.util.MLUtils'
 local moses = require 'moses'
 moses.range = require 'stuart-ml.util'.mosesPatchedRange
 local registerAsserts = require 'registerAsserts'
+local stuart = require 'stuart'
 local Vectors = require 'stuart-ml.linalg.Vectors'
 
 registerAsserts(assert)
 
 describe('util.MLUtils', function()
+  local sc = stuart.NewContext()
 
   it('epsilon computation', function()
     assert.is_true(1.0 + MLUtils.EPSILON > 1.0, 'EPSILON is too small: ' .. MLUtils.EPSILON)
@@ -134,4 +136,30 @@ describe('util.MLUtils', function()
     end
   end)
 
+  it('loadLibSVMFile', function()
+    local path = 'spec-fixtures/loadLibSVMFile-part00000.txt'
+    local pointsWithNumFeatures = MLUtils.loadLibSVMFile(sc, path, 6):collect()
+    local pointsWithoutNumFeatures = MLUtils.loadLibSVMFile(sc, path):collect()
+
+    for _, points in ipairs({pointsWithNumFeatures, pointsWithoutNumFeatures}) do
+      assert.equals(3, #points)
+      
+      assert.equals(1.0, points[1].label)
+      assert.equals(Vectors.sparse(6, {{0, 1.0}, {2, 2.0}, {4, 3.0}}), points[1].features)
+      
+      assert.equals(0.0, points[2].label)
+      -- assert(points(1).features == Vectors.sparse(6, Seq()))
+      -- TODO assert.equals(Vectors.sparse(6, {}), points[2].features)
+      
+      assert.equals(0.0, points[3].label)
+      assert.equals(Vectors.sparse(6, {{1, 4.0}, {3, 5.0}, {5, 6.0}}), points[3].features)
+    end
+
+    local multiclassPoints = MLUtils.loadLibSVMFile(sc, path):collect()
+    assert.equals(3, #multiclassPoints)
+    assert.equals(1.0, multiclassPoints[1].label)
+    assert.equals(0.0, multiclassPoints[2].label)
+    assert.equals(0.0, multiclassPoints[3].label)
+  end)
+  
 end)

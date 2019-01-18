@@ -18,4 +18,12 @@ describe('Java Utils :: Arrays', function()
     assert.equal(3 , arrays.binarySearch(t, 0, #t, 4))
     assert.equal(-4, arrays.binarySearch(t, 0, #t, 5))
   end)
+  
+  -- https://alvinalexander.com/source-code/scala/scala-tabulate-method-use-list-array-vector-seq-and-more
+  it('tabulate() works', function()
+    assert.same({1,2,3,4,5}, arrays.tabulate(5, function(n) return n+1 end))
+    assert.same({2,3,4,5,6}, arrays.tabulate(5, function(n) return n+2 end))
+    assert.same({0,2,4,6,8}, arrays.tabulate(5, function(n) return n*2 end))
+  end)
+  
 end)

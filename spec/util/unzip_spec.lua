@@ -11,4 +11,10 @@ describe('util/unzip', function()
     assert.same(expected, actual)
   end)
   
+  it('unzips like lodash.js with empty array', function()
+    local actual = unzip({})
+    local expected = {}
+    assert.same(expected, actual)
+  end)
+  
 end)
