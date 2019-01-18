@@ -22,4 +22,25 @@ M.binarySearch = function(a, fromIndex, toIndex, key)
   return -fromIndex
 end
 
+M.head = function(a)
+  if #a > 0 then return a[1] end
+end
+
+M.lastOption = function(a)
+  if #a > 0 then return a[#a] end
+end
+
+M.tabulate = function(n, f)
+  local res = {}
+  for i = 0, n-1 do
+    res[#res+1] = f(i)
+  end
+  return res
+end
+
+M.tail = function(a)
+  local unpack = table.unpack or unpack
+  return {unpack(a, 2, #a)}
+end
+
 return M

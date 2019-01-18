@@ -1,3 +1,7 @@
+## [Unreleased]
+### Added
+- [#43](https://github.com/BixData/stuart-ml/issues/43) `[util:]` Support loading LIBSVM files from `MLUtils`
+
 ## [2.0.1] - 2019-01-16
 ### Added
 - [#31](https://github.com/BixData/stuart-ml/issues/31) `[linalg:]` Support `DenseMatrix`, `Matrices`, `Matrix`, and `SparseMatrix` modules

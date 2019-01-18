@@ -34,7 +34,7 @@ end
 M.mosesPatchedZip = function(...)
   local moses = require 'moses'
   local args = {...}
-  local n = moses.max(args, function(array) return #array end)
+  local n = moses.max(args, function(array) return #array end) or 0
   local _ans = {}
   for i = 1,n do
     if not _ans[i] then _ans[i] = {} end
