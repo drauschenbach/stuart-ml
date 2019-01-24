@@ -45,7 +45,7 @@ describe('linalg.MatricesSuite', function()
     -- assert.equal(4, #mat2.values)
   end)
   
-  test('sparse matrix construction with wrong number of elements', function()
+  it('sparse matrix construction with wrong number of elements', function()
     assert.has_error(function()
       Matrices.sparse(3, 2, {0,1}, {1,2,1}, {0.0,1.0,2.0})
     end)
@@ -54,7 +54,7 @@ describe('linalg.MatricesSuite', function()
     end)
   end)
   
-  test('index in matrices incorrect input', function()
+  it('index in matrices incorrect input', function()
     local sm = Matrices.sparse(3, 2, {0, 2, 3}, {1, 2, 1}, {0.0, 1.0, 2.0})
     local dm = Matrices.dense(3, 2, {0.0, 2.3, 1.4, 3.2, 1.0, 9.1})
     for _, mat in ipairs({sm,dm}) do
@@ -101,7 +101,7 @@ describe('linalg.MatricesSuite', function()
   --  assert(!sparseMat.toArray.eq(sparseCopy.toArray))
   --}
   
-  test('matrix indexing and updating', function()
+  it('matrix indexing and updating', function()
     local m = 3
     local n = 2
     local allValues = {0.0, 1.0, 2.0, 3.0, 4.0, 0.0}
@@ -139,7 +139,7 @@ describe('linalg.MatricesSuite', function()
 --    assert.equals(10.0, sparseMat.values[3])
   end)
   
-  test('toSparse, toDense', function()
+  it('toSparse, toDense', function()
     local m = 3
     local n = 2
     local values = {1.0, 2.0, 4.0, 5.0}
@@ -157,25 +157,25 @@ describe('linalg.MatricesSuite', function()
     -- assert(deMat1.asBreeze === deMat2.asBreeze)
   end)
   
-  --test("map, update") {
-  --  local m = 3
-  --  local n = 2
-  --  local values = Array(1.0, 2.0, 4.0, 5.0)
-  --  local allValues = Array(1.0, 2.0, 0.0, 0.0, 4.0, 5.0)
-  --  local colPtrs = Array(0, 2, 4)
-  --  local rowIndices = Array(0, 1, 1, 2)
-  --
-  --  local spMat1 = new SparseMatrix(m, n, colPtrs, rowIndices, values)
-  --  local deMat1 = new DenseMatrix(m, n, allValues)
-  --  local deMat2 = deMat1.map(_ * 2)
-  --  local spMat2 = spMat1.map(_ * 2)
-  --  deMat1.update(_ * 2)
-  --  spMat1.update(_ * 2)
-  --
-  --  assert(spMat1.toArray === spMat2.toArray)
-  --  assert(deMat1.toArray === deMat2.toArray)
-  --}
-  --
+  it('map, update', function()
+    local m = 3
+    local n = 2
+    local values = {1.0, 2.0, 4.0, 5.0}
+    local allValues = {1.0, 2.0, 0.0, 0.0, 4.0, 5.0}
+    local colPtrs = {0, 2, 4}
+    local rowIndices = {0, 1, 1, 2}
+  
+    local spMat1 = SparseMatrix.new(m, n, colPtrs, rowIndices, values)
+    local deMat1 = DenseMatrix.new(m, n, allValues)
+    local deMat2 = deMat1:map(function(x) return x * 2 end)
+    local spMat2 = spMat1:map(function(x) return x * 2 end)
+    deMat1:update(function(x) return x * 2 end)
+    spMat1:update(function(x) return x * 2 end)
+  
+    assert.same(spMat1:toArray(), spMat2:toArray())
+    assert.same(deMat1:toArray(), deMat2:toArray())
+  end)
+  
   --test("transpose") {
   --  local dA =
   --    new DenseMatrix(4, 3, Array(0.0, 1.0, 0.0, 0.0, 2.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 3.0))
