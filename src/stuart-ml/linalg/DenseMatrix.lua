@@ -53,6 +53,14 @@ function DenseMatrix:copy()
   error('NIY')
 end
 
+function DenseMatrix.eye(n)
+  local identity = DenseMatrix.zeros(n, n)
+  for i=0, n-1 do
+    identity:update(i, i, 1.0)
+  end
+  return identity
+end
+
 function DenseMatrix:foreachActive(f)
   if not self.isTransposed then
     -- outer loop over columns

@@ -381,13 +381,12 @@ describe('linalg.MatricesSuite', function()
     for _, v in ipairs(mat.values) do assert.equals(1.0, v) end
   end)
   
-  --test("eye") {
-  --  local mat = Matrices.eye(2).asInstanceOf[DenseMatrix]
-  --  assert(mat.numCols === 2)
-  --  assert(mat.numCols === 2)
-  --  assert(mat.values.toSeq === Seq(1.0, 0.0, 0.0, 1.0))
-  --}
-  --
+  it('eye', function()
+    local mat = Matrices.eye(2)
+    assert.equals(2, mat.numCols)
+    assert.same({1.0, 0.0, 0.0, 1.0}, mat.values)
+  end)
+  
   --test("rand") {
   --  local rng = mock[Random]
   --  when(rng.nextDouble()).thenReturn(1.0, 2.0, 3.0, 4.0)
