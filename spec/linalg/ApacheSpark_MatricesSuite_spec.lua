@@ -3,6 +3,7 @@ local Matrices = require 'stuart-ml.linalg.Matrices'
 local moses = require 'moses'
 local registerAsserts = require 'registerAsserts'
 local SparseMatrix = require 'stuart-ml.linalg.SparseMatrix'
+local Vectors = require 'stuart-ml.linalg.Vectors'
 
 registerAsserts(assert)
 
@@ -404,14 +405,14 @@ describe('linalg.MatricesSuite', function()
   --  assert(mat.numCols === 2)
   --  assert(mat.values.toSeq === Seq(1.0, 2.0, 3.0, 4.0))
   --}
-  --
-  --test("diag") {
-  --  local mat = Matrices.diag(Vectors.dense(1.0, 2.0)).asInstanceOf[DenseMatrix]
-  --  assert(mat.numRows === 2)
-  --  assert(mat.numCols === 2)
-  --  assert(mat.values.toSeq === Seq(1.0, 0.0, 0.0, 2.0))
-  --}
-  --
+  
+  it('diag', function()
+    local mat = Matrices.diag(Vectors.dense(1.0, 2.0))
+    assert.equals(2, mat.numRows)
+    assert.equals(2, mat.numCols)
+    assert.same({1.0, 0.0, 0.0, 2.0}, mat.values)
+  end)
+  
   --test("sprand") {
   --  local rng = mock[Random]
   --  when(rng.nextInt(4)).thenReturn(0, 1, 1, 3, 2, 2, 0, 1, 3, 0)

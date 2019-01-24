@@ -21,8 +21,15 @@ end
   @return Square `Matrix` with size `values.length` x `values.length` and `values`
           on the diagonal
 --]]
-M.diag = function()
-  error('NIY')
+M.diag = function(vector)
+  local n = vector:size()
+  local DenseMatrix = require 'stuart-ml.linalg.DenseMatrix'
+  local matrix = DenseMatrix.zeros(n, n)
+  local values = vector:toArray()
+  for i=0, n-1 do
+    matrix:update(i, i, values[i+1])
+  end
+  return matrix
 end
 
 --[[
