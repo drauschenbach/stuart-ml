@@ -53,6 +53,14 @@ function DenseMatrix:copy()
   error('NIY')
 end
 
+function DenseMatrix.eye(n)
+  local identity = DenseMatrix.zeros(n, n)
+  for i=0, n-1 do
+    identity:update(i, i, 1.0)
+  end
+  return identity
+end
+
 function DenseMatrix:foreachActive(f)
   if not self.isTransposed then
     -- outer loop over columns
@@ -91,8 +99,9 @@ function DenseMatrix:index(i, j)
   end
 end
 
-function DenseMatrix:map()
-  error('NIY')
+function DenseMatrix:map(f)
+  local moses = require 'moses'
+  return DenseMatrix.new(self.numRows, self.numCols, moses.map(self.values, f), self.isTransposed)
 end
 
 function DenseMatrix:numActives()
@@ -138,7 +147,24 @@ function DenseMatrix:transpose()
   return DenseMatrix.new(self.numCols, self.numRows, self.values, not self.isTransposed)
 end
 
-function DenseMatrix:update(i, j, v)
+function DenseMatrix:update(...)
+  local moses = require 'moses'
+  local nargs = #moses.pack(...)
+  if nargs == 1 then
+    return self:updatef(...)
+  else
+    return self:update3(...)
+  end
+end
+
+function DenseMatrix:updatef(f)
+  for i=1,#self.values do
+    self.values[i] = f(self.values[i])
+  end
+  return self
+end
+
+function DenseMatrix:update3(i, j, v)
   self.values[self:index(i, j)] = v
 end
 

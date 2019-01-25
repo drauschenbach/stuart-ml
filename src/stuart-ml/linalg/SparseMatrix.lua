@@ -87,35 +87,6 @@ function SparseMatrix:foreachActive(f)
   end
 end
 
-function SparseMatrix:get(i, j)
-  local ind = self:index(i, j)
-  if ind < 1 then return 0.0 else return self.values[ind] end
-end
-
-function SparseMatrix:index(i, j)
-  assert(i >= 0 and i < self.numRows)
-  assert(j >= 0 and j < self.numCols)
-  local arrays = require 'stuart-ml.util.java.arrays'
-  if not self.isTransposed then
-    return arrays.binarySearch(self.rowIndices, self.colPtrs[j], self.colPtrs[j+1], i)
-  else
-    return arrays.binarySearch(self.rowIndices, self.colPtrs[i], self.colPtrs[i+1], j)
-  end
-end
-
-function SparseMatrix:map()
-  error('NIY')
-end
-
-function SparseMatrix:numActives()
-  return #self.values
-end
-
-function SparseMatrix:numNonzeros()
-  local moses = require 'moses'
-  return moses.countf(self.values, function(x) return x ~= 0 end)
-end
-
 --[[
   Generate a `SparseMatrix` from Coordinate List (COO) format. Input must be an array of
   (i, j, value) tuples. Entries that have duplicate values of i and j are
@@ -142,6 +113,36 @@ end
 --]]
 function SparseMatrix.genRandMatrix()
   error('NIY')
+end
+
+function SparseMatrix:get(i, j)
+  local ind = self:index(i, j)
+  if ind < 1 then return 0.0 else return self.values[ind] end
+end
+
+function SparseMatrix:index(i, j)
+  assert(i >= 0 and i < self.numRows)
+  assert(j >= 0 and j < self.numCols)
+  local arrays = require 'stuart-ml.util.java.arrays'
+  if not self.isTransposed then
+    return arrays.binarySearch(self.rowIndices, self.colPtrs[j], self.colPtrs[j+1], i)
+  else
+    return arrays.binarySearch(self.rowIndices, self.colPtrs[i], self.colPtrs[i+1], j)
+  end
+end
+
+function SparseMatrix:map(f)
+  local moses = require 'moses'
+  return SparseMatrix.new(self.numRows, self.numCols, self.colPtrs, self.rowIndices, moses.map(self.values, f), self.isTransposed)
+end
+
+function SparseMatrix:numActives()
+  return #self.values
+end
+
+function SparseMatrix:numNonzeros()
+  local moses = require 'moses'
+  return moses.countf(self.values, function(x) return x ~= 0 end)
 end
 
 --[[
@@ -206,7 +207,24 @@ function SparseMatrix:transpose()
   return SparseMatrix.new(self.numCols, self.numRows, self.colPtrs, self.rowIndices, self.values, not self.isTransposed)
 end
 
-function SparseMatrix:update(i, j, v)
+function SparseMatrix:update(...)
+  local moses = require 'moses'
+  local nargs = #moses.pack(...)
+  if nargs == 1 then
+    return self:updatef(...)
+  else
+    return self:update3(...)
+  end
+end
+
+function SparseMatrix:updatef(f)
+  for i=1,#self.values do
+    self.values[i] = f(self.values[i])
+  end
+  return self
+end
+
+function SparseMatrix:update3(i, j, v)
   local ind = self:index(i, j)
   assert(ind >= 1)
   self.values[ind] = v
