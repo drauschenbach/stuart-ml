@@ -177,33 +177,30 @@ describe('linalg.MatricesSuite', function()
     assert.same(deMat1:toArray(), deMat2:toArray())
   end)
   
-  --test("transpose") {
-  --  local dA =
-  --    new DenseMatrix(4, 3, Array(0.0, 1.0, 0.0, 0.0, 2.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 3.0))
-  --  local sA = new SparseMatrix(4, 3, Array(0, 1, 3, 4), Array(1, 0, 2, 3), Array(1.0, 2.0, 1.0, 3.0))
-  --
-  --  local dAT = dA.transpose.asInstanceOf[DenseMatrix]
-  --  local sAT = sA.transpose.asInstanceOf[SparseMatrix]
-  --  local dATexpected =
-  --    new DenseMatrix(3, 4, Array(0.0, 2.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 3.0))
-  --  local sATexpected =
-  --    new SparseMatrix(3, 4, Array(0, 1, 2, 3, 4), Array(1, 0, 1, 2), Array(2.0, 1.0, 1.0, 3.0))
-  --
+  it('transpose', function()
+    local dA = DenseMatrix.new(4, 3, {0.0, 1.0, 0.0, 0.0, 2.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 3.0})
+    local sA = SparseMatrix.new(4, 3, {0, 1, 3, 4}, {1, 0, 2, 3}, {1.0, 2.0, 1.0, 3.0})
+  
+    local dAT = dA:transpose()
+    local sAT = sA:transpose()
+--    local dATexpected = DenseMatrix.new(3, 4, {0.0, 2.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 3.0})
+--    local sATexpected = SparseMatrix.new(3, 4, {0, 1, 2, 3, 4}, {1, 0, 1, 2}, {2.0, 1.0, 1.0, 3.0})
+  
   --  assert(dAT.asBreeze === dATexpected.asBreeze)
   --  assert(sAT.asBreeze === sATexpected.asBreeze)
-  --  assert(dA(1, 0) === dAT(0, 1))
-  --  assert(dA(2, 1) === dAT(1, 2))
-  --  assert(sA(1, 0) === sAT(0, 1))
-  --  assert(sA(2, 1) === sAT(1, 2))
-  --
-  --  assert(!dA.toArray.eq(dAT.toArray), "has to have a new array")
-  --  assert(dA.values.eq(dAT.transpose.asInstanceOf[DenseMatrix].values), "should not copy array")
-  --
+    assert.equals(dA:get(1, 0), dAT:get(0, 1))
+    assert.equals(dA:get(2, 1), dAT:get(1, 2))
+    assert.equals(sA:get(1, 0), sAT:get(0, 1))
+    assert.equals(sA:get(2, 1), sAT:get(1, 2))
+  
+    assert.not_equals(dA:toArray(), dAT:toArray()) -- has to have a new array
+    assert.equals(dA.values, dAT:transpose().values) -- should not copy array
+  
   --  assert(dAT.toSparse.asBreeze === sATexpected.asBreeze)
   --  assert(sAT.toDense.asBreeze === dATexpected.asBreeze)
-  --}
+  end)
   
-  test('foreachActive', function()
+  it('foreachActive', function()
     local m = 3
     local n = 2
     local values = {1.0, 2.0, 4.0, 5.0}
@@ -368,14 +365,14 @@ describe('linalg.MatricesSuite', function()
   --  }
   --}
   
-  test('zeros', function()
+  it('zeros', function()
     local mat = Matrices.zeros(2, 3)
     assert.equals(2, mat.numRows)
     assert.equals(3, mat.numCols)
     for _, v in ipairs(mat.values) do assert.equals(0.0, v) end
   end)
   
-  test('ones', function()
+  it('ones', function()
     local mat = Matrices.ones(2, 3)
     assert.equals(2, mat.numRows)
     assert.equals(3, mat.numCols)
@@ -469,7 +466,7 @@ describe('linalg.MatricesSuite', function()
   --  assert(lines.size == 5 && lines.forall(_.size <= 100))
   --}
   
-  test('numNonzeros and numActives', function()
+  it('numNonzeros and numActives', function()
     local dm1 = Matrices.dense(3, 2, {0, 0, -1, 1, 0, 1})
     assert.equals(3, dm1:numNonzeros())
     assert.equals(6, dm1:numActives())
