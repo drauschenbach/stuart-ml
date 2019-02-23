@@ -14,11 +14,7 @@ local failures = 0
 
 local function assertEquals(expected,actual,message)
   message = message or string.format('Expected %s but got %s', tostring(expected), tostring(actual))
-  if type(expected) == 'table' and type(actual) == 'table' then
-    assert(moses.same(actual, expected), message)
-  else
-    assert(actual == expected, message)
-  end
+  assert(actual == expected, message)
 end
 
 local function assertError(testFn, message)
