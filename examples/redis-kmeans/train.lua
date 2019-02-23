@@ -1,8 +1,6 @@
 local KMeans = require 'stuart-ml.clustering.KMeans'
-local KMeansModel = require 'stuart-ml.clustering.KMeansModel'
 local stuart = require 'stuart'
 local Vectors = require 'stuart-ml.linalg.Vectors'
-local VectorWithNorm = require 'stuart-ml.clustering.VectorWithNorm'
 
 local sc = stuart.NewContext('local[1]', 'K-means')
 

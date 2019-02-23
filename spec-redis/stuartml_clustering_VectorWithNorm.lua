@@ -2,7 +2,6 @@ print('Begin test')
 
 local Vectors = require 'stuart-ml.linalg.Vectors'
 local VectorWithNorm = require 'stuart-ml.clustering.VectorWithNorm'
-local moses = require 'moses'
 
 
 -- ============================================================================

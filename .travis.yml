@@ -19,5 +19,5 @@ install:
   - luarocks install stuart
 
 script:
-  - luacheck --std max+busted --codes src spec examples --no-self --ignore 213 311 611 631
+  - luacheck --std max+busted --codes src spec spec-redis examples --no-self --ignore 213 311 611 631 --exclude-files "**/*-with-dependencies.lua"
   - busted --verbose --defer-print --no-auto-insulate

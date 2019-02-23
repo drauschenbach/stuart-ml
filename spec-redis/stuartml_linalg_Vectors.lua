@@ -1,6 +1,6 @@
 print('Begin test')
 
-local class = require 'stuart.class' 
+local class = require 'stuart.class'
 local Vector = require 'stuart-ml.linalg.Vector'
 local Vectors = require 'stuart-ml.linalg.Vectors'
 local moses = require 'moses'
