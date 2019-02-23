@@ -70,12 +70,22 @@ Then submit the test suite in another:
 $ redis-cli --eval stuartml_util_MLUtils-with-dependencies.lua 0,0
 ```
 
+## Suite: stuartml\_clustering\_kmeans
+
+	$ redis-cli --eval stuartml_clustering_KMeans-with-dependencies.lua 0,0
+
+```
+Begin test
+✓ findClosest() with exact match works
+✓ findClosest() with near match works
+End of test: 0 failures
+```
+
 ## Suite: stuartml\_linalg\_BLAS
 
 	$ redis-cli --eval stuartml_linalg_BLAS-with-dependencies.lua 0,0
 
 ```
-Begin test
 Begin test
 ✓ numNonzeros is accurate after axpy() changes the vector
 End of test: 0 failures
