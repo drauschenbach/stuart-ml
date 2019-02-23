@@ -102,7 +102,7 @@ M.sqdist = function(v1, v2)
     end
     return squaredDistance
   end
-  error('Unsupported vector type ' .. v1 .. ' and ' .. v2)
+  error('sqdist only supports DenseVector and SparseVector types')
 end
 
 M.sqdist_sparse_sparse = function(v1, v2)
