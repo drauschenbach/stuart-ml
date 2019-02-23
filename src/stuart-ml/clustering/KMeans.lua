@@ -154,7 +154,9 @@ function KMeans:initRandom(vectorsWithNormsRDD)
   -- Select without replacement; may still produce duplicates if the data has < k distinct
   -- points, so deduplicate the centroids to match the behavior of k-means|| in the same situation
   local now = require 'stuart.interface'.now
-  local sample = vectorsWithNormsRDD:takeSample(false, self.k, now())
+  local has_now, seed = pcall(now)
+  if not has_now then seed = math.random(32000) end
+  local sample = vectorsWithNormsRDD:takeSample(false, self.k, seed)
   local moses = require 'moses'
   local distinctSample = unique(moses.pluck(sample, 'vector'))
   local VectorWithNorm = require 'stuart-ml.clustering.VectorWithNorm'
@@ -210,11 +212,13 @@ function KMeans:runAlgorithm(data)
   
   -- Execute iterations of Lloyd's algorithm until converged
   local now = require 'stuart.interface'.now
-  local iterationStartTime = now()
+  local has_now, iterationStartTime = pcall(now)
+  
   local BLAS = require 'stuart-ml.linalg.BLAS'
   local tableIterator = require 'stuart-ml.util'.tableIterator
   local VectorWithNorm = require 'stuart-ml.clustering.VectorWithNorm'
   local Vectors = require 'stuart-ml.linalg.Vectors'
+  
   while iteration <= self.maxIterations and not converged do
     
     -- Find the sum and count of points mapping to each center
@@ -259,9 +263,11 @@ function KMeans:runAlgorithm(data)
     iteration = iteration + 1
   end
   
-  local iterationTimeInSeconds = now() - iterationStartTime
   local logging = require 'stuart.internal.logging'
-  logging.logInfo(string.format('Iterations took %f seconds.', iterationTimeInSeconds))
+  if has_now then
+    local iterationTimeInSeconds = now() - iterationStartTime
+    logging.logInfo(string.format('Iterations took %f seconds.', iterationTimeInSeconds))
+  end
   
   if iteration == self.maxIterations then
     logging.logInfo(string.format('KMeans reached the max number of iterations: %d.', self.maxIterations))

@@ -4,6 +4,9 @@
 - `DenseMatrix` and `SparseMatrix` map() and update() support
 - `DenseMatrix` diag() and eye() support
 
+### Fixed
+- [#47](https://github.com/BixData/stuart-ml/issues/47) Cannot train a K-means model within Redis due to unnecessary os.date() dependency (Redis interop)
+
 ## [2.0.1] - 2019-01-16
 ### Added
 - [#31](https://github.com/BixData/stuart-ml/issues/31) `[linalg:]` Support `DenseMatrix`, `Matrices`, `Matrix`, and `SparseMatrix` modules
