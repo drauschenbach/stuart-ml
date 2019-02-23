@@ -81,6 +81,20 @@ Begin test
 End of test: 0 failures
 ```
 
+## Suite: stuartml\_clustering\_VectorWithNorm
+
+	$ redis-cli --eval stuartml_clustering_VectorWithNorm-with-dependencies.lua 0,0
+
+```
+Begin test
+✓ constructs a DenseVector from an array
+✓ stringifies a DenseVector
+✓ stringifies a SparseVector
+✓ converts to DenseVector
+✓ equality
+End of test: 0 failures
+```
+
 ## Suite: stuartml\_linalg\_BLAS
 
 	$ redis-cli --eval stuartml_linalg_BLAS-with-dependencies.lua 0,0
