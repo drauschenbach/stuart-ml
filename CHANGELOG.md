@@ -1,5 +1,6 @@
 ## [Unreleased]
 ### Added
+- Document how to train a K-means model within Redis at [examples/redis-kmeans](./examples/redis-kmeans/)
 - Document how to run test suites within Redis at [spec-redis](./spec-redis/)
 - [#43](https://github.com/BixData/stuart-ml/issues/43) Support loading LIBSVM files from `MLUtils`
 - `DenseMatrix` and `SparseMatrix` map() and update() support
