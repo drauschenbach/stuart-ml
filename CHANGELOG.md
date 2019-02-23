@@ -1,5 +1,6 @@
 ## [Unreleased]
 ### Added
+- Document how to run test suites within Redis at [spec-redis](./spec-redis/)
 - [#43](https://github.com/BixData/stuart-ml/issues/43) `[util:]` Support loading LIBSVM files from `MLUtils`
 - `DenseMatrix` and `SparseMatrix` map() and update() support
 - `DenseMatrix` diag() and eye() support
