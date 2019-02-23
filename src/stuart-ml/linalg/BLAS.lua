@@ -7,23 +7,22 @@ local M = {}
 --]]
 M.axpy = function(a, vectorX, vectorY)
   local class = require 'stuart.class'
-  local istype = class.istype
   local Vector = require 'stuart-ml.linalg.Vector'
-  assert(istype(vectorX, Vector))
-  assert(istype(vectorY, Vector))
+  assert(class.istype(vectorX, Vector))
+  assert(class.istype(vectorY, Vector))
   assert(vectorX:size() == vectorY:size())
   local DenseVector = require 'stuart-ml.linalg.DenseVector'
-  if istype(vectorY,DenseVector) then
+  if class.istype(vectorY,DenseVector) then
     local SparseVector = require 'stuart-ml.linalg.SparseVector'
-    if istype(vectorX,SparseVector) then
+    if class.istype(vectorX,SparseVector) then
       return M.axpy_sparse_dense(a,vectorX,vectorY)
-    elseif istype(vectorX,DenseVector) then
+    elseif class.istype(vectorX,DenseVector) then
       return M.axpy_sparse_dense(a,vectorX:toSparse(),vectorY)
     else
-      error('axpy doesn\'t support vectorX type ' .. vectorX.class)
+      error('axpy only supports DenseVector and SparseVector types for vectorX 2nd arg')
     end
   end
-  error('axpy only supports adding to a DenseVector but got type ' .. class.type(vectorY))
+  error('axpy only supports adding to a DenseVector')
 end
 
 M.axpy_sparse_dense = function(a, x, y)
@@ -55,7 +54,7 @@ M.dot = function(x, y)
   elseif istype(x,SparseVector) and istype(y,SparseVector) then
       return M.dot_sparse_sparse(x, y)
   else
-    error(string.format("dot doesn't support (%s,%s)", class.type(x), class.type(y)))
+    error('dot only supports DenseVector and SparseVector types')
   end
 end
 

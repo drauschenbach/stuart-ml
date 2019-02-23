@@ -2900,6 +2900,34 @@ package.preload["moses"] = function(...)
   end
 end
 
+package.preload["stuart-ml.clustering.VectorWithNorm"] = function(...)
+  local class = require 'stuart.class'
+  -- A vector with its norm for fast distance computation.
+  --
+  -- @see [[org.apache.spark.mllib.clustering.KMeans#fastSquaredDistance]]
+  local VectorWithNorm = class.new()
+  function VectorWithNorm:_init(arg1, norm)
+    local Vector = require 'stuart-ml.linalg.Vector'
+    local Vectors = require 'stuart-ml.linalg.Vectors'
+    if class.istype(arg1, Vector) then
+      self.vector = arg1
+    else -- arg1 is a table
+      self.vector = Vectors.dense(arg1)
+    end
+    self.norm = norm or Vectors.norm(self.vector, 2.0)
+  end
+  function VectorWithNorm.__eq(a, b)
+    return a.vector == b.vector and a.norm == b.norm
+  end
+  function VectorWithNorm:__tostring()
+    return '(' .. tostring(self.vector) .. ',' .. self.norm .. ')'
+  end
+  function VectorWithNorm:toDense()
+    return VectorWithNorm.new(self.vector:toDense(), self.norm)
+  end
+  return VectorWithNorm
+end
+
 package.preload["stuart-ml.linalg.BLAS"] = function(...)
   local M = {}
   --[[ y += a * x
@@ -2994,6 +3022,164 @@ package.preload["stuart-ml.linalg.BLAS"] = function(...)
   return M
 end
 
+package.preload["stuart-ml.linalg.DenseMatrix"] = function(...)
+  local class = require 'stuart.class'
+  local Matrix = require 'stuart-ml.linalg.Matrix'
+  --[[
+    Column-major dense matrix.
+    The entry values are stored in a single array of doubles with columns listed in sequence.
+    For example, the following matrix
+    {{{
+      1.0 2.0
+      3.0 4.0
+      5.0 6.0
+    }}}
+    is stored as `[1.0, 3.0, 5.0, 2.0, 4.0, 6.0]`.
+  --]]
+  local DenseMatrix = class.new(Matrix)
+  --[[
+    @param numRows number of rows
+    @param numCols number of columns
+    @param values matrix entries in column major if not transposed or in row major otherwise
+    @param isTransposed whether the matrix is transposed. If true, `values` stores the matrix in
+                        row major.
+  --]]
+  function DenseMatrix:_init(numRows, numCols, values, isTransposed)
+    assert(#values == numRows * numCols)
+    Matrix:_init(self)
+    self.numRows = numRows
+    self.numCols = numCols
+    self.values = values
+    self.isTransposed = isTransposed or false
+  end
+  function DenseMatrix:__eq(other)
+    if not class.istype(other, Matrix) then return false end
+    if self.numRows ~= other.numRows or self.numCols ~= other.numCols then return false end
+    for row = 0, self.numRows-1 do
+      for col = 0, self.numCols-1 do
+        if self.values[self:index(row,col)] ~= other.values[other:index(row,col)] then return false end
+      end
+    end
+    return true
+  end
+  function DenseMatrix:apply()
+    error('NIY')
+  end
+  function DenseMatrix:asBreeze()
+    error('NIY')
+  end
+  function DenseMatrix:copy()
+    error('NIY')
+  end
+  function DenseMatrix.eye(n)
+    local identity = DenseMatrix.zeros(n, n)
+    for i=0, n-1 do
+      identity:update(i, i, 1.0)
+    end
+    return identity
+  end
+  function DenseMatrix:foreachActive(f)
+    if not self.isTransposed then
+      -- outer loop over columns
+      for j = 0, self.numCols-1 do
+        local indStart = j * self.numRows
+        for i = 0, self.numRows-1 do
+          f(i, j, self.values[1 + indStart + i])
+        end
+      end
+    else
+      -- outer loop over rows
+      for i = 0, self.numRows-1 do
+        local indStart = i * self.numCols
+        for j = 0, self.numCols-1 do
+          f(i, j, self.values[1 + indStart + j])
+        end
+      end
+    end
+  end
+  function DenseMatrix:get(i, j)
+    if j == nil then
+      return self.values[i+1]
+    else
+      return self.values[self:index(i, j)]
+    end
+  end
+  function DenseMatrix:index(i, j)
+    assert(i >= 0 and i < self.numRows)
+    assert(j >= 0 and j < self.numCols)
+    if not self.isTransposed then
+      return 1 + i + self.numRows * j
+    else
+      return 1 + j + self.numCols * i
+    end
+  end
+  function DenseMatrix:map(f)
+    local moses = require 'moses'
+    return DenseMatrix.new(self.numRows, self.numCols, moses.map(self.values, f), self.isTransposed)
+  end
+  function DenseMatrix:numActives()
+    return #self.values
+  end
+  function DenseMatrix:numNonzeros()
+    local moses = require 'moses'
+    return moses.countf(self.values, function(x) return x ~= 0 end)
+  end
+  function DenseMatrix.ones(numRows, numCols)
+    local moses = require 'moses'
+    return DenseMatrix.new(numRows, numCols, moses.ones(numRows*numCols))
+  end
+  --[[
+    Generate a `SparseMatrix` from the given `DenseMatrix`. The new matrix will have isTransposed
+    set to false.
+  --]]
+  function DenseMatrix:toSparse()
+    local spVals = {}
+    local moses = require 'moses'
+    local colPtrs = moses.zeros(self.numCols+1)
+    local rowIndices = {}
+    local nnz = 0
+    for j = 0, self.numCols-1 do
+      for i = 0, self.numRows-1 do
+        local v = self.values[self:index(i,j)]
+        if v ~= 0.0 then
+          rowIndices[#rowIndices+1] = i
+          spVals[#spVals+1] = v
+          nnz = nnz + 1
+        end
+      end
+      colPtrs[j+2] = nnz
+    end
+    local SparseMatrix = require 'stuart-ml.linalg.SparseMatrix'
+    return SparseMatrix.new(self.numRows, self.numCols, colPtrs, rowIndices, spVals)
+  end
+  function DenseMatrix:transpose()
+    return DenseMatrix.new(self.numCols, self.numRows, self.values, not self.isTransposed)
+  end
+  function DenseMatrix:update(...)
+    local moses = require 'moses'
+    local nargs = #moses.pack(...)
+    if nargs == 1 then
+      return self:updatef(...)
+    else
+      return self:update3(...)
+    end
+  end
+  function DenseMatrix:updatef(f)
+    for i=1,#self.values do
+      self.values[i] = f(self.values[i])
+    end
+    return self
+  end
+  function DenseMatrix:update3(i, j, v)
+    self.values[self:index(i, j)] = v
+  end
+  function DenseMatrix.zeros(numRows, numCols)
+    local moses = require 'moses'
+    return DenseMatrix.new(numRows, numCols, moses.zeros(numRows*numCols))
+  end
+  return DenseMatrix
+end
+
 package.preload["stuart-ml.linalg.DenseVector"] = function(...)
   local class = require 'stuart.class'
   local Vector = require 'stuart-ml.linalg.Vector'
@@ -3059,6 +3245,412 @@ package.preload["stuart-ml.linalg.DenseVector"] = function(...)
     return SparseVector.new(self:size(), ii, vv)
   end
   return DenseVector
+end
+
+package.preload["stuart-ml.linalg.Matrices"] = function(...)
+  --[[
+    Factory methods for stuart-ml.linalg.Matrix.
+  --]]
+  local M = {}
+  --[[
+    Creates a column-major dense matrix.
+   
+    @param numRows number of rows
+    @param numCols number of columns
+    @param values matrix entries in column major
+  --]]
+  M.dense = function(numRows, numCols, values)
+    local DenseMatrix = require 'stuart-ml.linalg.DenseMatrix'
+    return DenseMatrix.new(numRows, numCols, values)
+  end
+  --[[
+    Generate a diagonal matrix in `Matrix` format from the supplied values.
+    @param vector a `Vector` that will form the values on the diagonal of the matrix
+    @return Square `Matrix` with size `values.length` x `values.length` and `values`
+            on the diagonal
+  --]]
+  M.diag = function(vector)
+    local n = vector:size()
+    local DenseMatrix = require 'stuart-ml.linalg.DenseMatrix'
+    local matrix = DenseMatrix.zeros(n, n)
+    local values = vector:toArray()
+    for i=0, n-1 do
+      matrix:update(i, i, values[i+1])
+    end
+    return matrix
+  end
+  --[[
+    Generate a dense Identity Matrix in `Matrix` format.
+    @param n number of rows and columns of the matrix
+    @return `Matrix` with size `n` x `n` and values of ones on the diagonal
+  --]]
+  M.eye = function(n)
+    local DenseMatrix = require 'stuart-ml.linalg.DenseMatrix'
+    return DenseMatrix.eye(n)
+  end
+  --[[
+    Creates a Matrix instance from a breeze matrix.
+    @param breeze a breeze matrix
+    @return a Matrix instance
+  --]]
+  M.fromBreeze = function()
+    error('NIY')
+  end
+  --[[
+    Convert new linalg type to spark.mllib type.  Light copy; only copies references
+  --]]
+  M.fromML = function()
+    error('NIY')
+  end
+  --[[
+    Horizontally concatenate a sequence of matrices. The returned matrix will be in the format
+    the matrices are supplied in. Supplying a mix of dense and sparse matrices will result in
+    a sparse matrix. If the Array is empty, an empty `DenseMatrix` will be returned.
+    @param matrices array of matrices
+    @return a single `Matrix` composed of the matrices that were horizontally concatenated
+  --]]
+  M.horzcat = function()
+    error('NIY')
+  end
+  --[[
+    Generate a `DenseMatrix` consisting of ones.
+    @param numRows number of rows of the matrix
+    @param numCols number of columns of the matrix
+    @return `Matrix` with size `numRows` x `numCols` and values of ones
+  --]]
+  M.ones = function(numRows, numCols)
+    local DenseMatrix = require 'stuart-ml.linalg.DenseMatrix'
+    return DenseMatrix.ones(numRows, numCols)
+  end
+  --[[
+    Generate a `DenseMatrix` consisting of `i.i.d.` uniform random numbers.
+    @param numRows number of rows of the matrix
+    @param numCols number of columns of the matrix
+    @param rng a random number generator
+    @return `Matrix` with size `numRows` x `numCols` and values in U(0, 1)
+  --]]
+  M.rand = function()
+    error('NIY')
+  end
+  --[[
+    Generate a `DenseMatrix` consisting of `i.i.d.` gaussian random numbers.
+    @param numRows number of rows of the matrix
+    @param numCols number of columns of the matrix
+    @param rng a random number generator
+    @return `Matrix` with size `numRows` x `numCols` and values in N(0, 1)
+  --]]
+  M.randn = function()
+    error('NIY')
+  end
+  --[[
+    Creates a column-major sparse matrix in Compressed Sparse Column (CSC) format.
+     
+    @param numRows number of rows
+    @param numCols number of columns
+    @param colPtrs the index corresponding to the start of a new column
+    @param rowIndices the row index of the entry
+    @param values non-zero matrix entries in column major
+  --]]
+  M.sparse = function (numRows, numCols, colPtrs, rowIndices, values)
+    local SparseMatrix = require 'stuart-ml.linalg.SparseMatrix'
+    return SparseMatrix.new(numRows, numCols, colPtrs, rowIndices, values)
+  end
+  --[[
+    Generate a sparse Identity Matrix in `Matrix` format.
+    @param n number of rows and columns of the matrix
+    @return `Matrix` with size `n` x `n` and values of ones on the diagonal
+  --]]
+  M.speye = function(n)
+    local SparseMatrix = require 'stuart-ml.linalg.SparseMatrix'
+    return SparseMatrix.speye(n)
+  end
+  --[[
+    Generate a `SparseMatrix` consisting of `i.i.d.` gaussian random numbers.
+    @param numRows number of rows of the matrix
+    @param numCols number of columns of the matrix
+    @param density the desired density for the matrix
+    @param rng a random number generator
+    @return `Matrix` with size `numRows` x `numCols` and values in U(0, 1)
+  --]]
+  M.sprand = function()
+    error('NIY')
+  end
+  --[[
+    Vertically concatenate a sequence of matrices. The returned matrix will be in the format
+    the matrices are supplied in. Supplying a mix of dense and sparse matrices will result in
+    a sparse matrix. If the Array is empty, an empty `DenseMatrix` will be returned.
+    @param matrices array of matrices
+    @return a single `Matrix` composed of the matrices that were vertically concatenated
+  --]]
+  M.vertcat = function()
+    error('NIY')
+  end
+  --[[
+    Generate a `SparseMatrix` consisting of `i.i.d.` gaussian random numbers.
+    @param numRows number of rows of the matrix
+    @param numCols number of columns of the matrix
+    @param density the desired density for the matrix
+    @param rng a random number generator
+    @return `Matrix` with size `numRows` x `numCols` and values in N(0, 1)
+  --]]
+  M.sprandn = function()
+    error('NIY')
+  end
+  --[[
+    Generate a `Matrix` consisting of zeros.
+    @param numRows number of rows of the matrix
+    @param numCols number of columns of the matrix
+    @return `Matrix` with size `numRows` x `numCols` and values of zeros
+  --]]
+  M.zeros = function(numRows, numCols)
+    local DenseMatrix = require 'stuart-ml.linalg.DenseMatrix'
+    return DenseMatrix.zeros(numRows, numCols)
+  end
+  return M
+end
+
+package.preload["stuart-ml.linalg.Matrix"] = function(...)
+  local class = require 'stuart.class'
+  --[[
+    A local matrix.
+  --]]
+  local Matrix = class.new()
+  function Matrix:_init()
+    -- Flag that keeps track whether the matrix is transposed or not. False by default.
+    self.isTransposed = false
+  end
+  function Matrix:__eq(other)
+    return self:toSparse() == other:toSparse()
+  end
+  --[[
+    Convenience method for `Matrix`-`DenseVector` multiplication. For binary compatibility.
+  --]]
+  function Matrix:multiply()
+     error('NIY')
+  end
+  -- Converts to a dense array in column major
+  function Matrix:toArray()
+    local moses = require 'moses'
+    local newArray = moses.zeros(self.numRows + self.numCols)
+    self:foreachActive(function(i, j, v)
+      newArray[1 + j * self.numRows + i] = v
+    end)
+    return newArray
+  end
+  -- A human readable representation of the matrix
+  -- https://github.com/scalanlp/breeze/blob/releases/v0.13.1/math/src/main/scala/breeze/linalg/Matrix.scala#L68-L122
+  function Matrix:toString()
+    error('NIY')
+  end
+  return Matrix
+end
+
+package.preload["stuart-ml.linalg.SparseMatrix"] = function(...)
+  local class = require 'stuart.class'
+  local Matrix = require 'stuart-ml.linalg.Matrix'
+  --[[
+    Column-major sparse matrix.
+    The entry values are stored in Compressed Sparse Column (CSC) format.
+    For example, the following matrix
+    {{{
+      1.0 0.0 4.0
+      0.0 3.0 5.0
+      2.0 0.0 6.0
+    }}}
+    is stored as `values: [1.0, 2.0, 3.0, 4.0, 5.0, 6.0]`,
+    `rowIndices=[0, 2, 1, 0, 1, 2]`, `colPointers=[0, 2, 3, 6]`.
+  --]]
+  local SparseMatrix = class.new(Matrix)
+  --[[
+    @param numRows number of rows
+    @param numCols number of columns
+    @param colPtrs the index corresponding to the start of a new column (if not transposed)
+    @param rowIndices the row index of the entry (if not transposed). They must be in strictly
+                      increasing order for each column
+    @param values nonzero matrix entries in column major (if not transposed)
+    @param isTransposed whether the matrix is transposed. If true, the matrix can be considered
+                        Compressed Sparse Row (CSR) format, where `colPtrs` behaves as rowPtrs,
+                        and `rowIndices` behave as colIndices, and `values` are stored in row major.
+  --]]
+  function SparseMatrix:_init(numRows, numCols, colPtrs, rowIndices, values, isTransposed)
+    assert(#values == #rowIndices) -- The number of row indices and values don't match
+    if isTransposed then
+      assert(#colPtrs == numRows+1)
+    else
+      assert(#colPtrs == numCols+1)
+    end
+    assert(#values == colPtrs[#colPtrs]) -- The last value of colPtrs must equal the number of elements
+    Matrix._init(self)
+    self.numRows = numRows
+    self.numCols = numCols
+    self.colPtrs = colPtrs
+    self.rowIndices = rowIndices
+    self.values = values
+    self.isTransposed = isTransposed or false
+  end
+  function SparseMatrix:__eq()
+    error('NIY')
+  --    case m: Matrix => asBreeze == m.asBreeze
+  --    case _ => false
+  end
+  function SparseMatrix:asBreeze()
+    error('NIY')
+  end
+  function SparseMatrix:asML()
+    error('NIY')
+  end
+  function SparseMatrix:colIter()
+    error('NIY')
+  end
+  function SparseMatrix:copy()
+  end
+  function SparseMatrix:foreachActive(f)
+    if not self.isTransposed then
+      for j = 0, self.numCols-1 do
+        local idx = self.colPtrs[j+1]
+        local idxEnd = self.colPtrs[j + 2]
+        while idx < idxEnd do
+          f(self.rowIndices[idx+1], j, self.values[idx+1])
+          idx = idx + 1
+        end
+      end
+    else
+      for i = 0, self.numRows-1 do
+        local idx = self.colPtrs[i+1]
+        local idxEnd = self.colPtrs[i + 2]
+        while idx < idxEnd do
+          local j = self.rowIndices[idx+1]
+          f(i, j, self.values[idx+1])
+          idx = idx + 1
+        end
+      end
+    end
+  end
+  --[[
+    Generate a `SparseMatrix` from Coordinate List (COO) format. Input must be an array of
+    (i, j, value) tuples. Entries that have duplicate values of i and j are
+    added together. Tuples where value is equal to zero will be omitted.
+    @param numRows number of rows of the matrix
+    @param numCols number of columns of the matrix
+    @param entries Array of (i, j, value) tuples
+    @return The corresponding `SparseMatrix`
+  --]]
+  function SparseMatrix.fromCOO()
+    error('NIY')
+  end
+  --[[
+    Convert new linalg type to spark.mllib type.  Light copy; only copies references
+  --]]
+  function SparseMatrix.fromML()
+    error('NIY')
+  end
+  --[[
+    Generates the skeleton of a random `SparseMatrix` with a given random number generator.
+    The values of the matrix returned are undefined.
+  --]]
+  function SparseMatrix.genRandMatrix()
+    error('NIY')
+  end
+  function SparseMatrix:get(i, j)
+    local ind = self:index(i, j)
+    if ind < 1 then return 0.0 else return self.values[ind] end
+  end
+  function SparseMatrix:index(i, j)
+    assert(i >= 0 and i < self.numRows)
+    assert(j >= 0 and j < self.numCols)
+    local arrays = require 'stuart-ml.util.java.arrays'
+    if not self.isTransposed then
+      return arrays.binarySearch(self.rowIndices, self.colPtrs[j], self.colPtrs[j+1], i)
+    else
+      return arrays.binarySearch(self.rowIndices, self.colPtrs[i], self.colPtrs[i+1], j)
+    end
+  end
+  function SparseMatrix:map(f)
+    local moses = require 'moses'
+    return SparseMatrix.new(self.numRows, self.numCols, self.colPtrs, self.rowIndices, moses.map(self.values, f), self.isTransposed)
+  end
+  function SparseMatrix:numActives()
+    return #self.values
+  end
+  function SparseMatrix:numNonzeros()
+    local moses = require 'moses'
+    return moses.countf(self.values, function(x) return x ~= 0 end)
+  end
+  --[[
+    Generate a diagonal matrix in `SparseMatrix` format from the supplied values.
+    @param vector a `Vector` that will form the values on the diagonal of the matrix
+    @return Square `SparseMatrix` with size `values.length` x `values.length` and non-zero
+            `values` on the diagonal
+  --]]
+  function SparseMatrix.spdiag()
+    error('NIY')
+  end
+  --[[
+    Generate an Identity Matrix in `SparseMatrix` format.
+    @param n number of rows and columns of the matrix
+    @return `SparseMatrix` with size `n` x `n` and values of ones on the diagonal
+  --]]
+  function SparseMatrix.speye()
+    error('NIY')
+  end
+  --[[
+    Generate a `SparseMatrix` consisting of `i.i.d`. uniform random numbers. The number of non-zero
+    elements equal the ceiling of `numRows` x `numCols` x `density`
+    @param numRows number of rows of the matrix
+    @param numCols number of columns of the matrix
+    @param density the desired density for the matrix
+    @param rng a random number generator
+    @return `SparseMatrix` with size `numRows` x `numCols` and values in U(0, 1)
+  --]]
+  function SparseMatrix.sprand()
+    error('NIY')
+  end
+  --[[
+    Generate a `SparseMatrix` consisting of `i.i.d`. gaussian random numbers.
+    @param numRows number of rows of the matrix
+    @param numCols number of columns of the matrix
+    @param density the desired density for the matrix
+    @param rng a random number generator
+    @return `SparseMatrix` with size `numRows` x `numCols` and values in N(0, 1)
+  --]]
+  function SparseMatrix.sprandn()
+    error('NIY')
+  end
+  --[[
+    Generate a `DenseMatrix` from the given `SparseMatrix`. The new matrix will have isTransposed
+    set to false.
+  --]]
+  function SparseMatrix:toDense()
+    local DenseMatrix = require 'stuart-ml.linalg.DenseMatrix'
+    return DenseMatrix.new(self.numRows, self.numCols, self:toArray())
+  end
+  function SparseMatrix:toSparse()
+    return self
+  end
+  function SparseMatrix:transpose()
+    return SparseMatrix.new(self.numCols, self.numRows, self.colPtrs, self.rowIndices, self.values, not self.isTransposed)
+  end
+  function SparseMatrix:update(...)
+    local moses = require 'moses'
+    local nargs = #moses.pack(...)
+    if nargs == 1 then
+      return self:updatef(...)
+    else
+      return self:update3(...)
+    end
+  end
+  function SparseMatrix:updatef(f)
+    for i=1,#self.values do
+      self.values[i] = f(self.values[i])
+    end
+    return self
+  end
+  function SparseMatrix:update3(i, j, v)
+    local ind = self:index(i, j)
+    assert(ind >= 1)
+    self.values[ind] = v
+  end
+  return SparseMatrix
 end
 
 package.preload["stuart-ml.linalg.SparseVector"] = function(...)
@@ -3538,6 +4130,49 @@ package.preload["stuart-ml.util.MLUtils"] = function(...)
       local label, indices, values = e[1], e[2], e[3]
       return LabeledPoint.new(label, Vectors.sparse(d, indices, values))
     end)
+  end
+  return M
+end
+
+package.preload["stuart-ml.util.java.arrays"] = function(...)
+  local M = {}
+  -- interface: https://docs.oracle.com/javase/7/docs/api/java/util/Arrays.html#binarySearch(float[],%20int,%20int,%20float)
+  --            (but conforming to Lua 1-based table indexes instead of Java's 0-based indexes)
+  -- implementation: https://stackoverflow.com/questions/19522451/binary-search-of-an-array-of-arrays-in-lua
+  M.binarySearch = function(a, fromIndex, toIndex, key)
+    fromIndex = fromIndex or 0
+    assert(fromIndex >= 0, 'fromIndex must be >= 0')
+    toIndex = toIndex or nil
+    if toIndex == nil then toIndex = #a end
+    while fromIndex < toIndex do
+      local mid = math.floor((fromIndex+toIndex) / 2)
+      local midVal = a[mid+1]
+      if midVal < key then
+        fromIndex = mid+1
+      elseif midVal > key then
+        toIndex = mid
+      else
+        return mid
+      end
+    end
+    return -fromIndex
+  end
+  M.head = function(a)
+    if #a > 0 then return a[1] end
+  end
+  M.lastOption = function(a)
+    if #a > 0 then return a[#a] end
+  end
+  M.tabulate = function(n, f)
+    local res = {}
+    for i = 0, n-1 do
+      res[#res+1] = f(i)
+    end
+    return res
+  end
+  M.tail = function(a)
+    local unpack = table.unpack or unpack
+    return {unpack(a, 2, #a)}
   end
   return M
 end
