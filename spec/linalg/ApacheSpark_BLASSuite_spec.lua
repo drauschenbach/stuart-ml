@@ -13,7 +13,7 @@ describe('linalg.BLASSuite', function()
     local dx = Vectors.dense(1.0, 0.0, -2.0)
 
     BLAS.scal(a, sx)
-    assert.equal_abstol(Vectors.sparse(3, {0,2}, {0.1, -0.2}), sx, 1e-15)
+    assert.equal_absTol(Vectors.sparse(3, {0,2}, {0.1, -0.2}), sx, 1e-15)
 
     BLAS.scal(a, dx)
     assert.equal_absTol(Vectors.dense(0.1, 0.0, -0.2), dx, 1e-15)
