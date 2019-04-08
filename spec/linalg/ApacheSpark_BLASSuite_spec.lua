@@ -1,6 +1,8 @@
 local BLAS = require 'stuart-ml.linalg.BLAS'
+local DenseVector = require 'stuart-ml.linalg.DenseVector'
 local moses = require 'moses'
 local registerAsserts = require 'registerAsserts'
+local SparseVector = require 'stuart-ml.linalg.SparseVector'
 local Vectors = require 'stuart-ml.linalg.Vectors'
 
 registerAsserts(assert)
@@ -65,6 +67,29 @@ describe('linalg.BLASSuite', function()
     assert.equal_absTol(20.0, BLAS.dot(sx2, sx1), 1e-15)
 
     assert.has_error(function() BLAS.dot(sx, Vectors.dense(2.0,1.0)) end)
+  end)
+
+  it('spr', function()
+    -- test dense vector
+    local alpha = 0.1
+    local x = DenseVector.new({1.0, 2, 2.1, 4})
+    local U = DenseVector.new({1.0, 2, 2, 3, 3, 3, 4, 4, 4, 4})
+    local expected = DenseVector.new({1.1, 2.2, 2.4, 3.21, 3.42, 3.441, 4.4, 4.8, 4.84, 5.6})
+
+    BLAS.spr(alpha, x, U)
+    assert.equal_absTol(U, expected, 1e-9)
+
+    local matrix33 = DenseVector.new({1.0, 2, 3, 4, 5})
+    assert.error(function() -- Size of vector must match the rank of matrix
+      BLAS.spr(alpha, x, matrix33)
+    end)
+
+    -- test sparse vector
+    local sv = SparseVector.new(4, {0, 3}, {1.0, 2})
+    local U2 = DenseVector.new({1.0, 2, 2, 3, 3, 3, 4, 4, 4, 4})
+    BLAS.spr(0.1, sv, U2)
+    local expectedSparse = DenseVector.new({1.1, 2.0, 2.0, 3.0, 3.0, 3.0, 4.2, 4.0, 4.0, 4.4})
+    assert.equal_absTol(U2, expectedSparse, 1e-15)
   end)
 
 end)

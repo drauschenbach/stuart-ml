@@ -67,21 +67,19 @@ end
 function SparseMatrix:foreachActive(f)
   if not self.isTransposed then
     for j = 0, self.numCols-1 do
-      local idx = self.colPtrs[j+1]
+      local idxBegin = self.colPtrs[j+1]
       local idxEnd = self.colPtrs[j + 2]
-      while idx < idxEnd do
+      for idx = idxBegin, idxEnd-1 do
         f(self.rowIndices[idx+1], j, self.values[idx+1])
-        idx = idx + 1
       end
     end
   else
     for i = 0, self.numRows-1 do
-      local idx = self.colPtrs[i+1]
+      local idxBegin = self.colPtrs[i+1]
       local idxEnd = self.colPtrs[i + 2]
-      while idx < idxEnd do
+      for idx = idxBegin, idxEnd-1 do
         local j = self.rowIndices[idx+1]
         f(i, j, self.values[idx+1])
-        idx = idx + 1
       end
     end
   end

@@ -14,7 +14,7 @@ function DenseVector.__eq(a, b)
 end
 
 function DenseVector:__index(key)
-  if type(key)~='number' then return rawget(getmetatable(self), key) end
+  if type(key) ~= 'number' then return rawget(getmetatable(self), key) end
   return self.values[key]
 end
 
