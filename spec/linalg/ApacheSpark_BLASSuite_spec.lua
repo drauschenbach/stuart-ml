@@ -71,21 +71,18 @@ describe('linalg.BLASSuite', function()
 
   it('spr', function()
     -- test dense vector
-    --local alpha = 0.1
-    --local x = DenseVector.new({1.0, 2, 2.1, 4})
-    --local U = DenseVector.new({1.0, 2, 2, 3, 3, 3, 4, 4, 4, 4})
-    --local expected = DenseVector.new({1.1, 2.2, 2.4, 3.21, 3.42, 3.441, 4.4, 4.8, 4.84, 5.6})
+    local alpha = 0.1
+    local x = DenseVector.new({1.0, 2, 2.1, 4})
+    local U = DenseVector.new({1.0, 2, 2, 3, 3, 3, 4, 4, 4, 4})
+    local expected = DenseVector.new({1.1, 2.2, 2.4, 3.21, 3.42, 3.441, 4.4, 4.8, 4.84, 5.6})
 
-    --BLAS.spr(alpha, x, U)
-    --assert(U ~== expected absTol 1e-9)
-    --assert.equal_absTol(U, expected, 1e-9)
+    BLAS.spr(alpha, x, U)
+    assert.equal_absTol(U, expected, 1e-9)
 
---    val matrix33 = new DenseVector(Array(1.0, 2, 3, 4, 5))
---    withClue("Size of vector must match the rank of matrix") {
---      intercept[Exception] {
---        spr(alpha, x, matrix33)
---      }
---    }
+    local matrix33 = DenseVector.new({1.0, 2, 3, 4, 5})
+    assert.error(function() -- Size of vector must match the rank of matrix
+      BLAS.spr(alpha, x, matrix33)
+    end)
 
     -- test sparse vector
     local sv = SparseVector.new(4, {0, 3}, {1.0, 2})

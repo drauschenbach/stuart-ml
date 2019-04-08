@@ -1,3 +1,7 @@
+## [Unreleased]
+### Added
+- `linalg:` Ported `BLAS` `spr()`
+
 ## [2.0.2] - 2019-02-23
 ### Added
 - Document how to train a K-means model within Redis at [examples/redis-kmeans](./examples/redis-kmeans/)

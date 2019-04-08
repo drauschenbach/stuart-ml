@@ -101,11 +101,25 @@ M.spr = function(alpha, v, U)
   local class = require 'stuart.class'
   local Vector = require 'stuart-ml.linalg.Vector'
   if class.istype(U, Vector) then U = U.values end
+  
   local DenseVector = require 'stuart-ml.linalg.DenseVector'
-  local SparseVector = require 'stuart-ml.linalg.SparseVector'
   if class.istype(v, DenseVector) then
-    error('NIY')
-  elseif class.istype(v, SparseVector) then
+    local colStartIdx, prevCol = 0, 0
+    local nnz = #v.values
+    for j = 1, nnz do
+      local col = j-1
+      colStartIdx = colStartIdx + (col - prevCol) * (col + prevCol + 1) / 2
+      local av = alpha * v.values[j]
+      for i = 1, j do
+        U[colStartIdx + i] = U[colStartIdx + i] + av * v.values[i]
+      end
+      prevCol = col
+    end
+    return
+  end
+  
+  local SparseVector = require 'stuart-ml.linalg.SparseVector'
+  if class.istype(v, SparseVector) then
     local colStartIdx, prevCol = 0, 0
     local nnz = #v.indices
     for j = 1, nnz do
