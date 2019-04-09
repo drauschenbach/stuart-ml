@@ -9,6 +9,9 @@
 ### Fixed
 - [#56](https://github.com/BixData/stuart-ml/issues/56) Java array `binarySearch()` claimed to use 1-based index params and an exclusive end-index, but used 0-based index params and an inclusive end-index
 
+### Changed
+- `linalg:` `DenseVector` and `SparseVector` are now clonable, making them usable as a zero value in RDD functions; required by `RowMatrix`
+
 ## [2.0.2] - 2019-02-23
 ### Added
 - Document how to train a K-means model within Redis at [examples/redis-kmeans](./examples/redis-kmeans/)

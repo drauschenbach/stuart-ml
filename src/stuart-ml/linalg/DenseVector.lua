@@ -38,10 +38,12 @@ function DenseVector:argmax()
   end
 end
 
-function DenseVector:copy()
+function DenseVector:clone()
   local moses = require 'moses'
   return DenseVector.new(moses.clone(self.values))
 end
+
+DenseVector.copy = DenseVector.clone
 
 function DenseVector:foreachActive(f)
   for i,value in ipairs(self.values) do
