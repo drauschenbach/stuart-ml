@@ -18,7 +18,7 @@ local SparseMatrix = class.new(Matrix)
 --[[
   @param numRows number of rows
   @param numCols number of columns
-  @param colPtrs the 0-based index corresponding to the start of a new column (if not transposed)
+  @param colPtrs the 1-based index corresponding to the start of a new column (if not transposed)
   @param rowIndices the row index of the entry (if not transposed). They must be in strictly
                     increasing order for each column
   @param values nonzero matrix entries in column major (if not transposed)
@@ -33,7 +33,7 @@ function SparseMatrix:_init(numRows, numCols, colPtrs, rowIndices, values, isTra
   else
     assert(#colPtrs == numCols+1)
   end
-  assert(#values == colPtrs[#colPtrs]) -- The last value of colPtrs must equal the number of elements
+  assert(#values+1 == colPtrs[#colPtrs]) -- The last value of colPtrs must be one past the number of elements
   Matrix._init(self)
   self.numRows = numRows
   self.numCols = numCols
@@ -76,18 +76,19 @@ function SparseMatrix:foreachActive(f)
   if not self.isTransposed then
     for j = 0, self.numCols-1 do
       local idxBegin = self.colPtrs[j+1]
-      local idxEnd = self.colPtrs[j + 2]
+      local idxEnd = self.colPtrs[j+2]
       for idx = idxBegin, idxEnd-1 do
-        f(self.rowIndices[idx+1], j, self.values[idx+1])
+        local i = self.rowIndices[idx]
+        f(i, j, self.values[idx])
       end
     end
   else
     for i = 0, self.numRows-1 do
       local idxBegin = self.colPtrs[i+1]
-      local idxEnd = self.colPtrs[i + 2]
+      local idxEnd = self.colPtrs[i+2]
       for idx = idxBegin, idxEnd-1 do
-        local j = self.rowIndices[idx+1]
-        f(i, j, self.values[idx+1])
+        local j = self.rowIndices[idx]
+        f(i, j, self.values[idx])
       end
     end
   end
@@ -131,9 +132,9 @@ function SparseMatrix:index(i, j)
   assert(j >= 0 and j < self.numCols)
   local arrays = require 'stuart-ml.util.java.arrays'
   if not self.isTransposed then
-    return arrays.binarySearch(self.rowIndices, self.colPtrs[j+1]+1, self.colPtrs[j+2]+1, i)
+    return arrays.binarySearch(self.rowIndices, self.colPtrs[j+1], self.colPtrs[j+2], i)
   else
-    return arrays.binarySearch(self.rowIndices, self.colPtrs[i+1]+1, self.colPtrs[i+2]+1, j)
+    return arrays.binarySearch(self.rowIndices, self.colPtrs[i+1], self.colPtrs[i+2], j)
   end
 end
 

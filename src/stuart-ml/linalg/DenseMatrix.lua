@@ -128,9 +128,9 @@ end
 function DenseMatrix:toSparse()
   local spVals = {}
   local moses = require 'moses'
-  local colPtrs = moses.zeros(self.numCols+1)
+  local colPtrs = moses.ones(self.numCols+1)
   local rowIndices = {}
-  local nnz = 0
+  local nnz = 1
   for j = 0, self.numCols-1 do
     for i = 0, self.numRows-1 do
       local v = self.values[self:index(i,j)]

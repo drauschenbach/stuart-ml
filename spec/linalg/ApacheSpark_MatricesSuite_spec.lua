@@ -29,7 +29,7 @@ describe('linalg.MatricesSuite', function()
     local m = 3
     local n = 4
     local values = {1.0, 2.0, 4.0, 5.0}
-    local colPtrs = {0, 2, 2, 4, 4}
+    local colPtrs = {1, 3, 3, 5, 5}
     local rowIndices = {1, 2, 1, 2}
     local mat = Matrices.sparse(m, n, colPtrs, rowIndices, values)
     assert.equal(m, mat.numRows)
@@ -56,7 +56,7 @@ describe('linalg.MatricesSuite', function()
   end)
   
   it('index in matrices incorrect input', function()
-    local sm = Matrices.sparse(3, 2, {0, 2, 3}, {1, 2, 1}, {0.0, 1.0, 2.0})
+    local sm = Matrices.sparse(3, 2, {1, 3, 4}, {1, 2, 1}, {0.0, 1.0, 2.0})
     local dm = Matrices.dense(3, 2, {0.0, 2.3, 1.4, 3.2, 1.0, 9.1})
     for _, mat in ipairs({sm,dm}) do
       assert.has_error(function() mat:index(4,1) end)
@@ -93,7 +93,7 @@ describe('linalg.MatricesSuite', function()
     assert.not_equals(denseMat:toArray(), denseCopy:toArray())
   
     local values = {1.0, 2.0, 4.0, 5.0}
-    local colPtrs = {0, 2, 4}
+    local colPtrs = {1, 3, 5}
     local rowIndices = {1, 2, 1, 2}
     local sparseMat = Matrices.sparse(m, n, colPtrs, rowIndices, values)
     local sparseCopy = sparseMat:copy()
@@ -104,9 +104,7 @@ describe('linalg.MatricesSuite', function()
     local m = 3
     local n = 2
     local allValues = {0.0, 1.0, 2.0, 3.0, 4.0, 0.0}
-  
     local denseMat = DenseMatrix.new(m, n, allValues)
-  
     assert.equals(3.0, denseMat:get(0, 1))
     assert.equals(denseMat.values[4], denseMat:get(0, 1))
     assert.equals(denseMat.values[4], denseMat:get(0, 1))
@@ -117,10 +115,9 @@ describe('linalg.MatricesSuite', function()
     assert.equals(10.0, denseMat.values[1])
   
     local sparseValues = {1.0, 2.0, 3.0, 4.0}
-    local colPtrs = {0, 2, 4}
+    local colPtrs = {1, 3, 5}
     local rowIndices = {1, 2, 0, 1}
     local sparseMat = SparseMatrix.new(m, n, colPtrs, rowIndices, sparseValues)
-  
     assert.equals(3.0, sparseMat:get(0, 1))
     assert.equals(sparseMat.values[3], sparseMat:get(0, 1))
     assert.equals(0.0, sparseMat:get(0, 0))
@@ -143,7 +140,7 @@ describe('linalg.MatricesSuite', function()
     local n = 2
     local values = {1.0, 2.0, 4.0, 5.0}
     local allValues = {1.0, 2.0, 0.0, 0.0, 4.0, 5.0}
-    local colPtrs = {0, 2, 4}
+    local colPtrs = {1, 3, 5}
     local rowIndices = {0, 1, 1, 2}
 
     local spMat1 = SparseMatrix.new(m, n, colPtrs, rowIndices, values)
@@ -161,7 +158,7 @@ describe('linalg.MatricesSuite', function()
     local n = 2
     local values = {1.0, 2.0, 4.0, 5.0}
     local allValues = {1.0, 2.0, 0.0, 0.0, 4.0, 5.0}
-    local colPtrs = {0, 2, 4}
+    local colPtrs = {1, 3, 5}
     local rowIndices = {0, 1, 1, 2}
   
     local spMat1 = SparseMatrix.new(m, n, colPtrs, rowIndices, values)
@@ -177,7 +174,7 @@ describe('linalg.MatricesSuite', function()
   
   it('transpose', function()
     local dA = DenseMatrix.new(4, 3, {0.0, 1.0, 0.0, 0.0, 2.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 3.0})
-    local sA = SparseMatrix.new(4, 3, {0, 1, 3, 4}, {1, 0, 2, 3}, {1.0, 2.0, 1.0, 3.0})
+    local sA = SparseMatrix.new(4, 3, {1, 2, 4, 5}, {1, 0, 2, 3}, {1.0, 2.0, 1.0, 3.0})
   
     local dAT = dA:transpose()
     local sAT = sA:transpose()
@@ -203,7 +200,7 @@ describe('linalg.MatricesSuite', function()
     local n = 2
     local values = {1.0, 2.0, 4.0, 5.0}
     local allValues = {1.0, 2.0, 0.0, 0.0, 4.0, 5.0}
-    local colPtrs = {0, 2, 4}
+    local colPtrs = {1, 3, 5}
     local rowIndices = {0, 1, 1, 2}
   
     local sp = SparseMatrix.new(m, n, colPtrs, rowIndices, values)
@@ -482,7 +479,7 @@ describe('linalg.MatricesSuite', function()
     assert.equals(3, dm1:numNonzeros())
     assert.equals(6, dm1:numActives())
   
-    local sm1 = Matrices.sparse(3, 2, {0, 2, 3}, {0, 2, 1}, {0.0, -1.2, 0.0})
+    local sm1 = Matrices.sparse(3, 2, {1, 3, 4}, {0, 2, 1}, {0.0, -1.2, 0.0})
     assert.equals(1, sm1:numNonzeros())
     assert.equals(3, sm1:numActives())
   end)
