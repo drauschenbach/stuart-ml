@@ -49,9 +49,12 @@ function DenseMatrix:asBreeze()
   error('NIY')
 end
 
-function DenseMatrix:copy()
-  error('NIY')
+function DenseMatrix:clone()
+  local moses = require 'moses'
+  return DenseMatrix.new(self.numRows, self.numCols, moses.clone(self.values), self.isTransposed)
 end
+
+DenseMatrix.copy = DenseMatrix.clone
 
 function DenseMatrix.eye(n)
   local identity = DenseMatrix.zeros(n, n)

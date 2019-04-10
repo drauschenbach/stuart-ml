@@ -61,8 +61,12 @@ function SparseMatrix:colIter()
   error('NIY')
 end
 
-function SparseMatrix:copy()
+function SparseMatrix:clone()
+  local moses = require 'moses'
+  return SparseMatrix.new(self.numRows, self.numCols, self.colPtrs, self.rowIndices, moses.clone(self.values))
 end
+
+SparseMatrix.copy = SparseMatrix.clone
 
 function SparseMatrix:foreachActive(f)
   if not self.isTransposed then
