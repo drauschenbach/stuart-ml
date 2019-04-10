@@ -449,22 +449,35 @@ describe('linalg.MatricesSuite', function()
   --  assert(mUDT.typeName == "matrix")
   --  assert(mUDT.simpleString == "matrix")
   --}
-  --
-  --test("toString") {
-  --  local empty = Matrices.ones(0, 0)
-  --  empty.toString(0, 0)
-  --
-  --  local mat = Matrices.rand(5, 10, new Random())
-  --  mat.toString(-1, -5)
-  --  mat.toString(0, 0)
-  --  mat.toString(Int.MinValue, Int.MinValue)
-  --  mat.toString(Int.MaxValue, Int.MaxValue)
-  --  var lines = mat.toString(6, 50).lines.toArray
-  --  assert(lines.size == 5 && lines.forall(_.size <= 50))
-  --
-  --  lines = mat.toString(5, 100).lines.toArray
-  --  assert(lines.size == 5 && lines.forall(_.size <= 100))
-  --}
+  
+  it('toString', function()
+    local empty = Matrices.ones(0, 0)
+    empty:toString(0, 0)
+    
+    local mat = Matrices.rand(5, 10)
+    mat:toString(-1, -5)
+    mat:toString(0, 0)
+    -- mat:toString(Int.MinValue, Int.MinValue)
+    -- mat.toString(Int.MaxValue, Int.MaxValue)
+    
+    local lines = {}
+    for line in string.gmatch(mat:toString(6,50), '[^\n]+') do
+      lines[#lines+1] = line
+    end
+    assert.equals(5, #lines)
+    for _, line in ipairs(lines) do
+      assert(#line <= 50)
+    end
+    
+    lines = {}
+    for line in string.gmatch(mat:toString(5,100), '[^\n]+') do
+      lines[#lines+1] = line
+    end
+    assert.equals(5, #lines)
+    for _, line in ipairs(lines) do
+      assert(#line <= 100)
+    end
+  end)
   
   it('numNonzeros and numActives', function()
     local dm1 = Matrices.dense(3, 2, {0, 0, -1, 1, 0, 1})
