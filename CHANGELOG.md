@@ -1,7 +1,7 @@
 ## [Unreleased]
 ### Added
 - `linalg:` Ported `BLAS` `spr()`
-- `linalg:` Ported `Matrix` `toString()` from Breeze
+- `linalg:` Ported `Matrix` `copy()` and `toString()`, and implemented `clone()` to make matrices usable within RDD functions as a zero value parameter
 
 ## [2.0.2] - 2019-02-23
 ### Added

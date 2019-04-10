@@ -84,23 +84,21 @@ describe('linalg.MatricesSuite', function()
 --  --  assert(sm1 === dm2.transpose)
 --  end)
   
-  --test("matrix copies are deep copies") {
-  --  local m = 3
-  --  local n = 2
-  --
-  --  local denseMat = Matrices.dense(m, n, Array(0.0, 1.0, 2.0, 3.0, 4.0, 5.0))
-  --  local denseCopy = denseMat.copy
-  --
-  --  assert(!denseMat.toArray.eq(denseCopy.toArray))
-  --
-  --  local values = Array(1.0, 2.0, 4.0, 5.0)
-  --  local colPtrs = Array(0, 2, 4)
-  --  local rowIndices = Array(1, 2, 1, 2)
-  --  local sparseMat = Matrices.sparse(m, n, colPtrs, rowIndices, values)
-  --  local sparseCopy = sparseMat.copy
-  --
-  --  assert(!sparseMat.toArray.eq(sparseCopy.toArray))
-  --}
+  it('matrix copies are deep copies', function()
+    local m = 3
+    local n = 2
+  
+    local denseMat = Matrices.dense(m, n, {0.0, 1.0, 2.0, 3.0, 4.0, 5.0})
+    local denseCopy = denseMat:copy()
+    assert.not_equals(denseMat:toArray(), denseCopy:toArray())
+  
+    local values = {1.0, 2.0, 4.0, 5.0}
+    local colPtrs = {0, 2, 4}
+    local rowIndices = {1, 2, 1, 2}
+    local sparseMat = Matrices.sparse(m, n, colPtrs, rowIndices, values)
+    local sparseCopy = sparseMat:copy()
+    assert.not_equals(sparseMat:toArray(), sparseCopy:toArray())
+  end)
   
   it('matrix indexing and updating', function()
     local m = 3
