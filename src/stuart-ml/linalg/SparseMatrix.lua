@@ -18,7 +18,7 @@ local SparseMatrix = class.new(Matrix)
 --[[
   @param numRows number of rows
   @param numCols number of columns
-  @param colPtrs the index corresponding to the start of a new column (if not transposed)
+  @param colPtrs the 0-based index corresponding to the start of a new column (if not transposed)
   @param rowIndices the row index of the entry (if not transposed). They must be in strictly
                     increasing order for each column
   @param values nonzero matrix entries in column major (if not transposed)
@@ -43,10 +43,14 @@ function SparseMatrix:_init(numRows, numCols, colPtrs, rowIndices, values, isTra
   self.isTransposed = isTransposed or false
 end
 
-function SparseMatrix:__eq()
-  error('NIY')
---    case m: Matrix => asBreeze == m.asBreeze
---    case _ => false
+function SparseMatrix:__eq(other)
+  local moses = require 'moses'
+  return self.numRows == other.numRows
+    and self.numCols == other.numCols
+    and moses.same(self.colPtrs, other.colPtrs)
+    and moses.same(self.rowIndices, other.rowIndices)
+    and moses.same(self.values, other.values)
+    and self.isTransposed == other.isTransposed
 end
 
 function SparseMatrix:asBreeze()
@@ -127,9 +131,9 @@ function SparseMatrix:index(i, j)
   assert(j >= 0 and j < self.numCols)
   local arrays = require 'stuart-ml.util.java.arrays'
   if not self.isTransposed then
-    return arrays.binarySearch(self.rowIndices, self.colPtrs[j], self.colPtrs[j+1], i)
+    return arrays.binarySearch(self.rowIndices, self.colPtrs[j+1], self.colPtrs[j+2], i+1)
   else
-    return arrays.binarySearch(self.rowIndices, self.colPtrs[i], self.colPtrs[i+1], j)
+    return arrays.binarySearch(self.rowIndices, self.colPtrs[i+1], self.colPtrs[i+2], j+1)
   end
 end
 
