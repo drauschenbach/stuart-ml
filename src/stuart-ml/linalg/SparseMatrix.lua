@@ -131,9 +131,9 @@ function SparseMatrix:index(i, j)
   assert(j >= 0 and j < self.numCols)
   local arrays = require 'stuart-ml.util.java.arrays'
   if not self.isTransposed then
-    return arrays.binarySearch(self.rowIndices, self.colPtrs[j+1], self.colPtrs[j+2], i+1)
+    return arrays.binarySearch(self.rowIndices, self.colPtrs[j+1]+1, self.colPtrs[j+2]+1, i)
   else
-    return arrays.binarySearch(self.rowIndices, self.colPtrs[i+1], self.colPtrs[i+2], j+1)
+    return arrays.binarySearch(self.rowIndices, self.colPtrs[i+1]+1, self.colPtrs[i+2]+1, j)
   end
 end
 
