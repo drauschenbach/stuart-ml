@@ -10,10 +10,6 @@ function Matrix:_init()
   self.isTransposed = false
 end
 
-function Matrix:__eq(other)
-  return self:toSparse() == other:toSparse()
-end
-
 function Matrix:__tostring()
   return self:toString()
 end
