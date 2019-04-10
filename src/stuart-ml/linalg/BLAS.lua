@@ -104,18 +104,7 @@ M.spr = function(alpha, v, U)
   
   local DenseVector = require 'stuart-ml.linalg.DenseVector'
   if class.istype(v, DenseVector) then
-    local colStartIdx, prevCol = 0, 0
-    local nnz = #v.values
-    for j = 1, nnz do
-      local col = j-1
-      colStartIdx = colStartIdx + (col - prevCol) * (col + prevCol + 1) / 2
-      local av = alpha * v.values[j]
-      for i = 1, j do
-        U[colStartIdx + i] = U[colStartIdx + i] + av * v.values[i]
-      end
-      prevCol = col
-    end
-    return
+    v = v:toSparse()
   end
   
   local SparseVector = require 'stuart-ml.linalg.SparseVector'
@@ -132,7 +121,10 @@ M.spr = function(alpha, v, U)
       end
       prevCol = col
     end
+    return
   end
+  
+  error('Unsupported vector type')
 end
 
 return M

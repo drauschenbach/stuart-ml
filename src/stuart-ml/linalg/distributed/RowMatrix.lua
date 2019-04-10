@@ -9,6 +9,15 @@ function RowMatrix:_init(rows, nRows, nCols)
   self.nCols = nCols or 0
 end
 
+function RowMatrix:checkNumColumns(cols)
+  assert(cols <= 65535)
+  if cols > 10000 then
+    local memMB = (cols * cols) / 125000
+    local logging = require 'stuart.internal.logging'
+    logging.logWarning(string.format('$cols columns will require at least %d megabytes of memory', memMB))
+  end
+end
+
 --[[
 Compute all cosine similarities between columns of this matrix using the brute-force
 approach of computing normalized dot products.
@@ -26,10 +35,10 @@ end
   Computes column-wise summary statistics.
 --]]
 function RowMatrix:computeColumnSummaryStatistics()
-  local seqOp = function(aggregator, data) return aggregator:add(data) end
-  local combOp = function(aggregator1, aggregator2) return aggregator1:merge(aggregator2) end
   local MultivariateOnlineSummarizer = require 'stuart-ml.stat.MultivariateOnlineSummarizer'
   local summarizer = MultivariateOnlineSummarizer.new()
+  local seqOp = function(summarizer_, data) return summarizer_:add(data) end
+  local combOp = function(summarizer1, summarizer2) return summarizer1:merge(summarizer2) end
   local summary = self.rows:treeAggregate(summarizer, seqOp, combOp)
   self:updateNumRows(summary:count())
   return summary
@@ -42,7 +51,34 @@ end
 
 -- Computes the Gramian matrix `A^T A`.
 function RowMatrix:computeGramianMatrix()
-  error('NIY')
+  local n = self:numCols()
+  self:checkNumColumns(n)
+  -- Computes n*(n+1)/2, avoiding overflow in the multiplication.
+  -- This succeeds when n <= 65535, which is checked above
+  local nt
+  if n % 2 == 0 then
+    nt = (n / 2) * (n + 1)
+  else
+    nt = n * ((n + 1) / 2)
+  end
+
+  -- Compute the upper triangular part of the gram matrix.
+  local BLAS = require 'stuart-ml.linalg.BLAS'
+  local seqOp = function(u, v)
+    BLAS.spr(1.0, v, u)
+    return u
+  end
+  local DenseVector = require 'stuart-ml.linalg.DenseVector'
+  local moses = require 'moses'
+  local combOp = function(u1, u2)
+    local values = moses.map(moses.zip(u1.values, u2.values), function(e)
+      return e[1]+e[2]
+    end)
+    return DenseVector.new(values)
+  end
+  local zeroValue = DenseVector.new(moses.zeros(nt))
+  local GU = self.rows:treeAggregate(zeroValue, seqOp, combOp)
+  return RowMatrix.triuToFull(n, GU.values)
 end
 
 -- Computes the top k principal components only.
@@ -109,8 +145,22 @@ function RowMatrix:tallSkinnyQR()
 end
 
 -- Fills a full square matrix from its upper triangular part.
-function RowMatrix:triuToFull()
-  error('NIY')
+function RowMatrix.triuToFull(n, U)
+  local DenseMatrix = require 'stuart-ml.linalg.DenseMatrix'
+  local G = DenseMatrix.zeros(n, n)
+  local idx = 1
+  for col = 0, n-1 do
+    for row = 0, col-1 do
+      local value = U[idx]
+      G:update(row, col, value)
+      G:update(col, row, value)
+      idx = idx + 1
+    end
+    G:update(col, col, U[idx])
+    idx = idx + 1
+  end
+  local Matrices = require 'stuart-ml.linalg.Matrices'
+  return Matrices.dense(n, n, G.values)
 end
 
 -- Updates or verifies the number of rows.

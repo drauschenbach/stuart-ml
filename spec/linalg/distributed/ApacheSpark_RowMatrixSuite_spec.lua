@@ -1,3 +1,4 @@
+local Matrices = require 'stuart-ml.linalg.Matrices'
 local registerAsserts = require 'registerAsserts'
 local RowMatrix = require 'stuart-ml.linalg.distributed.RowMatrix'
 local stuart = require 'stuart'
@@ -38,25 +39,25 @@ describe('linalg.distributed.RowMatrixSuite', function()
     sparseMat = RowMatrix.new(sc:parallelize(sparseData, 2))
   end)
 
-  test('size', function()
+  it('size', function()
     assert.equal(m, denseMat:numRows())
     assert.equal(n, denseMat:numCols())
     assert.equal(m, sparseMat:numRows())
     assert.equal(n, sparseMat:numCols())
   end)
 
---  test("empty rows") {
---    val rows = sc.parallelize(Seq[Vector](), 1)
---    val emptyMat = new RowMatrix(rows)
---    intercept[RuntimeException] {
---      emptyMat.numCols()
---    }
---    intercept[RuntimeException] {
---      emptyMat.numRows()
---    }
---  }
---
---  test("toBreeze") {
+  it('empty rows', function()
+    local rows = sc:parallelize({}, 1)
+    local emptyMat = RowMatrix.new(rows)
+    assert.error(function()
+      emptyMat:numCols()
+    end)
+    assert.error(function()
+      emptyMat:numRows()
+    end)
+  end)
+
+--  it('toBreeze', function()
 --    val expected = BDM(
 --      (0.0, 1.0, 2.0),
 --      (3.0, 4.0, 5.0),
@@ -66,17 +67,16 @@ describe('linalg.distributed.RowMatrixSuite', function()
 --      assert(mat.toBreeze() === expected)
 --    }
 --  }
---
---  test("gram") {
---    val expected =
---      Matrices.dense(n, n, Array(126.0, 54.0, 72.0, 54.0, 66.0, 78.0, 72.0, 78.0, 94.0))
---    for (mat <- Seq(denseMat, sparseMat)) {
---      val G = mat.computeGramianMatrix()
---      assert(G.asBreeze === expected.asBreeze)
---    }
---  }
---
---  test("similar columns") {
+
+  it('gram', function()
+    local expected = Matrices.dense(n, n, {126.0, 54.0, 72.0, 54.0, 66.0, 78.0, 72.0, 78.0, 94.0})
+    for _, mat in pairs{denseMat, sparseMat} do
+      local G = mat:computeGramianMatrix()
+      assert.equal(expected, G)
+    end
+  end)
+
+--  it('similar columns', function()
 --    val colMags = Vectors.dense(math.sqrt(126), math.sqrt(66), math.sqrt(94))
 --    val expected = BDM(
 --      (0.0, 54.0, 72.0),
@@ -110,7 +110,7 @@ describe('linalg.distributed.RowMatrixSuite', function()
 --    }
 --  }
 --
---  test("svd of a full-rank matrix") {
+--  it('svd of a full-rank matrix', function()
 --    for (mat <- Seq(denseMat, sparseMat)) {
 --      for (mode <- Seq("auto", "local-svd", "local-eigs", "dist-eigs")) {
 --        val localMat = mat.toBreeze()
@@ -139,7 +139,7 @@ describe('linalg.distributed.RowMatrixSuite', function()
 --    }
 --  }
 --
---  test("svd of a low-rank matrix") {
+--  it('svd of a low-rank matrix', function()
 --    val rows = sc.parallelize(Array.fill(4)(Vectors.dense(1.0, 1.0, 1.0)), 2)
 --    val mat = new RowMatrix(rows, 4, 3)
 --    for (mode <- Seq("auto", "local-svd", "local-eigs", "dist-eigs")) {
@@ -152,7 +152,7 @@ describe('linalg.distributed.RowMatrixSuite', function()
 --    }
 --  }
 --
---  test("validate k in svd") {
+--  it('validate k in svd', function()
 --    for (mat <- Seq(denseMat, sparseMat)) {
 --      intercept[IllegalArgumentException] {
 --        mat.computeSVD(-1)
@@ -178,7 +178,7 @@ describe('linalg.distributed.RowMatrixSuite', function()
 --    }
 --  }
 --
---  test("pca") {
+--  it('pca', function()
 --    for (mat <- Seq(denseMat, sparseMat); k <- 1 to n) {
 --      val (pc, expVariance) = mat.computePrincipalComponentsAndExplainedVariance(k)
 --      assert(pc.numRows === n)
@@ -192,7 +192,7 @@ describe('linalg.distributed.RowMatrixSuite', function()
 --    }
 --  }
 --
---  test("multiply a local matrix") {
+--  it('multiply a local matrix', function()
 --    val B = Matrices.dense(n, 2, Array(0.0, 1.0, 2.0, 3.0, 4.0, 5.0))
 --    for (mat <- Seq(denseMat, sparseMat)) {
 --      val AB = mat.multiply(B)
@@ -224,7 +224,7 @@ describe('linalg.distributed.RowMatrixSuite', function()
     end
   end)
 
---  test("QR Decomposition") {
+--  it('QR Decomposition', function()
 --    for (mat <- Seq(denseMat, sparseMat)) {
 --      val result = mat.tallSkinnyQR(true)
 --      val expected = breeze.linalg.qr.reduced(mat.toBreeze())
@@ -239,16 +239,19 @@ describe('linalg.distributed.RowMatrixSuite', function()
 --      assert(closeToZero(abs(expected.r) - abs(rOnly.R.asBreeze.asInstanceOf[BDM[Double]])))
 --    }
 --  }
---
---  test("compute covariance") {
+
+--  it('compute covariance', function()
 --    for (mat <- Seq(denseMat, sparseMat)) {
---      val result = mat.computeCovariance()
+--    for _, mat in pairs{denseMat, sparseMat} do
+--      local result = mat:computeCovariance()
 --      val expected = breeze.linalg.cov(mat.toBreeze())
 --      assert(closeToZero(abs(expected) - abs(result.asBreeze.asInstanceOf[BDM[Double]])))
 --    }
---  }
---
---  test("covariance matrix is symmetric (SPARK-10875)") {
+--    end
+--    error('NIY')
+--  end)
+
+--  it('covariance matrix is symmetric (SPARK-10875)', function()
 --    val rdd = RandomRDDs.normalVectorRDD(sc, 100, 10, 0, 0)
 --    val matrix = new RowMatrix(rdd)
 --    val cov = matrix.computeCovariance()
@@ -257,7 +260,7 @@ describe('linalg.distributed.RowMatrixSuite', function()
 --    }
 --  }
 --
---  test("QR decomposition should aware of empty partition (SPARK-16369)") {
+--  it('QR decomposition should aware of empty partition (SPARK-16369)', function()
 --    val mat: RowMatrix = new RowMatrix(sc.parallelize(denseData, 1))
 --    val qrResult = mat.tallSkinnyQR(true)
 --
@@ -289,11 +292,11 @@ describe('linalg.distributed.RowMatrixSuite', function()
 --    mat = new RowMatrix(rows)
 --  }
 --
---  test("task size should be small in svd") {
+--  it('task size should be small in svd', function()
 --    val svd = mat.computeSVD(1, computeU = true)
 --  }
 --
---  test("task size should be small in summarize") {
+--  it('task size should be small in summarize', function()
 --    val summary = mat.computeColumnSummaryStatistics()
 --  }
 --}
