@@ -85,10 +85,13 @@ function SparseVector:argmax()
   return maxIdx
 end
 
-function SparseVector:copy()
+-- Clone support required for zeroValue args used in RDD:treeAggregate()
+function SparseVector:clone()
   local moses = require 'moses'
   return SparseVector.new(self._size, moses.clone(self.indices), moses.clone(self.values))
 end
+
+SparseVector.copy = SparseVector.clone
 
 function SparseVector:foreachActive(f)
   for i,value in ipairs(self.values) do
