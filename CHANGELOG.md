@@ -1,6 +1,7 @@
 ## [Unreleased]
 ### Added
 - `linalg:` Ported `BLAS` `spr()`
+- `linalg:` Ported `Matrix` `toString()` from Breeze
 
 ## [2.0.2] - 2019-02-23
 ### Added

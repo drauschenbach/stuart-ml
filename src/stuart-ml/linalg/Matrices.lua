@@ -84,11 +84,13 @@ end
   Generate a `DenseMatrix` consisting of `i.i.d.` uniform random numbers.
   @param numRows number of rows of the matrix
   @param numCols number of columns of the matrix
-  @param rng a random number generator
   @return `Matrix` with size `numRows` x `numCols` and values in U(0, 1)
 --]]
-M.rand = function()
-  error('NIY')
+M.rand = function(numRows, numCols)
+  local moses = require 'moses'
+  local DenseMatrix = require 'stuart-ml.linalg.DenseMatrix'
+  local data = moses.map(moses.zeros(numRows * numCols), function() return math.random() end)
+  return DenseMatrix.new(numRows, numCols, data)
 end
 
 --[[
