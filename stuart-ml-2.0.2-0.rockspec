@@ -42,6 +42,7 @@ build = {
       ["stuart-ml.stat.statistics"] = "src/stuart-ml/stat/statistics.lua",
       ["stuart-ml.util"] = "src/stuart-ml/util.lua",
       ["stuart-ml.util.java.arrays"] = "src/stuart-ml/util/java/arrays.lua",
+      ["stuart-ml.util.java.iterator"] = "src/stuart-ml/util/java/iterator.lua",
       ["stuart-ml.util.Loader"] = "src/stuart-ml/util/Loader.lua",
       ["stuart-ml.util.MLUtils"] = "src/stuart-ml/util/MLUtils.lua",
       ["stuart-ml.util.NumericParser"] = "src/stuart-ml/util/NumericParser.lua",
