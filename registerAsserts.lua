@@ -34,6 +34,18 @@ local registerAsserts = function(assert)
       return true
     end
     
+    local Matrix = require 'stuart-ml.linalg.Matrix'
+    if class.istype(x, Matrix) and class.istype(y, Matrix) then
+      for i = 0, x.numRows do
+        for j = 0, x.numCols do
+          if math.abs(a:get(i,j) - b:get(i,j)) >= eps then
+            return false
+          end
+        end
+      end
+      return true
+    end
+    
     return math.abs(x - y) < eps
   end, 'assertion.equal_absTol.positive', 'assertion.equal_absTol.negative')
   
