@@ -38,9 +38,10 @@ The `stuart-ml.stat.statistics` module provides methods to calculate correlation
 
 ```lua
 local statistics = require 'stuart-ml.stat.statistics'
-local sc = require 'stuart'.NewContext()
+local stuart = require 'stuart'
 local Vectors = require 'stuart-ml.linalg.Vectors'
 
+local sc = stuart.NewContext()
 local seriesX = sc:parallelize({1, 2, 3, 3, 5})  
 local seriesY = sc:parallelize({11, 22, 33, 33, 555})
 
@@ -51,7 +52,7 @@ print('Correlation is', correlation))
 local data = sc:parallelize({
   Vectors.dense(1.0, 10.0, 100.0),
   Vectors.dense(2.0, 20.0, 200.0),
-  Vectors.dense(5.0, 33.0, 366.0))
+  Vectors.dense(5.0, 33.0, 366.0)
 })  -- note that each Vector is a row and not a column
 
 -- calculate the correlation matrix using Pearson's method
