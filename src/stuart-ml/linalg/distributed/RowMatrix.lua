@@ -46,7 +46,30 @@ end
 
 -- Computes the covariance matrix, treating each row as an observation.
 function RowMatrix:computeCovariance()
-  error('NIY')
+  local n = self:numCols()
+  self:checkNumColumns(n)
+
+  local summary = self:computeColumnSummaryStatistics()
+  local m = summary:count()
+  assert(m > 1, 'Cannot compute the covariance of a RowMatrix with <= 1 row')
+  local mean = summary:mean()
+
+  -- We use the formula Cov(X, Y) = E[X * Y] - E[X] E[Y], which is not accurate if E[X * Y] is
+  -- large but Cov(X, Y) is small, but it is good for sparse computation.
+  
+  local G = self:computeGramianMatrix()
+
+  local m1 = m - 1.0
+  for i = 0, n-1 do
+    local alpha = m / m1 * mean[i+1]
+    for j = i, n-1 do
+      local Gij = G:get(i,j) / m1 - alpha * mean[j+1]
+      G:update(i, j, Gij)
+      G:update(j, i, Gij)
+    end
+  end
+
+  return G
 end
 
 -- Computes the Gramian matrix `A^T A`.

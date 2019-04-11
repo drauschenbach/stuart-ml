@@ -1,4 +1,5 @@
 local Matrices = require 'stuart-ml.linalg.Matrices'
+local RandomRDDs = require 'stuart-ml.random.RandomRDDs'
 local registerAsserts = require 'registerAsserts'
 local RowMatrix = require 'stuart-ml.linalg.distributed.RowMatrix'
 local stuart = require 'stuart'
@@ -240,26 +241,25 @@ describe('linalg.distributed.RowMatrixSuite', function()
 --    }
 --  }
 
---  it('compute covariance', function()
---    for (mat <- Seq(denseMat, sparseMat)) {
---    for _, mat in pairs{denseMat, sparseMat} do
---      local result = mat:computeCovariance()
---      val expected = breeze.linalg.cov(mat.toBreeze())
---      assert(closeToZero(abs(expected) - abs(result.asBreeze.asInstanceOf[BDM[Double]])))
---    }
---    end
---    error('NIY')
---  end)
+  it('compute covariance', function()
+    for _, mat in pairs{denseMat, sparseMat} do
+      mat:computeCovariance()
+      -- val expected = breeze.linalg.cov(mat.toBreeze())
+      -- assert(closeToZero(abs(expected) - abs(result.asBreeze.asInstanceOf[BDM[Double]])))
+    end
+  end)
 
---  it('covariance matrix is symmetric (SPARK-10875)', function()
---    val rdd = RandomRDDs.normalVectorRDD(sc, 100, 10, 0, 0)
---    val matrix = new RowMatrix(rdd)
---    val cov = matrix.computeCovariance()
---    for (i <- 0 until cov.numRows; j <- 0 until i) {
---      assert(cov(i, j) === cov(j, i))
---    }
---  }
---
+  it('covariance matrix is symmetric (SPARK-10875)', function()
+    local rdd = RandomRDDs.normalVectorRDD(sc, 100, 10, 0, 0)
+    local matrix = RowMatrix.new(rdd)
+    local cov = matrix:computeCovariance()
+    for i = 0, cov.numRows-1 do
+      for j = 0, cov.numCols-1 do
+        assert.equals(cov:get(i,j), cov:get(j,i))
+      end
+    end
+  end)
+
 --  it('QR decomposition should aware of empty partition (SPARK-16369)', function()
 --    val mat: RowMatrix = new RowMatrix(sc.parallelize(denseData, 1))
 --    val qrResult = mat.tallSkinnyQR(true)
@@ -300,4 +300,5 @@ describe('linalg.distributed.RowMatrixSuite', function()
 --    val summary = mat.computeColumnSummaryStatistics()
 --  }
 --}
+
 end)

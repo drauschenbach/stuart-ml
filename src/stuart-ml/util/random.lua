@@ -12,7 +12,15 @@ M.nextInt = function(n)
   if n ~= nil then
     return math.random(0, n)
   else
-    return math.random(-math.huge, math.huge)
+    return math.random(-2147483648, 2147483647)
+  end
+end
+
+M.nextLong = function(n)
+  if n ~= nil then
+    return math.random(0, n)
+  else
+    return math.random(-2^56, 2^56)
   end
 end
 
