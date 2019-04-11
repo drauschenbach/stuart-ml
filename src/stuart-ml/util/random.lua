@@ -20,7 +20,7 @@ M.nextLong = function(n)
   if n ~= nil then
     return math.random(0, n)
   else
-    return math.random(-9223372036854775808, 9223372036854775807)
+    return math.random(-2^56, 2^56)
   end
 end
 
