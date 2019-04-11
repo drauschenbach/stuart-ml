@@ -52,14 +52,14 @@ function MultivariateOnlineSummarizer:add(instance, weight)
     self.n = instance:size()
     assert(self.n > 0, 'Vector should have dimension larger than zero')
 
-    self.currMean = moses.fill({}, 0.0, 1, self.n)
-    self.currM2n = moses.fill({}, 0.0, 1, self.n)
-    self.currM2 = moses.fill({}, 0.0, 1, self.n)
-    self.currL1 = moses.fill({}, 0.0, 1, self.n)
-    self.weightSum = moses.fill({}, 0.0, 1, self.n)
+    self.currMean = moses.zeros(self.n)
+    self.currM2n = moses.zeros(self.n)
+    self.currM2 = moses.zeros(self.n)
+    self.currL1 = moses.zeros(self.n)
+    self.weightSum = moses.zeros(self.n)
     self.nnz = moses.zeros(self.n)
-    self.currMax = moses.fill({}, -math.huge, 1, self.n)
-    self.currMin = moses.fill({}, math.huge, 1, self.n)
+    self.currMax = moses.rep(-math.huge, self.n)
+    self.currMin = moses.rep(math.huge, self.n)
   end
 
   assert(self.n == instance:size(), 'Dimensions mismatch when adding new sample')
@@ -108,6 +108,34 @@ function MultivariateOnlineSummarizer:clone()
   other.currMax = self.currMax
   other.currMin = self.currMin
   return other
+end
+
+-- Sample size.
+function MultivariateOnlineSummarizer:count()
+  return self.totalCnt
+end
+
+-- Maximum value of each dimension.
+function MultivariateOnlineSummarizer:max()
+  assert(self.totalWeightSum > 0, 'Nothing has been added to this summarizer')
+  for i=1,self.n do
+    if self.nnz[i] < self.totalCnt and self.currMax[i] < 0.0 then
+      self.currMax[i] = 0.0
+    end
+  end
+  local Vectors = require 'stuart-ml.linalg.Vectors'
+  return Vectors.dense(self.currMax)
+end
+
+-- Sample mean of each dimension.
+function MultivariateOnlineSummarizer:mean()
+  assert(self.totalWeightSum > 0, 'Nothing has been added to this summarizer')
+  local realMean = moses.zeros(self.n)
+  for i=1,self.n do
+    realMean[i] = self.currMean[i] * (self.weightSum[i] / self.totalWeightSum)
+  end
+  local Vectors = require 'stuart-ml.linalg.Vectors'
+  return Vectors.dense(realMean)
 end
 
 --[[
@@ -162,59 +190,6 @@ function MultivariateOnlineSummarizer:merge(other)
   return self
 end
 
--- Sample mean of each dimension.
-function MultivariateOnlineSummarizer:mean()
-  assert(self.totalWeightSum > 0, 'Nothing has been added to this summarizer')
-  local realMean = moses.fill({}, 0.0, 1, self.n)
-  for i=1,self.n do
-    realMean[i] = self.currMean[i] * (self.weightSum[i] / self.totalWeightSum)
-  end
-  local Vectors = require 'stuart-ml.linalg.Vectors'
-  return Vectors.dense(realMean)
-end
-
--- Unbiased estimate of sample variance of each dimension.
-function MultivariateOnlineSummarizer:variance()
-  assert(self.totalWeightSum > 0, 'Nothing has been added to this summarizer')
-  local realVariance = moses.fill({}, 0.0, 1, self.n)
-  local denominator = self.totalWeightSum - self.weightSquareSum / self.totalWeightSum
-
-  -- Sample variance is computed, if the denominator is less than 0, the variance is just 0.
-  if denominator > 0.0 then
-    local deltaMean = moses.clone(self.currMean)
-    for i=1, #self.currM2n do
-      realVariance[i] = (self.currM2n[i] + deltaMean[i] * deltaMean[i] + self.weightSum[i]
-        * (self.totalWeightSum - self.weightSum[i]) / self.totalWeightSum) / denominator
-    end
-  end
-  local Vectors = require 'stuart-ml.linalg.Vectors'
-  return Vectors.dense(realVariance)
-end
-
--- Sample size.
-function MultivariateOnlineSummarizer:count()
-  return self.totalCnt
-end
-
--- Number of nonzero elements in each dimension.
-function MultivariateOnlineSummarizer:numNonzeros()
-  assert(self.totalWeightSum > 0, 'Nothing has been added to this summarizer')
-  local Vectors = require 'stuart-ml.linalg.Vectors'
-  return Vectors.dense(self.nnz)
-end
-
--- Maximum value of each dimension.
-function MultivariateOnlineSummarizer:max()
-  assert(self.totalWeightSum > 0, 'Nothing has been added to this summarizer')
-  for i=1,self.n do
-    if self.nnz[i] < self.totalCnt and self.currMax[i] < 0.0 then
-      self.currMax[i] = 0.0
-    end
-  end
-  local Vectors = require 'stuart-ml.linalg.Vectors'
-  return Vectors.dense(self.currMax)
-end
-
 -- Minimum value of each dimension.
 function MultivariateOnlineSummarizer:min()
   assert(self.totalWeightSum > 0, 'Nothing has been added to this summarizer')
@@ -227,10 +202,17 @@ function MultivariateOnlineSummarizer:min()
   return Vectors.dense(self.currMin)
 end
 
+-- L1 norm of each dimension.
+function MultivariateOnlineSummarizer:normL1()
+  assert(self.totalWeightSum > 0, 'Nothing has been added to this summarizer')
+  local Vectors = require 'stuart-ml.linalg.Vectors'
+  return Vectors.dense(self.currL1)
+end
+
 -- L2 (Euclidian) norm of each dimension.
 function MultivariateOnlineSummarizer:normL2()
   assert(self.totalWeightSum > 0, 'Nothing has been added to this summarizer')
-  local realMagnitude = moses.fill({}, 0.0, 1, self.n)
+  local realMagnitude = moses.zeros(self.n)
   for i=1,#self.currM2 do
     realMagnitude[i] = math.sqrt(self.currM2[i])
   end
@@ -238,11 +220,29 @@ function MultivariateOnlineSummarizer:normL2()
   return Vectors.dense(realMagnitude)
 end
 
--- L1 norm of each dimension.
-function MultivariateOnlineSummarizer:normL1()
+-- Number of nonzero elements in each dimension.
+function MultivariateOnlineSummarizer:numNonzeros()
   assert(self.totalWeightSum > 0, 'Nothing has been added to this summarizer')
   local Vectors = require 'stuart-ml.linalg.Vectors'
-  return Vectors.dense(self.currL1)
+  return Vectors.dense(self.nnz)
+end
+
+-- Unbiased estimate of sample variance of each dimension.
+function MultivariateOnlineSummarizer:variance()
+  assert(self.totalWeightSum > 0, 'Nothing has been added to this summarizer')
+  local realVariance = moses.zeros(self.n)
+  local denominator = self.totalWeightSum - self.weightSquareSum / self.totalWeightSum
+
+  -- Sample variance is computed, if the denominator is less than 0, the variance is just 0.
+  if denominator > 0.0 then
+    local deltaMean = self.currMean
+    for i=1, #self.currM2n do
+      realVariance[i] = (self.currM2n[i] + deltaMean[i] * deltaMean[i] + self.weightSum[i]
+        * (self.totalWeightSum - self.weightSum[i]) / self.totalWeightSum) / denominator
+    end
+  end
+  local Vectors = require 'stuart-ml.linalg.Vectors'
+  return Vectors.dense(realVariance)
 end
 
 return MultivariateOnlineSummarizer

@@ -2,7 +2,7 @@
 ### Added
 - `linalg:` Ported `BLAS` `spr()`
 - `linalg:` Ported `Matrix` `copy()` and `toString()`, and implemented `clone()` to make matrices usable within RDD functions as a zero value parameter
-- `linalg:` Ported `RowMatrix` `computeGramianMatrix()` and `triuToFull()`
+- `linalg:` Ported `RowMatrix` `computeCovariance()`, `computeGramianMatrix()` and `triuToFull()`
 - `util:` New utility equivalent to `scala.collection.Iterator` `fill()`
 
 ### Changed

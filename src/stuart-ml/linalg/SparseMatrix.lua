@@ -53,6 +53,11 @@ function SparseMatrix:__eq(other)
     and self.isTransposed == other.isTransposed
 end
 
+function SparseMatrix:apply(i, j)
+  local ind = self:index(i, j)
+  if ind < 1 then return 0.0 else return self.values[ind] end
+end
+
 function SparseMatrix:asBreeze()
   error('NIY')
 end
@@ -122,10 +127,7 @@ function SparseMatrix.genRandMatrix()
   error('NIY')
 end
 
-function SparseMatrix:get(i, j)
-  local ind = self:index(i, j)
-  if ind < 1 then return 0.0 else return self.values[ind] end
-end
+SparseMatrix.get = SparseMatrix.apply
 
 function SparseMatrix:index(i, j)
   assert(i >= 0 and i < self.numRows)

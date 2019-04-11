@@ -41,8 +41,12 @@ function DenseMatrix:__eq(other)
   return true
 end
 
-function DenseMatrix:apply()
-  error('NIY')
+function DenseMatrix:apply(i, j)
+  if j == nil then
+    return self.values[i+1]
+  else
+    return self.values[self:index(i, j)]
+  end
 end
 
 function DenseMatrix:asBreeze()
@@ -84,13 +88,7 @@ function DenseMatrix:foreachActive(f)
   end
 end
 
-function DenseMatrix:get(i, j)
-  if j == nil then
-    return self.values[i+1]
-  else
-    return self.values[self:index(i, j)]
-  end
-end
+DenseMatrix.get = DenseMatrix.apply
 
 function DenseMatrix:index(i, j)
   assert(i >= 0 and i < self.numRows)
