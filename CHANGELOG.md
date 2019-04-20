@@ -1,4 +1,4 @@
-## [Unreleased]
+## [2.0.4] - 2019-04-20
 ### Added
 - `linalg:` Ported `BLAS` `spr()`
 - `linalg:` Ported `Matrix` `copy()` and `toString()`, and implemented `clone()` to make matrices usable within RDD functions as a zero value parameter

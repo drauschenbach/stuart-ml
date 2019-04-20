@@ -1,8 +1,8 @@
 package = "stuart-ml"
-version = "2.0.2-0"
+version = "2.0.4-0"
 source = {
-   url = "https://github.com/BixData/stuart-ml/archive/2.0.2-0.tar.gz",
-   dir = "stuart-ml-2.0.2-0"
+   url = "https://github.com/BixData/stuart-ml/archive/2.0.4-0.tar.gz",
+   dir = "stuart-ml-2.0.4-0"
 }
 description = {
    summary = "A native Lua implementation of Spark MLlib",
