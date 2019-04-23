@@ -47,7 +47,7 @@ local seriesY = sc:parallelize({11, 22, 33, 33, 555})
 
 -- compute the correlation using Pearson's method
 local correlation = statistics.corr(seriesX, seriesY, 'pearson')
-print('Correlation is', correlation))
+print('Correlation is', correlation)
 
 local data = sc:parallelize({
   Vectors.dense(1.0, 10.0, 100.0),
@@ -58,4 +58,11 @@ local data = sc:parallelize({
 -- calculate the correlation matrix using Pearson's method
 local correlMatrix = statistics.corr(data, 'pearson')
 print(correlMatrix)
+```
+
+```
+Correlation is	0.8500286768773
+1                 0.97888346588947  0.99038956952757  
+0.97888346588947  1                 0.99774832339861  
+0.99038956952757  0.99774832339861  1                 
 ```
