@@ -1,7 +1,7 @@
 package = "stuart-ml"
 version = "2.0.4-1"
 source = {
-   url = "https://github.com/BixData/stuart-ml/archive/2.0.4-1.tar.gz",
+   url = "https://github.com/nubix-io/stuart-ml/archive/2.0.4-1.tar.gz",
    dir = "stuart-ml-2.0.4-1"
 }
 description = {
@@ -11,7 +11,7 @@ description = {
       use with Stuart, the Spark runtime for embedding and edge
       computing.
    ]],
-   homepage = "https://github.com/BixData/stuart-ml",
+   homepage = "https://github.com/nubix-io/stuart-ml",
    maintainer = "David Rauschenbach",
    license = "Apache 2.0"
 }

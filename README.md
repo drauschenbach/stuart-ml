@@ -2,9 +2,9 @@
 
 ## Stuart ML
 
-A native Lua implementation of [Spark MLlib](https://spark.apache.org/docs/2.2.0/ml-guide.html). This is a companion module for [Stuart](https://github.com/BixData/stuart), the Spark runtime for embedding and edge computing.
+A native Lua implementation of [Spark MLlib](https://spark.apache.org/docs/2.2.0/ml-guide.html). This is a companion module for [Stuart](https://github.com/nubix-io/stuart), the Spark runtime for embedding and edge computing.
 
-![Build Status](https://api.travis-ci.org/BixData/stuart-ml.svg?branch=master)
+![Build Status](https://api.travis-ci.org/nubix-io/stuart-ml.svg?branch=master)
 [![License](http://img.shields.io/badge/Licence-Apache%202.0-blue.svg)](LICENSE)
 [![Lua](https://img.shields.io/badge/Lua-5.1%20|%205.2%20|%205.3%20|%20JIT%202.0%20|%20JIT%202.1%20|%20eLua%20|%20Fengari%20|%20GopherLua%20|%20Redis-blue.svg)]()
 

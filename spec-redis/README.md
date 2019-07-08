@@ -1,6 +1,6 @@
 # Unit testing within Redis
 
-The [stuart-ml-elua](https://github.com/BixData/stuart-ml-elua) project provides self-contained test suites such as [test/stuartml\_util\_MLUtils.lua](https://github.com/BixData/stuart-ml-elua/blob/2.0.0-0/test/stuartml_util_MLUtils.lua) which are well-suited to being sent into Redis to report on test coverage.
+The [stuart-ml-elua](https://github.com/nubix-io/stuart-ml-elua) project provides self-contained test suites such as [test/stuartml\_util\_MLUtils.lua](https://github.com/nubix-io/stuart-ml-elua/blob/2.0.0-0/test/stuartml_util_MLUtils.lua) which are well-suited to being sent into Redis to report on test coverage.
 
 A test run shows up in the Redis log like this:
 
@@ -164,6 +164,6 @@ End of test: 0 failures
 
 ## Related
 
-* [moses-elua](https://github.com/BixData/moses-elua)
-* [stuart-elua](https://github.com/BixData/stuart-elua)
-* [stuart-ml-elua](https://github.com/BixData/stuart-ml-elua)
+* [moses-elua](https://github.com/nubix-io/moses-elua)
+* [stuart-elua](https://github.com/nubix-io/stuart-elua)
+* [stuart-ml-elua](https://github.com/nubix-io/stuart-ml-elua)
